@@ -75,11 +75,15 @@ output$selectedGroups <- renderUI({
 
 output$clinicalDataSummary <- renderDataTable(clinicalDataSummary(),
                                               callback = "function(table) {
-                                              table.on('click.dt', 'tr', function() {
-                                              $(this).toggleClass('selected');
-                                              Shiny.onInputChange('rows',
-                                              table.rows('.selected').indexes().toArray());
-                                              });}")
+        table.on('click.dt', 'tr', function() {
+          $(this).closest('table').find('.selected').each(function(){
+              $(this).removeClass('selected');
+          });
+          $(this).toggleClass('selected');
+          Shiny.onInputChange('rows',
+          table.rows('.selected').indexes().toArray());
+        });
+      }")
 #output$dataSummary <- renderDataTable(NULL) 
 
 ##################################################################################
