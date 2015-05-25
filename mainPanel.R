@@ -1,5 +1,5 @@
 mainPanel(
-  conditionalPanel(condition="$('html').hasClass('shiny-busy')",                   
+ conditionalPanel(condition="$('html').hasClass('shiny-busy')",                   
                    img(src="PleaseWait.gif")
                  ),
 
@@ -21,11 +21,9 @@ mainPanel(
   
   conditionalPanel(condition = "output.displayPlatform == 'TRUE'",
       tabsetPanel(type = "pills", id = "tabs",
-          tabPanel("Clinical Data Summary",
-              dataTableOutput("clinicalDataSummary")                       
-          ),
+          tabPanel("Clinical Data Summary", dataTableOutput("clinicalDataSummary")),
           tabPanel("Clinical Data Table", dataTableOutput("clinicalData")),
-          tabPanel("Analysis", uiOutput("selectGroupsMessage"), plotOutput("plot")),
+          tabPanel("Differential Expression Analysis", uiOutput("selectGroupsMessage"), plotOutput("plot")),
 
           tabPanel("About",
             h3("Authors"),
@@ -33,7 +31,7 @@ mainPanel(
             HTML("is a MSc. Graduate Student in the Predictive Analytics program at DePaul University.
                   Jasmine has a BSE in Biomedical Engineering from the University of Hartford
                   and a Professional Certificate in Medical Product Develpment from UCI Extension.
-                  She is currently a R&D Engineering Technician at Covidien, Surgical Solutions Group."), 
+                  She is currently a R&D Engineering Technician at Medtronic."), 
             a("Github Profile", href ="https://github.com/jasdumas"), 
             br(), br(),
             

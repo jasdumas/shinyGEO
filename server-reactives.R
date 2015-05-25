@@ -3,7 +3,7 @@
 #############################################################################
 
 ####################################
-### datInput: the GEO object #######
+### dataInput: the GEO object ######
 ####################################
 dataInput <- reactive({
   # Runs the intial input once the button is pressed from within the 
@@ -14,9 +14,9 @@ dataInput <- reactive({
   getGEO(GEO = isolate(GSE), AnnotGPL=TRUE)
 })
 
-######################################
-### Platforms: the available platforms 
-######################################  
+################################################################
+### Platforms: returns the platform only if the GSE # is entered 
+################################################################  
 Platforms <- reactive({
   if (is.null(dataInput())) {
     return(NULL)
@@ -90,11 +90,11 @@ clinicalInput <- reactive({
     return(NULL)
   }
   
-  #####################################################################
-  #  display only columns that have more than one possible value; this
-  #   removes many columns such as contact info. In addition all 
-  #   columns specified by RM.COLS will be removed
-  #####################################################################
+#####################################################################
+#  display only columns that have more than one possible value; this
+#   removes many columns such as contact info. In addition all 
+#   columns specified by RM.COLS will be removed
+#####################################################################
   
   RM.COLS = c("status", "last_update_date", "submission_date")
   p = as.data.frame(pData(phenoData(object = dataInput()[[platformIndex()]])))
@@ -148,6 +148,7 @@ clinicalDataSummary <- reactive({
   vars = colnames(t)
   a = apply(t, 2, function(x)levels(as.factor(x)))
   
+## format function to truncate row contents with a place holder " ..."
   format.it <-function(x, max) {
     x = x[x!=""]
     if (length(x) <= max) return(x)
@@ -162,7 +163,7 @@ clinicalDataSummary <- reactive({
 
 
 ###################################################
-# get possible values of the selected column
+# get possible values of the selected column names
 ###################################################
 groupsForSelectedColumn <- reactive({
   vars = clinicalInput()
@@ -172,12 +173,12 @@ groupsForSelectedColumn <- reactive({
 })  
 
 ###################################################
-# get default values of selected column, either
-# all values or NULL if number of values exceeds
-# a cut-off
+# get default levels of the selected column, either
+# all levels or NULL if number of levels exceeds
+# a cut-off 
 ###################################################
 defaultGroupsForSelectedColumn <- reactive({
   g = groupsForSelectedColumn()
-  if (length(g) > 8) return(NULL)
+  if (length(g) > 8) return(NULL) # Why is 8 chosen as the cut-off?
   g    
 })

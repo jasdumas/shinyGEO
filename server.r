@@ -8,7 +8,6 @@ library(limma)
 
 source("stripchart2.R")
 
-options(shiny.suppressMissingContextError=TRUE)
 shinyServer(function(input, output, session){
   
   source("server-reactives.R", local = TRUE)

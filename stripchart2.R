@@ -1,6 +1,6 @@
-##################################
-### stripchart2 function 
-##################################
+###############################################################################
+### stripchart2 function to dictate the graphical appearance of gene expression
+##############################################################################
 stripchart2 <- function(x,y, group.names = NULL, jitter = 0.3, line.off = 0.3, 
                         lwd = 5, col = NULL, main = "", mark = "mean", 
                         ret = FALSE,  AUC = FALSE, subset = rep(TRUE, length(y)), 
