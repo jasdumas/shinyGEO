@@ -83,18 +83,17 @@ probeNames <- reactive({
 #######################################################
 # clinicalInput: Clinical Data
 #######################################################
+
 clinicalInput <- reactive({
-  #cat("print data input")
-  #print(dataInput())
   if (is.null(dataInput()) | is.null(platformIndex())) {
     return(NULL)
   }
   
-#####################################################################
-#  display only columns that have more than one possible value; this
-#   removes many columns such as contact info. In addition all 
-#   columns specified by RM.COLS will be removed
-#####################################################################
+      #####################################################################
+      #  display only columns that have more than one possible value; this
+      #   removes many columns such as contact info. In addition all 
+      #   columns specified by RM.COLS will be removed
+      #####################################################################
   
   RM.COLS = c("status", "last_update_date", "submission_date")
   p = as.data.frame(pData(phenoData(object = dataInput()[[platformIndex()]])))
@@ -110,7 +109,6 @@ clinicalInput <- reactive({
   
   return(p)
 })
-##################################################################################
 
 ######################################################
 # exprInput - expression data for selected platform
@@ -142,6 +140,7 @@ ColumnNames <- reactive({
 ########################################
 ### Summary of Clinical Data table
 ########################################  
+
 clinicalDataSummary <- reactive({
   t = clinicalInput()
   if (is.null(t)) return(NULL)

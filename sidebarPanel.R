@@ -19,7 +19,8 @@ sidebarPanel(
         uiOutput('selectProbes'),
                  
         uiOutput('selectedColumn'),
-        uiOutput('selectedGroups')
+        uiOutput('selectedGroups'), 
+        verbatimTextOutput('DTtest')
     ) #end Analyze Conditional Panel
 
 ) ## end sidebarPanel 

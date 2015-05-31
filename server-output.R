@@ -66,34 +66,42 @@ output$selectedGroups <- renderUI({
   )
 })
 
-
 ############################################
 ## displays the Clinical Summary Data Table
 ###########################################
+#action = dataTableAjax(session, clinicalDataSummary(), rownames = TRUE) # for the row_output as characters
 
-output$clinicalDataSummary <- renderDataTable(clinicalDataSummary(),
-                                              callback = "function(table) {
-                                              table.on('click.dt', 'tr', function() {
-                                              $(this).closest('table').find('.selected').each(function(){
-                                              $(this).removeClass('selected');
-                                              });
-                                              $(this).toggleClass('selected');
-                                              Shiny.onInputChange('rows',
-                                              table.rows('.selected').indexes().toArray());
-                                              });
-                                              }")
+output$clinicalDataSummary <- renderDataTable({(datatable(as.data.frame(clinicalDataSummary()), 
+                                                          selection = 'single', 
+                                                          rownames = TRUE
+                                                          #options = list(ajax = list(url = action)), server = TRUE
+#                                                           callback = JS("function(table) {
+#                                                           table.on('click.dt', 'tr', function() {
+#                                                           $(this).closest('table').find('.selected').each(function(){  
+#                                                           $(this).removeClass('selected');                          
+#                                                           });
+#                                                           $(this).toggleClass('selected');
+#                                                           Shiny.onInputChange('rows',
+#                                                           table.rows('.selected').indexes().toArray());
+#                                                           });
+#                                                           }")
+                                                          ))})
 
+output$DTtest <- renderPrint({
+  s = input$clinicalDataSummary_rows_selected
+  if (length(s)) {
+    cat('These rows were selected:\n\n')
+    cat(s, sep = '\n')
+  }
+  
+})
 
-#########################################
+######################################################################
 ## displays the full Clinical Data Table - currently with multi-select
-#########################################
-output$clinicalData <- renderDataTable(clinicalInput(), 
+#####################################################################
+output$clinicalData <- renderDataTable({ datatable(clinicalInput(), 
+                                                   filter = 'top', extensions = c('ColReorder', 'FixedColumns', 'KeyTable'),
                                        options = list(paging=F, searchable=T, info=T, autowidth=T, 
-                                                      scrollX=T, scrollY="400px", scrollCollapse = T), 
-                                       callback = "function(table) {
-                                       table.on('click.dt', 'tr', function() {
-                                       $(this).toggleClass('selected');
-                                       Shiny.onInputChange('rows',
-                                       table.rows('.selected').indexes().toArray());
-                                       });
-                                       }")
+                                                      scrollX=T, scrollY="500px", scrollCollapse = T, 
+                                                      dom = 'Rlfrtip') 
+                                       )})
