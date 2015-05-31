@@ -71,7 +71,7 @@ output$selectedGroups <- renderUI({
 ###########################################
 #action = dataTableAjax(session, clinicalDataSummary(), rownames = TRUE) # for the row_output as characters
 
-output$clinicalDataSummary <- renderDataTable({(datatable(as.data.frame(clinicalDataSummary()), 
+output$clinicalDataSummary <- DT::renderDataTable({(datatable(as.data.frame(clinicalDataSummary()), 
                                                           selection = 'single', 
                                                           rownames = TRUE
                                                           #options = list(ajax = list(url = action)), server = TRUE
@@ -88,7 +88,7 @@ output$clinicalDataSummary <- renderDataTable({(datatable(as.data.frame(clinical
                                                           ))})
 
 output$DTtest <- renderPrint({
-  s = input$clinicalDataSummary_rows_selected
+  s = input$clinicalDataSummary_row_last_clicked # explose the index of the last clicked row to shiny, per request in #78
   if (length(s)) {
     cat('These rows were selected:\n\n')
     cat(s, sep = '\n')
@@ -99,7 +99,7 @@ output$DTtest <- renderPrint({
 ######################################################################
 ## displays the full Clinical Data Table - currently with multi-select
 #####################################################################
-output$clinicalData <- renderDataTable({ datatable(clinicalInput(), 
+output$clinicalData <- DT::renderDataTable({ datatable(clinicalInput(), 
                                                    filter = 'top', extensions = c('ColReorder', 'FixedColumns', 'KeyTable'),
                                        options = list(paging=F, searchable=T, info=T, autowidth=T, 
                                                       scrollX=T, scrollY="500px", scrollCollapse = T, 
