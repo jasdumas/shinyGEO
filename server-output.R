@@ -30,24 +30,24 @@ output$platform <- renderUI({
 ## function to select most recent item selected
 ##################################################
 mostRecent <- function() { 
-  return (ColumnNames()[input$rows+1])
+  return (ColumnNames()[input$rows+1]) # This doesn't seem relevant and maybe removed soon
 }
 
 ################################################
 ### Renders drop-down menu for variables/columns 
 ################################################  
 output$selectedColumn <- renderUI({
-  a=mostRecent()
+  a=mostRecent() # This doesn't seem relevant and maybe removed soon (if/else statement setup)
   
   if ( length(a) == 0 ) {
     # if nothing has been selected it shows all possible choices
     selectInput('selectedColumn', 'Selected Column', 
-                ColumnNames(), multiple = F, selectize = FALSE
+                choices = input$clinicalDataSummary_row_last_clicked, multiple = F, selectize = FALSE
     )
   }
   else {
     selectInput('selectedColumn', 'Selected Column', 
-                mostRecent(), multiple = F, selectize = FALSE
+                choices = input$clinicalDataSummary_row_last_clicked, multiple = F, selectize = FALSE
     )
   }
 })
@@ -69,23 +69,25 @@ output$selectedGroups <- renderUI({
 ############################################
 ## displays the Clinical Summary Data Table
 ###########################################
-#action = dataTableAjax(session, clinicalDataSummary(), rownames = TRUE) # for the row_output as characters
 
-output$clinicalDataSummary <- DT::renderDataTable({(datatable(as.data.frame(clinicalDataSummary()), 
-                                                          selection = 'single', 
-                                                          rownames = TRUE
-                                                          #options = list(ajax = list(url = action)), server = TRUE
-#                                                           callback = JS("function(table) {
-#                                                           table.on('click.dt', 'tr', function() {
-#                                                           $(this).closest('table').find('.selected').each(function(){  
-#                                                           $(this).removeClass('selected');                          
-#                                                           });
-#                                                           $(this).toggleClass('selected');
-#                                                           Shiny.onInputChange('rows',
-#                                                           table.rows('.selected').indexes().toArray());
-#                                                           });
-#                                                           }")
-                                                          ))})
+observe({  # observe needed since data object is a reactive function
+  
+  output$clinicalDataSummary <- DT::renderDataTable({ (datatable(as.data.frame(clinicalDataSummary()), rownames = TRUE,  
+                                                                 extensions = 'ColReorder',
+                                                                 options = list(dom = 'Rlfrtip', ajax = list(url = action)),
+                                                                 filter = 'top', 
+                                                                 server = TRUE, 
+                                                                 selection = 'single')) 
+    
+  })
+  
+  dd = clinicalDataSummary()
+  
+  action = dataTableAjax(session, data=dd, rownames = TRUE) # for the row_output as characters
+  
+})
+
+
 
 output$DTtest <- renderPrint({
   s = input$clinicalDataSummary_row_last_clicked # explose the index of the last clicked row to shiny, per request in #78
@@ -99,7 +101,7 @@ output$DTtest <- renderPrint({
 ######################################################################
 ## displays the full Clinical Data Table - currently with multi-select
 #####################################################################
-output$clinicalData <- DT::renderDataTable({ datatable(clinicalInput(), 
+output$clinicalData <- DT::renderDataTable({ datatable(as.data.frame(clinicalInput()), 
                                                    filter = 'top', extensions = c('ColReorder', 'FixedColumns', 'KeyTable'),
                                        options = list(paging=F, searchable=T, info=T, autowidth=T, 
                                                       scrollX=T, scrollY="500px", scrollCollapse = T, 
