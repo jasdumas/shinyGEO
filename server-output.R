@@ -105,7 +105,6 @@ output$clinicalData <- DT::renderDataTable({ datatable(as.data.frame(clinicalInp
                                                    extensions = 'ColReorder',
                                                    options = list(dom = 'Rlfrtip', ajax = list(url = action1)),
                                                    filter = 'top',
-                                                   selection = 'single')
   })
 
 
@@ -114,11 +113,13 @@ di = clinicalInput()
 action1 = dataTableAjax(session, data=di, rownames = TRUE)
 
 })
+
 output$DTtestFull <- renderPrint({
-  s = input$clinicalInput_row_last_clicked # explose the index of the last clicked row to shiny, per request in #78
-  if (length(s)) {
+  print("got it")
+  j = input$clinicalInput_row_last_clicked
+  if (length(j)) {
     cat('Debug - These rows were selected:\n\n')
-    cat(s, sep = '\n')
+    cat(j, sep = '\n')
   }
   
 })
