@@ -105,6 +105,7 @@ output$clinicalData <- DT::renderDataTable({ datatable(as.data.frame(clinicalInp
                                                    extensions = 'ColReorder',
                                                    options = list(dom = 'Rlfrtip', ajax = list(url = action1)),
                                                    filter = 'top',
+                                                   selection = 'multiple') # this needs to be multiple selection soon
   })
 
 
