@@ -90,7 +90,7 @@ observe({  # observe needed since data object is a reactive function
 output$DTtest <- renderPrint({
   s = input$clinicalDataSummary_row_last_clicked # explose the index of the last clicked row to shiny, per request in #78
   if (length(s)) {
-    cat('Debug - These rows were selected:\n\n')
+    cat('These rows were selected:\n\n')
     cat(s, sep = '\n')
   }
   
@@ -116,10 +116,9 @@ action1 = dataTableAjax(session, data=di, rownames = TRUE)
 })
 
 output$DTtestFull <- renderPrint({
-  print("got it")
-  j = input$clinicalInput_row_last_clicked
+  j = input$clinicalData_rows_selected
   if (length(j)) {
-    cat('Debug - These rows were selected:\n\n')
+    cat('These rows were selected:\n\n')
     cat(j, sep = '\n')
   }
   
