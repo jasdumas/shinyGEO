@@ -76,7 +76,6 @@ observe({  # observe needed since data object is a reactive function
                                                                  extensions = 'ColReorder',
                                                                  options = list(dom = 'Rlfrtip', ajax = list(url = action)),
                                                                  filter = 'top', 
-                                                                  
                                                                  selection = 'single') 
     
   })
@@ -91,7 +90,7 @@ observe({  # observe needed since data object is a reactive function
 output$DTtest <- renderPrint({
   s = input$clinicalDataSummary_row_last_clicked # explose the index of the last clicked row to shiny, per request in #78
   if (length(s)) {
-    cat('These rows were selected:\n\n')
+    cat('Debug - These rows were selected:\n\n')
     cat(s, sep = '\n')
   }
   
@@ -100,10 +99,26 @@ output$DTtest <- renderPrint({
 ######################################################################
 ## displays the full Clinical Data Table - currently with multi-select
 #####################################################################
+
+observe({
 output$clinicalData <- DT::renderDataTable({ datatable(as.data.frame(clinicalInput()), rownames = TRUE,
                                                    extensions = 'ColReorder',
-                                                   options = list(dom = 'Rlfrtip', ajax = list(url = action)),
+                                                   options = list(dom = 'Rlfrtip', ajax = list(url = action1)),
                                                    filter = 'top',
-                                                    
                                                    selection = 'single')
   })
+
+
+di = clinicalInput()
+
+action1 = dataTableAjax(session, data=di, rownames = TRUE)
+
+})
+output$DTtestFull <- renderPrint({
+  s = input$clinicalInput_row_last_clicked # explose the index of the last clicked row to shiny, per request in #78
+  if (length(s)) {
+    cat('Debug - These rows were selected:\n\n')
+    cat(s, sep = '\n')
+  }
+  
+})
