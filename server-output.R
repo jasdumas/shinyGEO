@@ -72,12 +72,12 @@ output$selectedGroups <- renderUI({
 
 observe({  # observe needed since data object is a reactive function
   
-  output$clinicalDataSummary <- DT::renderDataTable({ (datatable(as.data.frame(clinicalDataSummary()), rownames = TRUE,  
+  output$clinicalDataSummary <- DT::renderDataTable({ datatable(as.data.frame(clinicalDataSummary()), rownames = TRUE,  
                                                                  extensions = 'ColReorder',
                                                                  options = list(dom = 'Rlfrtip', ajax = list(url = action)),
                                                                  filter = 'top', 
-                                                                 server = TRUE, 
-                                                                 selection = 'single')) 
+                                                                  
+                                                                 selection = 'single') 
     
   })
   
@@ -86,7 +86,6 @@ observe({  # observe needed since data object is a reactive function
   action = dataTableAjax(session, data=dd, rownames = TRUE) # for the row_output as characters
   
 })
-
 
 
 output$DTtest <- renderPrint({
@@ -101,9 +100,10 @@ output$DTtest <- renderPrint({
 ######################################################################
 ## displays the full Clinical Data Table - currently with multi-select
 #####################################################################
-output$clinicalData <- DT::renderDataTable({ datatable(as.data.frame(clinicalInput()), 
-                                                   filter = 'top', extensions = c('ColReorder', 'FixedColumns', 'KeyTable'),
-                                       options = list(paging=F, searchable=T, info=T, autowidth=T, 
-                                                      scrollX=T, scrollY="500px", scrollCollapse = T, 
-                                                      dom = 'Rlfrtip') 
-                                       )})
+output$clinicalData <- DT::renderDataTable({ datatable(as.data.frame(clinicalInput()), rownames = TRUE,
+                                                   extensions = 'ColReorder',
+                                                   options = list(dom = 'Rlfrtip', ajax = list(url = action)),
+                                                   filter = 'top',
+                                                    
+                                                   selection = 'single')
+  })
