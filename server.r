@@ -6,8 +6,11 @@ library(reshape2)
 library(survival)
 library(affy)
 library(limma)
+library(shinyBS)
 
 source("stripchart2.R")
+#options(shiny.deprecation.messages=FALSE)
+
 
 shinyServer(function(input, output, session){
   

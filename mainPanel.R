@@ -1,3 +1,4 @@
+
 mainPanel(
  conditionalPanel(condition="$('html').hasClass('shiny-busy')",                   
                    img(src="PleaseWait.gif")
@@ -21,8 +22,8 @@ mainPanel(
   
   conditionalPanel(condition = "output.displayPlatform == 'TRUE'",
       tabsetPanel(type = "pills", id = "tabs",
-          tabPanel("Clinical Data Summary", DT::dataTableOutput("clinicalDataSummary")),
-          tabPanel("Clinical Data Table", DT::dataTableOutput("clinicalData")),
+          tabPanel("Clinical Data Summary", hr(), DT::dataTableOutput("clinicalDataSummary")),
+          tabPanel("Clinical Data Table", hr(), DT::dataTableOutput("clinicalData")),
           tabPanel("Differential Expression Analysis", uiOutput("selectGroupsMessage"), plotOutput("plot")),
 
           tabPanel("About",

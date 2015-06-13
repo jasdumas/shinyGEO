@@ -26,30 +26,18 @@ output$platform <- renderUI({
   selectInput('platform', 'Platform', Platforms(), multiple = F, selectize = FALSE)        
 })
 
-##################################################
-## function to select most recent item selected
-##################################################
-mostRecent <- function() { 
-  return (ColumnNames()[input$rows+1]) # This doesn't seem relevant and maybe removed soon
-}
-
 ################################################
 ### Renders drop-down menu for variables/columns 
 ################################################  
 output$selectedColumn <- renderUI({
-  a=mostRecent() # This doesn't seem relevant and maybe removed soon (if/else statement setup)
   
-  if ( length(a) == 0 ) {
-    # if nothing has been selected it shows all possible choices
-    selectInput('selectedColumn', 'Selected Column', 
-                choices = input$clinicalDataSummary_row_last_clicked, multiple = F, selectize = FALSE
+  
+# show possible choices (column names)
+selectInput('selectedColumn', 'Selected Column', 
+            choices = ColumnNames(),
+            selected = input$clinicalDataSummary_row_last_clicked, multiple = F, selectize = FALSE
     )
-  }
-  else {
-    selectInput('selectedColumn', 'Selected Column', 
-                choices = input$clinicalDataSummary_row_last_clicked, multiple = F, selectize = FALSE
-    )
-  }
+  
 })
 
 
@@ -86,7 +74,7 @@ observe({  # observe needed since data object is a reactive function
   
 })
 
-
+# only needed for debugging - will remove soon
 output$DTtest <- renderPrint({
   s = input$clinicalDataSummary_row_last_clicked # explose the index of the last clicked row to shiny, per request in #78
   if (length(s)) {
@@ -115,6 +103,8 @@ action1 = dataTableAjax(session, data=di, rownames = TRUE)
 
 })
 
+
+# only needed for debugging - will remove soon
 output$DTtestFull <- renderPrint({
   j = input$clinicalData_rows_selected
   if (length(j)) {
@@ -123,3 +113,5 @@ output$DTtestFull <- renderPrint({
   }
   
 })
+
+
