@@ -10,12 +10,18 @@ output$displayPlatform <- renderText(displayPlatform())
 outputOptions(output, 'displayPlatform', suspendWhenHidden=FALSE)
 
 output$selectGenes <- renderUI({
+  validate(
+    need(!is.null(geneNames()), 'Processing.')
+  )
   selectInput("selectGenes", label = "Select Gene",
               choice = geneNames(), multiple = F,
               selected = 0)
 })
 
 output$selectProbes <- renderUI({
+  validate(
+    need(!is.null(probeNames()), 'Processing.')
+  )
   selectInput("selectProbes", label = "Select Probe", 
               choices = probeNames(), multiple = F,
               selected = 0)
@@ -23,6 +29,9 @@ output$selectProbes <- renderUI({
 
 
 output$platform <- renderUI({
+  validate(
+    need(!is.null(Platforms()), 'Processing.')
+  )
   selectInput('platform', 'Platform', Platforms(), multiple = F, selectize = FALSE)        
 })
 
@@ -49,7 +58,7 @@ output$selectedGroups <- renderUI({
               choices = groupsForSelectedColumn(), multiple=TRUE,
               selected = defaultGroupsForSelectedColumn(),
               selectize = TRUE
-
+              
               
   )
 })
@@ -59,12 +68,14 @@ output$selectedGroups <- renderUI({
 ###########################################
 
 observe({  # observe needed since data object is a reactive function
-  
+  validate(
+    need(!is.null(clinicalDataSummary()), 'Processing.')
+  )
   output$clinicalDataSummary <- DT::renderDataTable({ datatable(as.data.frame(clinicalDataSummary()), rownames = TRUE,  
-                                                                 extensions = 'ColReorder',
-                                                                 options = list(dom = 'Rlfrtip', ajax = list(url = action)),
-                                                                 filter = 'top', 
-                                                                 selection = 'single') 
+                                                                extensions = 'ColReorder',
+                                                                options = list(dom = 'Rlfrtip', ajax = list(url = action)),
+                                                                filter = 'top', 
+                                                                selection = 'single') 
     
   })
   
@@ -89,18 +100,21 @@ output$DTtest <- renderPrint({
 #####################################################################
 
 observe({
-output$clinicalData <- DT::renderDataTable({ datatable(as.data.frame(clinicalInput()), rownames = TRUE,
-                                                   extensions = 'ColReorder',
-                                                   options = list(dom = 'Rlfrtip', ajax = list(url = action1)),
-                                                   filter = 'top',
-                                                   selection = 'multiple') # this needs to be multiple selection soon
+  validate(
+    need(!is.null(clinicalInput()), 'Processing.')
+  )
+  output$clinicalData <- DT::renderDataTable({ datatable(as.data.frame(clinicalInput()), rownames = TRUE,
+                                                         extensions = 'ColReorder',
+                                                         options = list(dom = 'Rlfrtip', ajax = list(url = action1)),
+                                                         filter = 'top',
+                                                         selection = 'multiple') # this needs to be multiple selection soon
   })
-
-
-di = clinicalInput()
-
-action1 = dataTableAjax(session, data=di, rownames = TRUE)
-
+  
+  
+  di = clinicalInput()
+  
+  action1 = dataTableAjax(session, data=di, rownames = TRUE)
+  
 })
 
 
@@ -111,7 +125,6 @@ output$DTtestFull <- renderPrint({
     cat('These rows were selected:\n\n')
     cat(j, sep = '\n')
   }
-  
 })
 
 
