@@ -10,8 +10,8 @@ dataInput <- reactive({
   # reactive statement
   input$submitButton
   GSE = isolate(gsub(" ", "", input$GSE))   # remove white space
-  if (GSE=="") return(NULL)
-  getGEO(GEO = isolate(GSE), AnnotGPL=TRUE)
+  if (GSE== "" | GSE == "GSE" | !grepl("GSE",GSE)) return(NULL)
+  return(getGEO(GEO = isolate(GSE), AnnotGPL=TRUE))
 })
 
 ################################################################
@@ -41,7 +41,8 @@ platformIndex <- reactive({
 ################################################  
 platInfo <- reactive({
   if (is.null(Platforms())) return (NULL)
-  t = Table(getGEO(Platforms()[platformIndex()]))
+  g = getGEO(Platforms()[platformIndex()]) ## Where the loading error is
+  t = Table(g)
   k = t[,"ID"]
   common.probes = intersect(row.names(exprInput()), as.character(k))
   n = match(common.probes, k)
@@ -89,11 +90,11 @@ clinicalInput <- reactive({
     return(NULL)
   }
   
-      #####################################################################
-      #  display only columns that have more than one possible value; this
-      #   removes many columns such as contact info. In addition all 
-      #   columns specified by RM.COLS will be removed
-      #####################################################################
+  #####################################################################
+  #  display only columns that have more than one possible value; this
+  #   removes many columns such as contact info. In addition all 
+  #   columns specified by RM.COLS will be removed
+  #####################################################################
   
   RM.COLS = c("status", "last_update_date", "submission_date")
   p = as.data.frame(pData(phenoData(object = dataInput()[[platformIndex()]])))
@@ -147,7 +148,7 @@ clinicalDataSummary <- reactive({
   vars = colnames(t)
   a = apply(t, 2, function(x)levels(as.factor(x)))
   
-## format function to truncate row contents with a place holder " ..."
+  ## format function to truncate row contents with a place holder " ..."
   format.it <-function(x, max) {
     x = x[x!=""]
     if (length(x) <= max) return(x)
