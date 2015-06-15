@@ -74,15 +74,6 @@ observe({  # observe needed since data object is a reactive function
   
 })
 
-# only needed for debugging - will remove soon
-output$DTtest <- renderPrint({
-  s = input$clinicalDataSummary_row_last_clicked # explose the index of the last clicked row to shiny, per request in #78
-  if (length(s)) {
-    cat('These rows were selected:\n\n')
-    cat(s, sep = '\n')
-  }
-  
-})
 
 ######################################################################
 ## displays the full Clinical Data Table - currently with multi-select
@@ -104,14 +95,18 @@ action1 = dataTableAjax(session, data=di, rownames = TRUE)
 })
 
 
-# only needed for debugging - will remove soon
-output$DTtestFull <- renderPrint({
-  j = input$clinicalData_rows_selected
-  if (length(j)) {
-    cat('These rows were selected:\n\n')
-    cat(j, sep = '\n')
-  }
-  
+
+#############################################################################################
+# A new way of creating group fields for users to select individual samples for survival analysis
+#############################################################################################
+output$group1 <- renderUI({
+  selectInput("g1", "Group 1", choices = input$clinicalData_rows_selected, 
+              multiple = TRUE, selectize = TRUE,
+              selected = input$clinicalData_rows_selected)
 })
 
-
+output$group2 <- renderUI({
+  selectInput("g2", "Group 2", choices = input$clinicalData_rows_selected, 
+              multiple = TRUE, selectize = TRUE,
+              selected = input$clinicalData_rows_selected)
+})
