@@ -96,17 +96,3 @@ action1 = dataTableAjax(session, data=di, rownames = TRUE)
 
 
 
-#############################################################################################
-# A new way of creating group fields for users to select individual samples for survival analysis
-#############################################################################################
-output$group1 <- renderUI({
-  selectInput("g1", "Group 1", choices = input$clinicalData_rows_selected, 
-              multiple = TRUE, selectize = TRUE,
-              selected = input$clinicalData_rows_selected)
-})
-
-output$group2 <- renderUI({
-  selectInput("g2", "Group 2", choices = input$clinicalData_rows_selected, 
-              multiple = TRUE, selectize = TRUE,
-              selected = input$clinicalData_rows_selected)
-})

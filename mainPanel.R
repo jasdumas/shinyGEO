@@ -23,10 +23,7 @@ mainPanel(
   conditionalPanel(condition = "output.displayPlatform == 'TRUE'",
       tabsetPanel(type = "pills", id = "tabs",
           tabPanel("Clinical Data Summary", hr(), DT::dataTableOutput("clinicalDataSummary")),
-          tabPanel("Clinical Data Table", hr(), 
-                   fluidRow(
-                   column(4, uiOutput("group1")), column(4, uiOutput("group2"))), 
-                   DT::dataTableOutput("clinicalData")),
+          tabPanel("Clinical Data Table", hr(), DT::dataTableOutput("clinicalData")),
           tabPanel("Differential Expression Analysis", uiOutput("selectGroupsMessage"), plotOutput("plot")),
 
           tabPanel("About",
