@@ -178,6 +178,6 @@ groupsForSelectedColumn <- reactive({
 ###################################################
 defaultGroupsForSelectedColumn <- reactive({
   g = groupsForSelectedColumn()
-  if (length(g) > 8) return(NULL) # Why is 8 chosen as the cut-off?
+  if (length(g) > 8) return(NULL) 
   g    
 })

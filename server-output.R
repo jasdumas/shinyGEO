@@ -31,7 +31,6 @@ output$platform <- renderUI({
 ################################################  
 output$selectedColumn <- renderUI({
   
-  
 # show possible choices (column names)
 selectInput('selectedColumn', 'Selected Column', 
             choices = ColumnNames(),
@@ -75,8 +74,8 @@ observe({  # observe needed since data object is a reactive function
 ## displays the full Clinical Data Table - currently with multi-select
 #####################################################################
 observe({
-#output$clinicalData <- DT::renderDataTable({ datatable(as.data.frame(clinicalInput()), rownames = TRUE,
-output$clinicalData <- DT::renderDataTable({ datatable(as.data.frame(editClinicalTable()), rownames = TRUE,
+output$clinicalData <- DT::renderDataTable({ datatable(as.data.frame(clinicalInput()), rownames = TRUE,
+#output$clinicalData <- DT::renderDataTable({ datatable(as.data.frame(editClinicalTable()), rownames = TRUE,
                                                    extensions = 'ColReorder',
                                                    options = list(dom = 'Rlfrtip', ajax = list(url = action1)),
                                                    filter = 'top',
@@ -94,78 +93,70 @@ action1 = dataTableAjax(session, data=di, rownames = TRUE)
 ## Expression Profiles plot 
 ##############################
 
-output$exProfiles <- renderPlot({  # no formating and log options yet
-  #boxplot(x = profiles())
-  #boxplot(log2(exprInput()))
-  if (input$radio == 1 | input$radio == 2) return (boxplot(log2(exprInput())))
-  else return(boxplot(exprInput()))
+observeEvent(input$submitButton,
+output$exProfiles <- renderPlot({ 
+  
+  # set parameters and draw the plot
+  palette(c("#99d5db", "#d399db")) # i don't think this pallete works right now
+  dev.new(width=4+dim(dataInput())[[2]]/5, height=6)
+  par(mar=c(2+round(max(nchar(sampleNames(dataInput())))/2),4,2,1))
+  title <- paste (input$GSE, '/', input$platform, " selected samples", sep ='')
+  #if (input$radio == 1 | input$radio == 2) return (y.label = "log2 Expression")
+  #else return(y.label = "Expression")
+  boxplot(x = profiles(), boxwex=0.6, notch=T, main=title, outline=FALSE, las=2, ylab="log2 Expression")
   
 })
+)
+######## This reactive function changes the value of a reactive function into a variable
+######## to be used as a reactive expression in the plot but I could also call profiles() in the 
+######## in the Diff. Expr. Analysis to truely reflect the data transformation
 
-# ## can't find function in boxplot... might have to do with type
-# observeEvent(input$submitButton,
-# profiles <- reactive ({
-#   if (input$radio == 1) {
-#   
-#   # log2 transform Auto-detect settings
-#   ex <- exprInput()
-#   qx <- as.numeric(quantile(ex, c(0., 0.25, 0.5, 0.75, 0.99, 1.0), na.rm=T))
-#   LogC <- (qx[5] > 100) ||
-#     (qx[6]-qx[1] > 50 && qx[2] > 0) ||
-#     (qx[2] > 0 && qx[2] < 1 && qx[4] > 1 && qx[4] < 2)
-#   if (LogC) { ex[which(ex <= 0)] <- NaN
-#   get(exprInput()) <- log2(exprInput()) } }
-#   
-#   if (input$radio == 2) return (exprInput() <- log2(exprInput()))
-#   
-#   if (input$radio == 3) return (exprInput())
-#   
-# })
-# )
+   profiles <- reactive({
 
+    if (input$radio == 1) return (ex <- log2(exprInput()))  # this is the auto-detect for now
+    if (input$radio == 2) return (ex <- log2(exprInput()))
+    else return (ex <- exprInput())
+ })
 
-
-#############################
+#######################################################
 ## Find & Replace Method 
-#############################
+######################################################
 output$dropModal <- renderUI({
   selectInput("drop2", "Column Names", choices = ColumnNames(), selected = "")
 })
 
-#observeEvent(input$Enter
+    ######################################################### 
+    # Editable tables function + temporary observe functions
+    ########################################################
+    #observeEvent(input$Enter
+ 
+    findStr <- reactive({input$find})       # reactives for textboxes in modal window
+    replaceStr <- reactive({input$replace})
+    columnNum <- reactive({input$drop2})  
+    #)
 
-findStr <- reactive({input$find})       # reactives for textboxes in modal window
-replaceStr <- reactive({input$replace})
-columnNum <- reactive({input$drop2})  # new drop down menu for column names
-#)
-
-##### Entire function as a reactive
-
-#observe({
-editClinicalTable <- reactive({
-  input$Enter    
+    #observe({
+    editClinicalTable <- reactive({
+    input$Enter    
   
-  cat(" in Full Clinical Table\n")
-  exactMatch = isolate(input$checkbox) # exact match condition
+    cat(" in Full Clinical Table\n")
+    exactMatch = isolate(input$checkbox) # exact match condition
   
+    find.str = isolate(findStr())
+    column.num = isolate(columnNum())
+    replace.str = isolate(replaceStr())
   
-  find.str = isolate(findStr())
-  column.num = isolate(columnNum())
-  replace.str = isolate(replaceStr())
+    valuesIris$FIND <- find.str
+    valuesIris$REPLACE <- replace.str
+    valuesIris$DD <- column.num
   
-  valuesIris$FIND <- find.str
-  valuesIris$REPLACE <- replace.str
-  valuesIris$DD <- column.num
+    if (exactMatch) {    # while default is false
+      find.str = paste("^", find.str, "$", sep = "")
+    }
   
-  if (exactMatch) {    # while default is false
-    find.str = paste("^", find.str, "$", sep = "")
-  }
+    newIris = isolate(clinicalInput())
   
-  
-  newIris = isolate(clinicalEditTable())
-  
-  
-  ### if factor, change to character.  Otherwise we can't replace it. ##
+    ### if factor, change to character.  Otherwise we can't replace it. ##
   
   if (is.factor(newIris[,column.num])) {
     newIris[,column.num] = as.character(newIris[,column.num])

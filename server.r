@@ -30,10 +30,10 @@ shinyServer(function(input, output, session){
       } else  {
           output$selectGroupsMessage <-renderText({""})
           output$plot <- renderPlot({
-              x = exprInput()[selectedProbe(),]
+              x = profiles()[selectedProbe(),] # effected by data transformation
               iv = input$selectedColumn
               m = match(as.character(iv), colnames(clinicalInput()))  # GD: change grep to match
-              clinical = as.character(clinicalInput()[,m])
+              clinical = as.character(clinicalInput()[,m])  # clinicalInput() should be the new edited table once fixed
               selected = c(as.character(input$Group1Values))
               k = clinical%in% selected
     
