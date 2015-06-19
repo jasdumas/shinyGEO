@@ -74,8 +74,8 @@ observe({  # observe needed since data object is a reactive function
 ## displays the full Clinical Data Table - currently with multi-select
 #####################################################################
 observe({
-output$clinicalData <- DT::renderDataTable({ datatable(as.data.frame(clinicalInput()), rownames = TRUE,
-#output$clinicalData <- DT::renderDataTable({ datatable(as.data.frame(editClinicalTable()), rownames = TRUE,
+#output$clinicalData <- DT::renderDataTable({ datatable(as.data.frame(clinicalInput()), rownames = TRUE,
+output$clinicalData <- DT::renderDataTable({ datatable(data = switchTable(), rownames = TRUE,
                                                    extensions = 'ColReorder',
                                                    options = list(dom = 'Rlfrtip', ajax = list(url = action1)),
                                                    filter = 'top',
@@ -101,7 +101,7 @@ output$exProfiles <- renderPlot({
   dev.new(width=4+dim(dataInput())[[2]]/5, height=6)
   par(mar=c(2+round(max(nchar(sampleNames(dataInput())))/2),4,2,1))
   title <- paste (input$GSE, '/', input$platform, " selected samples", sep ='')
-  #if (input$radio == 1 | input$radio == 2) return (y.label = "log2 Expression")
+  #if (input$radio == 1 | input$radio == 2) return (y.label = "log2 Expression")        # doesnt work yet
   #else return(y.label = "Expression")
   boxplot(x = profiles(), boxwex=0.6, notch=T, main=title, outline=FALSE, las=2, ylab="log2 Expression")
   
@@ -118,58 +118,54 @@ output$exProfiles <- renderPlot({
     else return (ex <- exprInput())
  })
 
-#######################################################
-## Find & Replace Method 
-######################################################
-output$dropModal <- renderUI({
-  selectInput("drop2", "Column Names", choices = ColumnNames(), selected = "")
-})
-
-    ######################################################### 
-    # Editable tables function + temporary observe functions
-    ########################################################
-    #observeEvent(input$Enter
- 
-    findStr <- reactive({input$find})       # reactives for textboxes in modal window
-    replaceStr <- reactive({input$replace})
-    columnNum <- reactive({input$drop2})  
-    #)
-
-    #observe({
-    editClinicalTable <- reactive({
-    input$Enter    
-  
-    cat(" in Full Clinical Table\n")
-    exactMatch = isolate(input$checkbox) # exact match condition
-  
-    find.str = isolate(findStr())
-    column.num = isolate(columnNum())
-    replace.str = isolate(replaceStr())
-  
-    valuesIris$FIND <- find.str
-    valuesIris$REPLACE <- replace.str
-    valuesIris$DD <- column.num
-  
-    if (exactMatch) {    # while default is false
-      find.str = paste("^", find.str, "$", sep = "")
-    }
-  
-    newIris = isolate(clinicalInput())
-  
-    ### if factor, change to character.  Otherwise we can't replace it. ##
-  
-  if (is.factor(newIris[,column.num])) {
-    newIris[,column.num] = as.character(newIris[,column.num])
-  }
-  
-  # isolate allows the user to edit multiple times if the find box is kept the same - 
-  # so the find and replace is pointing to the original table and not a updated version
-  
-  g = isolate(grep(find.str, newIris[,column.num])) 
-  cat("g = ", g, "\n")
-  newIris[g,column.num] = replace.str 
-  cat("replacing ", find.str, "with ", replace.str)
-  return(newIris) # its returning the new data table when edited and then once the find parameters change it reverts back to the original
-})
-#})
-
+   #######################################################
+   ## Find & Replace Method 
+   ######################################################
+   output$dropModal <- renderUI({
+     selectInput("drop2", "Column Names", choices = ColumnNames(), selected = "")
+   })
+   
+   ######################################################### 
+   # Editable tables function + temporary observe functions
+   ########################################################
+   
+   find.str <- reactive({input$find})       # reactives for textboxes in modal window
+   replace.str <- reactive({input$replace})
+   column.num <- reactive({input$drop2})
+   
+   #observeEvent(input$Enter,
+   editClinicalTable <- reactive({
+     input$Enter    
+     
+     cat(" in Full Clinical Table\n")  # trouble shooting print output
+     
+     exactMatch = isolate(input$checkbox) # exact match condition
+     
+     if (exactMatch) {    # while default is false
+       find.str() = paste("^", find.str, "$", sep = "")
+     }
+     
+     newClinical <- values$table
+     #newClinical <- iris
+     
+     ### if factor, change to character.  Otherwise we can't replace it. ##
+     if (is.factor(newClinical[,column.num()])) {
+       newClinical[,column.num()] = as.character(newClinical[,column.num()])
+     }
+     
+     g = isolate(grep(find.str(), newClinical[,column.num()])) 
+     cat("g = ", g, "\n")
+     newClinical[g,column.num()] = replace.str() 
+     cat("replacing ", find.str(), "with ", replace.str())
+     return (newClinical)
+     #if (!is.null(find.str()) & !is.null(replace.str())) return(newClinical)
+     #else return(clinicalInput())
+     
+   })
+   
+   switchTable <- reactive({
+     if (is.null(find.str()) & is.null(replace.str())) return(newClinical)
+     else return(clinicalInput())
+   })
+  # )
+   

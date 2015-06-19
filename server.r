@@ -12,11 +12,13 @@ source("stripchart2.R")
 #options(shiny.deprecation.messages=FALSE)
 
 # test trial with data table
-valuesIris <- reactiveValues()
-#valuesIris$table <- clinicalInput()
-valuesIris$FIND = ""
-valuesIris$REPLACE = ""
-valuesIris$DD = ""
+observeEvent(input$submitButton,
+values <- reactiveValues(),
+values$table <- clinicalInput()
+)
+# valuesIris$FIND = ""
+# valuesIris$REPLACE = ""
+# valuesIris$DD = ""
 
 shinyServer(function(input, output, session){
   
