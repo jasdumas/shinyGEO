@@ -1,3 +1,4 @@
+library(shinyBS) # needs to be here also!
 
 mainPanel(
  conditionalPanel(condition="$('html').hasClass('shiny-busy')",                   
@@ -30,7 +31,8 @@ mainPanel(
           tabPanel("Clinical Data Table", hr(), 
                    actionButton("tabBut", "Edit Data Table"),
           bsModal("modalExample", "Edit Data Table", "tabBut", size = "small",
-                  uiOutput("dropModal"),
+                  #uiOutput("dropModal"),
+                  numericInput("dropModal", "column.num", value = 5),
                   textInput("find", label = "Find", value = ""),
                   checkboxInput("checkbox", label = "Exact Match", value = FALSE),
                   textInput("replace", label = "Replace", value = ""),
