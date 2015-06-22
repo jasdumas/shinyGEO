@@ -185,7 +185,6 @@ defaultGroupsForSelectedColumn <- reactive({
 ###################################################
 # Edit table reactiveValues()
 ###################################################
-
 p = as.data.frame(pData(phenoData(object = getGEO("GSE13")[[1]]))) # this WORKS when the values is defined here
 
 values.edit <- reactiveValues()

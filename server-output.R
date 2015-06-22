@@ -72,7 +72,7 @@ observe({  # observe needed since data object is a reactive function
 ## displays the full Clinical Data Table - currently with multi-select
 #####################################################################
 observe({
-output$clinicalData <- DT::renderDataTable({ datatable(as.data.frame(editClinicalTable()), #rownames = TRUE,
+output$clinicalData <- DT::renderDataTable({ datatable(as.data.frame(x = editClinicalTable()), #rownames = TRUE,
                                                    extensions = 'ColReorder',
                                                    #options = list(dom = 'Rlfrtip', ajax = list(url = action1)),
                                                    filter = 'top',
@@ -110,11 +110,22 @@ output$exProfiles <- renderPlot({
 # in the Diff. Expr. Analysis to truely reflect the data transformation
 ##############################################################################
 profiles <- reactive({
+  ### log2 transform (auto-detect) citation ###
+  # Edgar R, Domrachev M, Lash AE.
+  # Gene Expression Omnibus: NCBI gene expression and hybridization array data repository
+  # Nucleic Acids Res. 2002 Jan 1;30(1):207-10
   
-    if (input$radio == 1) return (ex <- log2(exprInput()))  # this is the auto-detect for now
-    if (input$radio == 2) return (ex <- log2(exprInput()))
-    else return (ex <- exprInput())
-    print(length(ex)) 
+  ex <- exprInput()
+  qx <- as.numeric(quantile(ex, c(0., 0.25, 0.5, 0.75, 0.99, 1.0), na.rm=T))
+  LogC <- (qx[5] > 100) ||
+    (qx[6]-qx[1] > 50 && qx[2] > 0) ||
+    (qx[2] > 0 && qx[2] < 1 && qx[4] > 1 && qx[4] < 2)
+  if (LogC | input$radio == 1) { ex[which(ex <= 0)] <- NaN
+  return (ex <- log2(ex)) }    ## next step is to include a function that displays a sample() of the results to prevent over-crowding
+  
+  if (input$radio == 2) return (ex <- log2(exprInput()))   # forced Yes
+  else return (ex <- exprInput())  # No
+  
  })
 
 #######################################################
@@ -131,7 +142,7 @@ profiles <- reactive({
    replace.str <- reactive({input$replace})
    column.num <- reactive({input$dropModal})  # changed drop-downs back to numbers for subset
 
-## editClinicalTable uses grep as a all-or-nothing replacement -> soon to include gsub changing parts of cells!   
+## editClinicalTable uses grep as a all-or-nothing replacement -> soon to include gsub for changing parts of cells!   
 editClinicalTable <- reactive({
      input$Enter    
      
@@ -156,9 +167,9 @@ editClinicalTable <- reactive({
        newClinical[,column.num] = as.character(newClinical[,column.num])
      }
      
-     g = grep(find.str, newClinical[,column.num])
-     cat("g = ", g, "\n")
-     newClinical[g,column.num] = replace.str 
+     g.total = grep(find.str, newClinical[,column.num])  # regular g is used in selectGene() reactive
+     cat("g.total = ", g.total, "\n")
+     newClinical[g.total,column.num] = replace.str 
      cat("replacing ", find.str, "with ", replace.str)
      values.edit$table = newClinical
      return (values.edit$table)
