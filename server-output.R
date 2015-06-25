@@ -98,9 +98,14 @@ output$exProfiles <- renderPlot({
   dev.new(width=4+dim(dataInput())[[2]]/5, height=6)
   par(mar=c(2+round(max(nchar(sampleNames(dataInput())))/2),4,2,1))
   title <- paste (input$GSE, '/', input$platform, " selected samples", sep ='')
-  #if (input$radio == 1 | input$radio == 2) return (y.label = "log2 Expression")        # doesnt work yet
-  #else return(y.label = "Expression")
-  boxplot(x = profiles(), boxwex=0.6, notch=T, main=title, outline=FALSE, las=2, ylab="log2 Expression", col = colors())
+  # Changes y-zxis label if radio choices change
+  if (input$radio == 1 | input$radio == 2) {
+     y.label = "log2 Expression"       
+  } else {
+    y.label = "Expression"
+  }
+  
+  boxplot(x = profiles(), boxwex=0.6, notch=T, main=title, outline=FALSE, las=2, ylab= y.label, col = colors())
   
 })
 )
