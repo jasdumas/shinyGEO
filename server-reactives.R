@@ -40,7 +40,7 @@ platformIndex <- reactive({
 ### return selected platform info as a table
 ################################################  
 platInfo <- reactive({
-  if (is.null(Platforms())) return (NULL)
+  if (is.null(Platforms()) | is.null(platformIndex())) return (NULL)
   t = Table(getGEO(Platforms()[platformIndex()]))
   k = t[,"ID"]
   common.probes = intersect(row.names(exprInput()), as.character(k))
@@ -64,7 +64,7 @@ geneNames <- reactive ({
 ### selected Gene index
 ########################################  
 selectGene <- reactive ({
-  if (is.null(input$selectGenes)) return (NULL)
+  if (input$selectGenes == "") return (NULL)
   m = match("Gene Symbol",colnames(platInfo()))
   if(is.na(m)) { m = match("Symbol", colnames(platInfo()))}
   g = grep(paste("^",input$selectGenes,"$",sep=""), as.character(platInfo()[,m]))
@@ -76,7 +76,7 @@ selectGene <- reactive ({
 #############################################  
 probeNames <- reactive({
   if (is.null(dataInput())) return(NULL)
-  else if (is.null(selectGene())) return(as.list(row.names(exprInput())))
+  else if (is.null(selectGene())) return(NULL)
   return (as.character(platInfo()[selectGene(),match("ID",colnames(platInfo()))]))
 })
 
