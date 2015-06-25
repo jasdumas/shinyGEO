@@ -39,7 +39,7 @@ mainPanel(
                   actionButton("Enter", label = "Submit")),
                   DT::dataTableOutput("clinicalData")),
           tabPanel("Differential Expression Analysis", hr(), uiOutput("selectGroupsMessage"), plotOutput("plot")),
-
+          tabPanel("Survival Analysis", hr(), plotOutput("kmSurvival")),
           tabPanel("About",
             h3("Authors"),
             HTML("<span style = \"font-weight: bold\"> Jasmine Dumas </span>"),

@@ -72,15 +72,15 @@ observe({  # observe needed since data object is a reactive function
 ## displays the full Clinical Data Table - currently with multi-select
 #####################################################################
 observe({
-output$clinicalData <- DT::renderDataTable({ datatable(as.data.frame(x = editClinicalTable()), #rownames = TRUE,
+output$clinicalData <- DT::renderDataTable({ datatable(editClinicalTable(), rownames = TRUE,
                                                    extensions = 'ColReorder',
-                                                   #options = list(dom = 'Rlfrtip', ajax = list(url = action1)),
+                                                   options = list(dom = 'Rlfrtip', ajax = list(url = action1)),
                                                    filter = 'top',
-                                                   selection = 'multiple') 
+                                                   selection = 'multiple')
   })
 
-#di = clinicalInput()
-#action1 = dataTableAjax(session, data=di, rownames = TRUE)
+di = clinicalInput()
+action1 = dataTableAjax(session, data=di, rownames = TRUE)
 
 ## removed rownames to eliminate datatables error: https://www.datatables.net/manual/tech-notes/4 
 ## I can edit the table now
@@ -168,9 +168,9 @@ editClinicalTable <- reactive({
      }
      
      g.total = grep(find.str, newClinical[,column.num])  # regular g is used in selectGene() reactive
-     cat("g.total = ", g.total, "\n")
+     cat("g.total = ", g.total, " \n")
      newClinical[g.total,column.num] = replace.str 
-     cat("replacing ", find.str, "with ", replace.str)
+     cat("replacing ", find.str, " with ", replace.str)
      values.edit$table = newClinical
      return (values.edit$table)
     
@@ -180,5 +180,14 @@ editClinicalTable <- reactive({
 #observe({if(!is.na(input$find)) print(input$find) })
 
 #})  # end of observe for editClinicalTable()
+
+
+####################
+# Survival Analysis - place holder
+####################
+output$kmSurvival <- renderPlot(
+  a = 1:25,
+  boxplot(a)
   
+)
    

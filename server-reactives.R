@@ -83,21 +83,23 @@ probeNames <- reactive({
 #######################################################
 # clinicalInput: Clinical Data
 #######################################################
-
 clinicalInput <- reactive({
   if (is.null(dataInput()) | is.null(platformIndex())) {
     return(NULL)
   }
-  
-      #####################################################################
-      #  display only columns that have more than one possible value; this
-      #   removes many columns such as contact info. In addition all 
-      #   columns specified by RM.COLS will be removed
-      #####################################################################
+  ### Checks if initial values.edit$table is NULL (which it is set to initially)
+  if (!is.null(values.edit$table)) {
+    p = values.edit$table
+  } else {
+    p = as.data.frame(pData(phenoData(object = dataInput()[[platformIndex()]])))
+  }
+  #####################################################################
+  #  display only columns that have more than one possible value; this
+  #   removes many columns such as contact info. In addition all 
+  #   columns specified by RM.COLS will be removed
+  #####################################################################
   
   RM.COLS = c("status", "last_update_date", "submission_date")
-  p = as.data.frame(pData(phenoData(object = dataInput()[[platformIndex()]])))
-  
   num.levels = apply(p, 2, function(x) nlevels(as.factor(x)))
   p = p[,num.levels > 1]
   m = match(RM.COLS, colnames(p))
@@ -106,7 +108,7 @@ clinicalInput <- reactive({
   
   m = match(colnames(exprInput()), rownames(p))
   p = p[m,]
-  
+  values.edit$table = p
   return(p)
 })
 
@@ -147,7 +149,7 @@ clinicalDataSummary <- reactive({
   vars = colnames(t)
   a = apply(t, 2, function(x)levels(as.factor(x)))
   
-## format function to truncate row contents with a place holder " ..."
+  ## format function to truncate row contents with a place holder " ..."
   format.it <-function(x, max) {
     x = x[x!=""]
     if (length(x) <= max) return(x)
@@ -165,10 +167,12 @@ clinicalDataSummary <- reactive({
 # get possible values of the selected column names
 ###################################################
 groupsForSelectedColumn <- reactive({
-  vars = clinicalInput()
+  vars = values.edit$table
   if (is.null(vars)) return(NULL)      
   vars <- vars[, as.character(input$selectedColumn)] 
+  vars = factor(vars)
   return(as.list(levels(vars)))
+  print(vars)
 })  
 
 ###################################################
@@ -185,7 +189,9 @@ defaultGroupsForSelectedColumn <- reactive({
 ###################################################
 # Edit table reactiveValues()
 ###################################################
-p = as.data.frame(pData(phenoData(object = getGEO("GSE13")[[1]]))) # this WORKS when the values is defined here
 
-values.edit <- reactiveValues()
-values.edit$table <- isolate(p)   # clinicalInput() value p
+values.edit <- reactiveValues(table = NULL)
+
+observeEvent(input$submitButton, { 
+values.edit$table <- NULL  
+})
