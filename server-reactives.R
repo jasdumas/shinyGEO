@@ -189,9 +189,79 @@ defaultGroupsForSelectedColumn <- reactive({
 ###################################################
 # Edit table reactiveValues()
 ###################################################
-
 values.edit <- reactiveValues(table = NULL)
 
 observeEvent(input$submitButton, { 
 values.edit$table <- NULL  
 })
+
+#######################################################
+## Find & Replace Method for editing tables 
+######################################################
+# currently this method uses column numbers instead of column names
+# output$dropModal <- renderUI({
+#      selectInput("drop2", "Column Names", choices = rownames(p), selected = "")
+#    })
+
+## reactives for textboxes/drop-downs in modal window
+find.str <- reactive({input$find})       
+replace.str <- reactive({input$replace})
+column.num <- reactive({input$dropModal})  # changed drop-downs back to numbers for subset
+
+## editClinicalTable uses grep as a all-or-nothing replacement -> soon to include gsub for changing parts of cells!   
+editClinicalTable <- reactive({
+  input$Enter    
+  
+  #cat(" in Full Clinical Table\n")  # trouble-shooting print output
+  find.str = isolate(find.str())
+  column.num = isolate(column.num())
+  replace.str = isolate(replace.str())
+  
+  if (find.str == "" & replace.str == "") {   # if there is nothing entered it returns the original table
+    return(values.edit$table)
+  }
+  exactMatch = isolate(input$checkbox) # exact match condition
+  
+  if (exactMatch) {    # while default is false
+    find.str = paste("^", find.str, "$", sep = "")
+  }
+  
+  newClinical <- values.edit$table
+  
+  ### if factor, change to character.  Otherwise we can't replace it. ##
+  if (is.factor(newClinical[,column.num])) {
+    newClinical[,column.num] = as.character(newClinical[,column.num])
+  }
+  
+  g.total = grep(find.str, newClinical[,column.num])  
+  cat("g.total = ", g.total, " \n")
+  newClinical[g.total,column.num] = replace.str 
+  cat("replacing ", find.str, " with ", replace.str)
+  values.edit$table = newClinical
+  return (values.edit$table)
+  
+}) # end of editClinicalTable() reactive
+
+###########################################
+# Expression profiles - data transformation
+###########################################
+profiles <- reactive({
+  ### log2 transform (auto-detect) citation ###
+  # Edgar R, Domrachev M, Lash AE.
+  # Gene Expression Omnibus: NCBI gene expression and hybridization array data repository
+  # Nucleic Acids Res. 2002 Jan 1;30(1):207-10
+  
+  ex <- exprInput()
+  qx <- as.numeric(quantile(ex, c(0., 0.25, 0.5, 0.75, 0.99, 1.0), na.rm=T))
+  LogC <- (qx[5] > 100) ||
+    (qx[6]-qx[1] > 50 && qx[2] > 0) ||
+    (qx[2] > 0 && qx[2] < 1 && qx[4] > 1 && qx[4] < 2)
+  if (LogC | input$radio == 1) { ex[which(ex <= 0)] <- NaN
+  return (ex <- log2(ex)) }    ## next step is to include a function that displays a sample() of the results to prevent over-crowding
+  
+  if (input$radio == 2) return (ex <- log2(exprInput()))   # forced Yes
+  else return (ex <- exprInput())  # No
+  
+})
+
+
