@@ -9,6 +9,7 @@ library(limma)
 library(shinyBS)
 
 source("stripchart2.R")
+source("plot.shiny.km.R")
 #options(shiny.deprecation.messages=FALSE)
 
 shinyServer(function(input, output, session){

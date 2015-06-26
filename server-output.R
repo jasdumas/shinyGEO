@@ -110,9 +110,40 @@ output$exProfiles <- renderPlot({
 ####################
 # Survival Analysis - place holder
 ####################
+output$survTime <- renderUI({
+     selectInput("servTimeUI", "Time", choices = ColumnNames(), selected = "")
+   })
+
+output$survOutcome <- renderUI({
+    selectInput("servOutcomeUI", "Outcome", choices = ColumnNames(), selected = "")
+})
+
+output$survX <- renderUI({
+  selectInput("servXUI", "x", choices = ColumnNames(), selected = "")
+})
+
+###### Survival reactives ########
+time <- reactive({
+  input$servTimeUI
+})
+
+outcome <- reactive ({
+  input$servOutcomeUI
+})
+
+x <- reactive ({
+  input$servXUI
+})
+
+#### Plots
 output$kmSurvival <- renderPlot(
   a = 1:25,
   boxplot(a)
+  # plot.shiny.km(time = time(), death = outcome(), x = x())
+  ## create options for title/labels/colors etc!
   
 )
+
+#####
+
    

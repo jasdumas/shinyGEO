@@ -233,10 +233,22 @@ editClinicalTable <- reactive({
     newClinical[,column.num] = as.character(newClinical[,column.num])
   }
   
-  g.total = grep(find.str, newClinical[,column.num])  
-  cat("g.total = ", g.total, " \n")
-  newClinical[g.total,column.num] = replace.str 
-  cat("replacing ", find.str, " with ", replace.str)
+  ### if the check box for partial match is checked
+  ## TO-DO: I now need adjust for characters ie: \\(months \\)
+  partialReplace = isolate(input$survCheckbox)
+  
+  if (partialReplace) {                 
+    newClinical[[column.num]] = gsub(find.str, replace.str, newClinical[[column.num]])
+    g.total = grep(find.str, newClinical[,column.num])  
+    newClinical[g.total,column.num] = replace.str 
+    cat("replacing ", find.str, " with ", replace.str)
+  } else {
+    g.total = grep(find.str, newClinical[,column.num])  
+    cat("g.total = ", g.total, " \n")
+    newClinical[g.total,column.num] = replace.str 
+    cat("replacing ", find.str, " with ", replace.str)
+  }
+    
   values.edit$table = newClinical
   return (values.edit$table)
   
@@ -263,5 +275,6 @@ profiles <- reactive({
   else return (ex <- exprInput())  # No
   
 })
+
 
 
