@@ -198,15 +198,15 @@ values.edit$table <- NULL
 #######################################################
 ## Find & Replace Method for editing tables 
 ######################################################
-# currently this method uses column numbers instead of column names
-# output$dropModal <- renderUI({
-#      selectInput("drop2", "Column Names", choices = rownames(p), selected = "")
-#    })
+# drop-down of column names
+ output$dropModal <- renderUI({
+      selectInput("drop2", "Column Names", choices = ColumnNames(), selected = "")
+    })
 
 ## reactives for textboxes/drop-downs in modal window
 find.str <- reactive({input$find})       
 replace.str <- reactive({input$replace})
-column.num <- reactive({input$dropModal})  # changed drop-downs back to numbers for subset
+column.num <- reactive({as.character(input$drop2)}) 
 
 ## editClinicalTable uses grep as a all-or-nothing replacement -> soon to include gsub for changing parts of cells!   
 editClinicalTable <- reactive({
