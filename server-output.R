@@ -57,8 +57,8 @@ observe({  # observe needed since data object is a reactive function
   
   output$clinicalDataSummary <- DT::renderDataTable({ datatable(as.data.frame(clinicalDataSummary()), rownames = TRUE,  
                                                                  extensions = 'ColReorder',
-                                                                 options = list(dom = 'Rlfrtip', ajax = list(url = action)),
-                                                                 filter = 'top', 
+                                                                 options = list(dom = 'Rlrtip', ajax = list(url = action)),
+                                                                 filter = 'none', 
                                                                  selection = 'single') 
     
   })
@@ -74,7 +74,7 @@ observe({  # observe needed since data object is a reactive function
 observe({
 output$clinicalData <- DT::renderDataTable({ datatable(editClinicalTable(), rownames = TRUE,
                                                    extensions = 'ColReorder',
-                                                   options = list(dom = 'Rlfrtip', ajax = list(url = action1)),
+                                                   options = list(dom = 'Rlfrtip', ajax = list(url = action1), paging = F),
                                                    filter = 'top',
                                                    selection = 'multiple')
   })
@@ -90,11 +90,21 @@ action1 = dataTableAjax(session, data=di, rownames = TRUE)
 observeEvent(input$submitButton,
 output$exProfiles <- renderPlot({ 
   
-  # set parameters and draw the plot
-  #palette(c("#99d5db", "#d399db"))                       # global palette choices for strip chart too
-  dev.new(width=4+dim(dataInput())[[2]]/5, height=6)
-  par(mar=c(2+round(max(nchar(sampleNames(dataInput())))/2),4,2,1))
-  title <- paste (input$GSE, '/', input$platform, " selected samples", sep ='')
+  # Return max 30 exp. samples if there is alot of samples to make the determination easier = unclutterd graphics
+  x = profiles()
+  n = ncol(x)
+  if (n > 30) {
+    s = sample(1:n, 30)
+    x = x[,s]
+  }
+  
+  # if more than 30 samples change the title to include " selected samples" since they are randomly selected, else " samples"
+  if (n > 30) {
+    title.detail = " selected samples"
+  } else {
+    title.detail = " samples"
+  }
+  
   # Changes y-zxis label if radio choices change
   if (input$radio == 1 | input$radio == 2) {
      y.label = "log2 Expression"       
@@ -102,7 +112,12 @@ output$exProfiles <- renderPlot({
     y.label = "Expression"
   }
   
-  boxplot(x = profiles(), boxwex=0.6, notch=T, main=title, outline=FALSE, las=2, ylab= y.label, col = colors())
+  # set parameters and draw the plot
+  #palette(c("#99d5db", "#d399db"))                       # global palette choices for strip chart too
+  dev.new(width=4+dim(dataInput())[[2]]/5, height=6)
+  par(mar=c(2+round(max(nchar(sampleNames(dataInput())))/2),4,2,1))
+  title <- paste(input$GSE, '/', input$platform, title.detail, sep ='') # need 
+  boxplot(x = x, boxwex=0.6, notch=T, main=title, outline=FALSE, las=2, ylab= y.label, col = colors())
   
 })
 )

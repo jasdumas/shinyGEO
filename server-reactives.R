@@ -268,8 +268,9 @@ profiles <- reactive({
   LogC <- (qx[5] > 100) ||
     (qx[6]-qx[1] > 50 && qx[2] > 0) ||
     (qx[2] > 0 && qx[2] < 1 && qx[4] > 1 && qx[4] < 2)
-  if (LogC | input$radio == 1) { ex[which(ex <= 0)] <- NaN
-  return (ex <- log2(ex)) }    ## next step is to include a function that displays a sample() of the results to prevent over-crowding
+  if (LogC & input$radio == 1) { 
+    ex[which(ex <= 0)] <- NaN
+  return (ex <- log2(ex)) }    
   
   if (input$radio == 2) return (ex <- log2(exprInput()))   # forced Yes
   else return (ex <- exprInput())  # No
