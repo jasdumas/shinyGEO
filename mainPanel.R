@@ -1,6 +1,22 @@
 library(shinyBS) # needs to be here also!
 
 mainPanel(
+
+#tags$style(type = "text/css",
+#".navbar, .navbar li a:link {color: white; background-color: blue}"
+#),
+
+## this effects drop down items
+#tags$style(type = "text/css",
+#".navbar li a:hover {background-color: red;}"
+#),
+
+## this effects direct navbar items
+#tags$style(type = "text/css",
+#".navbar li {background-color:red}"
+#),
+
+
  conditionalPanel(condition="$('html').hasClass('shiny-busy')",                   
                    img(src="PleaseWait.gif")
                  ),
@@ -22,13 +38,17 @@ mainPanel(
   ),
   
   conditionalPanel(condition = "output.displayPlatform == 'TRUE'",
-      tabsetPanel(type = "pills", id = "tabs",
+#      tabsetPanel(type = "pills", id = "tabs",
+	navbarPage("GEO-AWS", id = "tabs", inverse = TRUE, 
           tabPanel("Expression Profiles", hr(), helpText("Determine if these samples are fair to compare: "), 
                    radioButtons("radio", label = "Apply log transformation to the data", 
                                                     choices = list("Auto-Detect" = 1, "Yes" = 2, "No" = 3), 
                                                     selected = 1), plotOutput("exProfiles")),
+	
+	navbarMenu("Clinical Data", 
+
           tabPanel("Clinical Data Summary", hr(), DT::dataTableOutput("clinicalDataSummary")),
-          tabPanel("Clinical Data Table", hr(), 
+          tabPanel("Full Data Table", hr(), 
                    actionButton("tabBut", "Edit Data Table"),
           bsModal("modalExample", "Edit Data Table", "tabBut", size = "small",
                   uiOutput("dropModal"),
@@ -37,8 +57,21 @@ mainPanel(
                   textInput("replace", label = "Replace", value = ""),
                   checkboxInput("survCheckbox", label = "Partial Replace", value = FALSE),  ### for survival analysis
                   actionButton("Enter", label = "Submit")),
-                  DT::dataTableOutput("clinicalData")),
-          tabPanel("Differential Expression Analysis", hr(), uiOutput("selectGroupsMessage"), plotOutput("plot")),
+                  DT::dataTableOutput("clinicalData"))
+         ),
+
+	navbarMenu("Analyses",
+          tabPanel("Differential Expression Analysis", 
+                   hr(), 
+                   div(style = "display:inline-block; width:30%",
+                      uiOutput('selectGenes')
+                   ),
+                   div(style = "display:inline-block; width:30%",
+                     uiOutput('selectProbes')
+                   ),
+
+                   uiOutput("selectGroupsMessage"), 
+                   plotOutput("plot")),
           tabPanel("Survival Analysis", hr(),
                    actionButton("survButton", "Survival Analysis Parameters"),
           bsModal("survivalModal", "Survival Analysis Parameters", "survButton", size = "small",
@@ -46,7 +79,8 @@ mainPanel(
                   uiOutput("survOutcome"),
                   uiOutput("survX"),
                   actionButton("survEnter", label = "Submit")),
-                  plotOutput("kmSurvival")),
+                  plotOutput("kmSurvival"))
+    ),
           tabPanel("About",
             h3("Authors"),
             HTML("<span style = \"font-weight: bold\"> Jasmine Dumas </span>"),
@@ -81,8 +115,8 @@ mainPanel(
             He has also earned his Craftsman for working Electrical and Enviromental systems on aircraft, as well as having an A.S. in Computer 
             Technology from Manchester Community College.")
           )
-      )
-  ),
+  )
+ ),
   conditionalPanel(condition="$('html').hasClass('shiny-busy')",                    
                    tags$div(br(), h1("Processing, please wait...", align = "center"),id="loadmessage")
   )
