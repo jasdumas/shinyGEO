@@ -38,7 +38,18 @@ mainPanel(
                   checkboxInput("survCheckbox", label = "Partial Replace", value = FALSE),  ### for survival analysis
                   actionButton("Enter", label = "Submit")),
                   DT::dataTableOutput("clinicalData")),
-          tabPanel("Differential Expression Analysis", hr(), uiOutput("selectGroupsMessage"), plotOutput("plot")),
+          tabPanel("Differential Expression Analysis", 
+                   hr(), 
+                   div(style = "display:inline-block; width:30%",
+                      uiOutput('selectGenes')
+                   ),
+                   div(style = "display:inline-block; width:30%",
+                     uiOutput('selectProbes')
+                   ),
+
+                   uiOutput("selectGroupsMessage"), 
+                   
+                   plotOutput("plot")),
           tabPanel("Survival Analysis", hr(),
                    actionButton("survButton", "Survival Analysis Parameters"),
           bsModal("survivalModal", "Survival Analysis Parameters", "survButton", size = "small",
