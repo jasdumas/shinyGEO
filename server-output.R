@@ -134,7 +134,7 @@ output$survOutcome <- renderUI({
 })
 
 output$survX <- renderUI({
-  selectInput("servXUI", "x", choices = ColumnNames(), selected = "")
+  selectInput("servXUI", "x", choices = ColumnNames(), selected = "")  ## choices = input$editClinicalTable_rows_current, multi-select
 })
 
 ###### Survival reactives ########
