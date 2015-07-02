@@ -2,6 +2,21 @@
 ## Reactives
 #############################################################################
 
+###################################################
+# Edit table reactiveValues()
+###################################################
+values.edit <- reactiveValues(table = NULL, platformGeneColumn = NULL)
+
+observeEvent(input$submitButton, { 
+  values.edit$table <- NULL  
+  values.edit$platformGeneColumn <- NULL
+})
+
+
+observe({
+  cat("selected tab = ", input$tabs, "\n")
+})
+
 ####################################
 ### dataInput: the GEO object ######
 ####################################
@@ -12,7 +27,7 @@ dataInput <- reactive({
   input$submitButton
   GSE = isolate(gsub(" ", "", input$GSE))   # remove white space
   if (GSE=="") return(NULL)
-  getGEO(GEO = isolate(GSE), AnnotGPL=TRUE)
+  getGEO(GEO = isolate(GSE), AnnotGPL=FALSE, getGPL = FALSE)  
 })
 
 ################################################################
@@ -70,8 +85,22 @@ observe({
 geneNames <- reactive ({
   if (TRACE) cat("In geneNames reactive...\n")
   if (is.null(platInfo())) return (NULL)
-  m = match("Gene Symbol",colnames(platInfo()))
-  if(is.na(m)) { m = match("Symbol", colnames(platInfo()))}
+ 
+  gene.column = values.edit$platformGeneColumn
+  if (is.null(gene.column)) {
+    check.names = c("Gene Symbol", "GeneSymbol", "Symbol",
+                 "GENE_SYMBOL")
+    m = check.names%in%colnames(platInfo()) 
+    w = which(m)
+    if (length(w) == 0) {
+      stop("Gene Symbol not found in selected Platform\n") 
+    }
+    gene.column = check.names[w[1]]
+    values.edit$platformGeneColumn = gene.column
+  }
+ 
+  #cat("finding column: ", gene.column, "\n")
+  m = match(gene.column,colnames(platInfo()))
   t = unique(platInfo()[,m])  
   return(sort(as.character(t)))
 })
@@ -82,8 +111,9 @@ geneNames <- reactive ({
 selectGene <- reactive ({
   if (TRACE) cat("In selectGene reactive...\n")
   if (is.null(input$selectGenes)) return (NULL)
-  m = match("Gene Symbol",colnames(platInfo()))
-  if(is.na(m)) { m = match("Symbol", colnames(platInfo()))}
+  gene.column = values.edit$platformGeneColumn
+  #cat("using gene column = ", gene.column, "\n")
+  m = match(gene.column,colnames(platInfo()))
   g = grep(paste("^",input$selectGenes,"$",sep=""), as.character(platInfo()[,m]))
   return(g)
 })
@@ -213,14 +243,6 @@ defaultGroupsForSelectedColumn <- reactive({
   g    
 })
 
-###################################################
-# Edit table reactiveValues()
-###################################################
-values.edit <- reactiveValues(table = NULL)
-
-observeEvent(input$submitButton, { 
-  values.edit$table <- NULL  
-})
 
 #######################################################
 ## Find & Replace Method for editing tables 
