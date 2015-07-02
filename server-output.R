@@ -89,7 +89,6 @@ action1 = dataTableAjax(session, data=di, rownames = TRUE)
 ##############################
 observeEvent(input$submitButton,
 output$exProfiles <- renderPlot({ 
-  
   # Return max 30 exp. samples if there is alot of samples to make the determination easier = unclutterd graphics
   x = profiles()
   if (is.null(x)) return(NULL)
