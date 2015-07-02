@@ -8,6 +8,7 @@
 dataInput <- reactive({
   # Runs the intial input once the button is pressed from within the 
   # reactive statement
+  if (TRACE) cat("In dataInput reactive...\n")
   input$submitButton
   GSE = isolate(gsub(" ", "", input$GSE))   # remove white space
   if (GSE=="") return(NULL)
@@ -18,6 +19,7 @@ dataInput <- reactive({
 ### Platforms: returns the platform only if the GSE # is entered 
 ################################################################  
 Platforms <- reactive({
+  if (TRACE) cat("In Platforms reactive...\n")
   if (is.null(dataInput())) {
     return(NULL)
   }
@@ -28,6 +30,7 @@ Platforms <- reactive({
 ### Platforms: the chosen platform Index 
 #########################################  
 platformIndex <- reactive({
+  if (TRACE) cat("In platformIndex reactive...\n")
   if (is.null(dataInput()) | length(input$platform) ==0) {
     return(NULL)
   }
@@ -40,6 +43,7 @@ platformIndex <- reactive({
 ### return selected platform info as a table
 ################################################  
 platInfo <- reactive({
+  if (TRACE) cat("In platInfo reactive...\n")
   if (is.null(Platforms()) | is.null(platformIndex())) return (NULL)
   t = Table(getGEO(Platforms()[platformIndex()]))
   k = t[,"ID"]
@@ -49,10 +53,22 @@ platInfo <- reactive({
   return(r)
 })
 
+## update gene and probe names when platform index changes
+## we do this so the user is not waiting for genes/probes
+## to be displayed when moving to Differential Expression
+## Analysis panel
+
+observe({
+  platformIndex()
+  geneNames()
+  probeNames()
+})
+
 ##############################################
 ### unique gene names for selected platform
 ##############################################
 geneNames <- reactive ({
+  if (TRACE) cat("In geneNames reactive...\n")
   if (is.null(platInfo())) return (NULL)
   m = match("Gene Symbol",colnames(platInfo()))
   if(is.na(m)) { m = match("Symbol", colnames(platInfo()))}
@@ -64,7 +80,8 @@ geneNames <- reactive ({
 ### selected Gene index
 ########################################  
 selectGene <- reactive ({
-  if (input$selectGenes == "") return (NULL)
+  if (TRACE) cat("In selectGene reactive...\n")
+  if (is.null(input$selectGenes)) return (NULL)
   m = match("Gene Symbol",colnames(platInfo()))
   if(is.na(m)) { m = match("Symbol", colnames(platInfo()))}
   g = grep(paste("^",input$selectGenes,"$",sep=""), as.character(platInfo()[,m]))
@@ -75,6 +92,7 @@ selectGene <- reactive ({
 ### probe names for current expression data
 #############################################  
 probeNames <- reactive({
+  if (TRACE) cat("In probeNames reactive...\n")
   if (is.null(dataInput())) return(NULL)
   else if (is.null(selectGene())) return(NULL)
   return (as.character(platInfo()[selectGene(),match("ID",colnames(platInfo()))]))
@@ -84,6 +102,7 @@ probeNames <- reactive({
 # clinicalInput: Clinical Data
 #######################################################
 clinicalInput <- reactive({
+  if (TRACE) cat("In clinicalInput reactive...\n")
   if (is.null(dataInput()) | is.null(platformIndex())) {
     return(NULL)
   }
@@ -116,6 +135,7 @@ clinicalInput <- reactive({
 # exprInput - expression data for selected platform
 ######################################################
 exprInput <- reactive({
+  if (TRACE) cat("In exprInput reactive...\n")
   pi = platformIndex()
   if (is.null(dataInput()) | is.null(pi)) return(NULL)
   ans = exprs(dataInput()[[pi]])
@@ -126,6 +146,7 @@ exprInput <- reactive({
 ### selected probe as row number
 ########################################  
 selectedProbe <- reactive ({
+  if (TRACE) cat("In selectedProbe reactive...\n")
   return(match(input$selectProbes,rownames(exprInput())))
 })
 
@@ -133,6 +154,7 @@ selectedProbe <- reactive ({
 ### ColumnNames of clinicial data table
 ########################################  
 ColumnNames <- reactive({
+  if (TRACE) cat("In ColumnNames reactive...\n")
   if (is.null(clinicalInput()) | is.null(exprInput())) return(NULL)
   vars = colnames(clinicalInput())
   vars <- as.list(vars)
@@ -144,6 +166,7 @@ ColumnNames <- reactive({
 ########################################  
 
 clinicalDataSummary <- reactive({
+  if (TRACE) cat("In clinicalDataSummary reactive...\n")
   t = clinicalInput()
   if (is.null(t)) return(NULL)
   vars = colnames(t)
@@ -167,8 +190,11 @@ clinicalDataSummary <- reactive({
 # get possible values of the selected column names
 ###################################################
 groupsForSelectedColumn <- reactive({
+  if (TRACE) cat("In groupsForSelectedColumn reactive...\n")
   vars = values.edit$table
-  if (is.null(vars)) return(NULL)      
+  #if (is.null(vars)) return(NULL)      
+  if (is.null(vars) | is.null(input$selectedColumn)) return(NULL)      
+  
   vars <- vars[, as.character(input$selectedColumn)] 
   vars = factor(vars)
   return(as.list(levels(vars)))
@@ -181,6 +207,7 @@ groupsForSelectedColumn <- reactive({
 # a cut-off 
 ###################################################
 defaultGroupsForSelectedColumn <- reactive({
+  if (TRACE) cat("In defaultGroupsForSelectedColumn reactive...\n")
   g = groupsForSelectedColumn()
   if (length(g) > 8) return(NULL) 
   g    
@@ -192,7 +219,7 @@ defaultGroupsForSelectedColumn <- reactive({
 values.edit <- reactiveValues(table = NULL)
 
 observeEvent(input$submitButton, { 
-values.edit$table <- NULL  
+  values.edit$table <- NULL  
 })
 
 #######################################################
@@ -211,8 +238,7 @@ column.num <- reactive({as.character(input$drop2)})
 ## editClinicalTable uses grep as a all-or-nothing replacement -> soon to include gsub for changing parts of cells!   
 editClinicalTable <- reactive({
   input$Enter    
-  
-  #cat(" in Full Clinical Table\n")  # trouble-shooting print output
+  if (TRACE) cat("In editClinicalTable reactive...\n")
   find.str = isolate(find.str())
   column.num = isolate(column.num())
   replace.str = isolate(replace.str())
@@ -258,12 +284,14 @@ editClinicalTable <- reactive({
 # Expression profiles - data transformation
 ###########################################
 profiles <- reactive({
+  if (TRACE) cat("In profiles reactive...\n")
   ### log2 transform (auto-detect) citation ###
   # Edgar R, Domrachev M, Lash AE.
   # Gene Expression Omnibus: NCBI gene expression and hybridization array data repository
   # Nucleic Acids Res. 2002 Jan 1;30(1):207-10
   
   ex <- exprInput()
+  if (is.null(ex)) return(NULL)
   qx <- as.numeric(quantile(ex, c(0., 0.25, 0.5, 0.75, 0.99, 1.0), na.rm=T))
   LogC <- (qx[5] > 100) ||
     (qx[6]-qx[1] > 50 && qx[2] > 0) ||

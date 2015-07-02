@@ -92,6 +92,7 @@ output$exProfiles <- renderPlot({
   
   # Return max 30 exp. samples if there is alot of samples to make the determination easier = unclutterd graphics
   x = profiles()
+  if (is.null(x)) return(NULL)
   n = ncol(x)
   if (n > 30) {
     s = sample(1:n, 30)
@@ -114,7 +115,7 @@ output$exProfiles <- renderPlot({
   
   # set parameters and draw the plot
   #palette(c("#99d5db", "#d399db"))                       # global palette choices for strip chart too
-  dev.new(width=4+dim(dataInput())[[2]]/5, height=6)
+  #dev.new(width=4+dim(dataInput())[[2]]/5, height=6)
   par(mar=c(2+round(max(nchar(sampleNames(dataInput())))/2),4,2,1))
   title <- paste(input$GSE, '/', input$platform, title.detail, sep ='') # need 
   boxplot(x = x, boxwex=0.6, notch=T, main=title, outline=FALSE, las=2, ylab= y.label, col = colors())

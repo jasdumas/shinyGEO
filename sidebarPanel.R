@@ -17,13 +17,14 @@ sidebarPanel(
     #######################################################################
     conditionalPanel(condition = "output.displayPlatform == 'TRUE'",
         uiOutput('platform'),  
-        tags$div(HTML("<hr style = \"background-color: blue; height:5px\">")), 
-                 
-        #uiOutput('selectGenes'),
-        #uiOutput('selectProbes'),
-                 
-        uiOutput('selectedColumn'),
-        uiOutput('selectedGroups') 
+
+        conditionalPanel(condition = "input.tabs == 'Differential Expression Analysis'",
+          #uiOutput('selectGenes'),
+          #uiOutput('selectProbes'),
+          tags$div(HTML("<hr style = \"background-color: red; height:4px\">")),                  
+          uiOutput('selectedColumn'),
+          uiOutput('selectedGroups') 
+      ) # end Conditional Panel
     ) #end Analyze Conditional Panel
 
 ) ## end sidebarPanel 

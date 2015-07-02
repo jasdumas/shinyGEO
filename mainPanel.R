@@ -2,6 +2,10 @@ library(shinyBS) # needs to be here also!
 
 mainPanel(
 
+  tags$style(type = "text/css",
+             ".well{color: white; background-color: black}"
+  ),
+  
 #tags$style(type = "text/css",
 #".navbar, .navbar li a:link {color: white; background-color: blue}"
 #),
