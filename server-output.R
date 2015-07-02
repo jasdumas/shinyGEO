@@ -133,10 +133,15 @@ output$survOutcome <- renderUI({
     selectInput("servOutcomeUI", "Outcome", choices = ColumnNames(), selected = "")
 })
 
-output$survX <- renderUI({
-  selectInput("servXUI", "x", choices = ColumnNames(), selected = "")  ## choices = input$editClinicalTable_rows_current, multi-select
-})
+#######################
+## This choice parameter depends on whether the user would select groups by sample name [GSM...] (rownames(editClinicalTable()))
+## or if they need to choose a column that has been edited ie. stages in a ColumnNames() or groupsForSelectedColumn() [Immature B Cells..]
 
+output$survX <- renderUI({
+  selectInput("servXUI", "x", choices = rownames(editClinicalTable()), 
+              #selected = input$editClinicalTable_rows_selected, 
+              multiple = TRUE, selectize = TRUE)  
+})
 ###### Survival reactives ########
 time <- reactive({
   input$servTimeUI
@@ -151,13 +156,13 @@ x <- reactive ({
 })
 
 #### Plots
-output$kmSurvival <- renderPlot(
-  a = 1:25,
+output$kmSurvival <- renderPlot({
+  a = 1:25
   boxplot(a)
   # plot.shiny.km(time = time(), death = outcome(), x = x())
   ## create options for title/labels/colors etc!
   
-)
+})
 
 #####
 
