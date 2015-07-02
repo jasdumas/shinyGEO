@@ -1,3 +1,5 @@
+TRACE = FALSE
+
 library(DT)
 library(shiny)
 library(GEOquery)
@@ -24,6 +26,7 @@ shinyServer(function(input, output, session){
       } else  {
           output$selectGroupsMessage <-renderText({""})
           output$plot <- renderPlot({
+            
               x = profiles()[selectedProbe(),] # effected by data transformation
               iv = input$selectedColumn
               m = match(as.character(iv), colnames(clinicalInput()))  # GD: change grep to match
