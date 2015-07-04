@@ -85,12 +85,6 @@ mainPanel(
                        uiOutput('selectProbesSurv')
                    ),
                    
-                   actionButton("survButton", "Survival Analysis Parameters"),
-          bsModal("survivalModal", "Survival Analysis Parameters", "survButton", size = "small",
-                  uiOutput("survTime"),
-                  uiOutput("survOutcome"),
-                  uiOutput("survX"),
-                  actionButton("survEnter", label = "Submit")),
                   plotOutput("kmSurvival"))
     ),
           tabPanel("About",

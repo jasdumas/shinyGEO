@@ -155,9 +155,9 @@ output$survOutcome <- renderUI({
     # ie. stages in a ColumnNames() or groupsForSelectedColumn() [Immature B Cells..]
     ##############################################
 output$survX <- renderUI({
-  selectInput("survXUI", "x", choices = rownames(editClinicalTable()), 
+  selectInput("survXUI", "x", choices = ColumnNames(), 
               #selected = input$editClinicalTable_rows_selected, 
-              multiple = TRUE, selectize = TRUE)  
+              multiple = F, selectize = TRUE)  
 })
 
 #### Plots

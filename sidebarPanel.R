@@ -24,7 +24,21 @@ sidebarPanel(
           tags$div(HTML("<hr style = \"background-color: red; height:4px\">")),                  
           uiOutput('selectedColumn'),
           uiOutput('selectedGroups') 
+      ), # end Conditional Panel
+      
+      conditionalPanel(condition = "input.tabs == 'Survival Analysis'",
+                       tags$div(HTML("<hr style = \"background-color: red; height:4px\">")),   
+                       uiOutput("survTime"),
+                       uiOutput("survOutcome"),
+                       uiOutput("survX"), 
+                       actionButton("parseButton", "Parse Data"), 
+                       
+                       bsModal("parseModal", "Selected Survival Analysis Parameters", "parseButton", size = "large",
+                               actionButton("parseEnter", label = "Submit"))
+                       #uiOutput('selectedColumn'),
+                       #uiOutput('selectedGroups') 
       ) # end Conditional Panel
+      
     ) #end Analyze Conditional Panel
 
 ) ## end sidebarPanel 
