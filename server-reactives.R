@@ -327,5 +327,20 @@ profiles <- reactive({
   
 })
 
+###########################################
+# Survival Reactives (time, occurance, x)
+###########################################
+time <- reactive({
+  input$survTimeUI
+})
+
+outcome <- reactive ({
+  input$survOutcomeUI
+})
+
+x <- reactive ({
+  input$survXUI
+})
+
 
 

@@ -123,36 +123,26 @@ output$exProfiles <- renderPlot({
 )
 
 ####################
-# Survival Analysis - place holder
+# Survival Analysis 
 ####################
 output$survTime <- renderUI({
-     selectInput("servTimeUI", "Time", choices = ColumnNames(), selected = "")
+     selectInput("survTimeUI", "Time", choices = ColumnNames(), selected = "")
    })
 
 output$survOutcome <- renderUI({
-    selectInput("servOutcomeUI", "Outcome", choices = ColumnNames(), selected = "")
+    selectInput("survOutcomeUI", "Outcome", choices = ColumnNames(), selected = "")
 })
 
-#######################
-## This choice parameter depends on whether the user would select groups by sample name [GSM...] (rownames(editClinicalTable()))
-## or if they need to choose a column that has been edited ie. stages in a ColumnNames() or groupsForSelectedColumn() [Immature B Cells..]
-
+    ##############################################
+    # serThis choice parameter depends on whether the user 
+    # would select groups by sample name [GSM...] (rownames(editClinicalTable()))
+    # or if they need to choose a column that has been edited 
+    # ie. stages in a ColumnNames() or groupsForSelectedColumn() [Immature B Cells..]
+    ##############################################
 output$survX <- renderUI({
-  selectInput("servXUI", "x", choices = rownames(editClinicalTable()), 
+  selectInput("survXUI", "x", choices = rownames(editClinicalTable()), 
               #selected = input$editClinicalTable_rows_selected, 
               multiple = TRUE, selectize = TRUE)  
-})
-###### Survival reactives ########
-time <- reactive({
-  input$servTimeUI
-})
-
-outcome <- reactive ({
-  input$servOutcomeUI
-})
-
-x <- reactive ({
-  input$servXUI
 })
 
 #### Plots
