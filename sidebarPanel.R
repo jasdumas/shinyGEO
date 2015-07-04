@@ -35,8 +35,7 @@ sidebarPanel(
                        
                        bsModal("parseModal", "Selected Survival Analysis Parameters", "parseButton", size = "large",
                                actionButton("parseEnter", label = "Submit"))
-                       #uiOutput('selectedColumn'),
-                       #uiOutput('selectedGroups') 
+                       
       ) # end Conditional Panel
       
     ) #end Analyze Conditional Panel
