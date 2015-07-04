@@ -25,6 +25,21 @@ output$platform <- renderUI({
   selectInput('platform', 'Platform', Platforms(), multiple = F, selectize = FALSE)        
 })
 
+
+#### Survival Analysis duplicates of Gene and Probe selection
+output$selectGenesSurv <- renderUI({
+  selectInput("selectGenesSurv", label = "Select Gene",
+              choice = geneNames(), multiple = F,
+              selected = 0)
+})
+
+output$selectProbesSurv <- renderUI({
+  selectInput("selectProbesSurv", label = "Select Probe", 
+              choices = probeNames(), multiple = F,
+              selected = 0)
+})
+
+
 ################################################
 ### Renders drop-down menu for variables/columns 
 ################################################  

@@ -77,6 +77,14 @@ mainPanel(
                    uiOutput("selectGroupsMessage"), 
                    plotOutput("plot")),
           tabPanel("Survival Analysis", hr(),
+                   
+                   div(style = "display:inline-block; width:30%",
+                       uiOutput('selectGenesSurv')
+                   ),
+                   div(style = "display:inline-block; width:30%",
+                       uiOutput('selectProbesSurv')
+                   ),
+                   
                    actionButton("survButton", "Survival Analysis Parameters"),
           bsModal("survivalModal", "Survival Analysis Parameters", "survButton", size = "small",
                   uiOutput("survTime"),
