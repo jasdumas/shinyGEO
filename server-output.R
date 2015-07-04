@@ -154,11 +154,11 @@ output$survOutcome <- renderUI({
     # or if they need to choose a column that has been edited 
     # ie. stages in a ColumnNames() or groupsForSelectedColumn() [Immature B Cells..]
     ##############################################
-output$survX <- renderUI({
-  selectInput("survXUI", "x", choices = ColumnNames(), 
+    output$survX <- renderUI({
+      selectInput("survXUI", "x", choices = ColumnNames(), 
               #selected = input$editClinicalTable_rows_selected, 
               multiple = F, selectize = TRUE)  
-})
+    })
 
 #### Plots
 output$kmSurvival <- renderPlot({
@@ -169,6 +169,9 @@ output$kmSurvival <- renderPlot({
   
 })
 
+output$selectedCols <- DT::renderDataTable( datatable(iris)
+  
+)
 #####
 
    

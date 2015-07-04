@@ -19,8 +19,6 @@ sidebarPanel(
         uiOutput('platform'),  
 
         conditionalPanel(condition = "input.tabs == 'Differential Expression Analysis'",
-          #uiOutput('selectGenes'),
-          #uiOutput('selectProbes'),
           tags$div(HTML("<hr style = \"background-color: red; height:4px\">")),                  
           uiOutput('selectedColumn'),
           uiOutput('selectedGroups') 
@@ -34,6 +32,7 @@ sidebarPanel(
                        actionButton("parseButton", "Parse Data"), 
                        
                        bsModal("parseModal", "Selected Survival Analysis Parameters", "parseButton", size = "large",
+                               DT::dataTableOutput("selectedCols"),
                                actionButton("parseEnter", label = "Submit"))
                        
       ) # end Conditional Panel

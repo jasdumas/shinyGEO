@@ -286,7 +286,7 @@ editClinicalTable <- reactive({
   partialReplace = isolate(input$survCheckbox)
   
   if (partialReplace) {                 
-    newClinical[[column.num]] = gsub(find.str, replace.str, newClinical[[column.num]])
+    newClinical[[column.num]] = gsub(find.str, replace.str, newClinical[[column.num]])  ## fixed = T for symbols
     g.total = grep(find.str, newClinical[,column.num])  
     newClinical[g.total,column.num] = replace.str 
     cat("replacing ", find.str, " with ", replace.str)

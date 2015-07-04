@@ -6,6 +6,7 @@ mainPanel(
              ".well{color: white; background-color: black}"
   ),
   
+ 
 #tags$style(type = "text/css",
 #".navbar, .navbar li a:link {color: white; background-color: blue}"
 #),
@@ -43,7 +44,8 @@ mainPanel(
   
   conditionalPanel(condition = "output.displayPlatform == 'TRUE'",
 #      tabsetPanel(type = "pills", id = "tabs",
-	navbarPage("GEO-AWS", id = "tabs", inverse = TRUE, 
+	navbarPage("GEO-AWS", id = "tabs", inverse = TRUE,
+	      
           tabPanel("Expression Profiles", hr(), helpText("Determine if these samples are fair to compare: "), 
                    radioButtons("radio", label = "Apply log transformation to the data", 
                                                     choices = list("Auto-Detect" = 1, "Yes" = 2, "No" = 3), 
@@ -76,8 +78,8 @@ mainPanel(
 
                    uiOutput("selectGroupsMessage"), 
                    plotOutput("plot")),
-          tabPanel("Survival Analysis", hr(),
-                   
+          tabPanel("Survival Analysis", 
+                   hr(),
                    div(style = "display:inline-block; width:30%",
                        uiOutput('selectGenesSurv')
                    ),
@@ -86,7 +88,7 @@ mainPanel(
                    ),
                    
                   plotOutput("kmSurvival"))
-    ),
+        ),
           tabPanel("About",
             h3("Authors"),
             HTML("<span style = \"font-weight: bold\"> Jasmine Dumas </span>"),
