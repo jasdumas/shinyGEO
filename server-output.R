@@ -57,7 +57,7 @@ observe({  # observe needed since data object is a reactive function
   
   output$clinicalDataSummary <- DT::renderDataTable({ datatable(as.data.frame(clinicalDataSummary()), rownames = TRUE,  
                                                                  extensions = 'ColReorder',
-                                                                 options = list(dom = 'Rlrtip', ajax = list(url = action)),
+                                                                 options = list(dom = 'Rlrtip', ajax = list(url = action), paging = F),
                                                                  filter = 'none', 
                                                                  selection = 'single') 
     
