@@ -169,9 +169,14 @@ output$kmSurvival <- renderPlot({
   
 })
 
-output$selectedCols <- DT::renderDataTable( datatable(iris)
+output$selectedCols <- DT::renderDataTable({ 
+  datatable(data = parse.modal <- data.frame(
+                           editClinicalTable()[time()],
+                           editClinicalTable()[outcome()], 
+                           editClinicalTable()[x()]),       
+                                                         rownames = F)
   
-)
+}) 
 #####
 
    

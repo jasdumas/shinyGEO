@@ -3,7 +3,7 @@ library(shinyBS) # needs to be here also!
 mainPanel(
 
   tags$style(type = "text/css",
-             ".well{color: white; background-color: black}"
+             ".well{color: gray; background-color: black}"
   ),
   
  
@@ -56,7 +56,7 @@ mainPanel(
           tabPanel("Clinical Data Summary", hr(), DT::dataTableOutput("clinicalDataSummary")),
           tabPanel("Full Data Table", hr(), 
                    actionButton("tabBut", "Edit Data Table"),
-          bsModal("modalExample", "Edit Data Table", "tabBut", size = "small",
+          shinyBS::bsModal("modalExample", "Edit Data Table", "tabBut", size = "small",
                   uiOutput("dropModal"),
                   textInput("find", label = "Find", value = ""),
                   checkboxInput("checkbox", label = "Exact Match", value = FALSE),

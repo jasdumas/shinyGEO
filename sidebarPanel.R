@@ -31,7 +31,7 @@ sidebarPanel(
                        uiOutput("survX"), 
                        actionButton("parseButton", "Parse Data"), 
                        
-                       bsModal("parseModal", "Selected Survival Analysis Parameters", "parseButton", size = "large",
+                       shinyBS::bsModal("parseModal", "Selected Survival Analysis Parameters", "parseButton", size = "large",
                                DT::dataTableOutput("selectedCols"),
                                actionButton("parseEnter", label = "Submit"))
                        
