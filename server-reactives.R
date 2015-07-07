@@ -79,7 +79,6 @@ platInfo <- reactive({
 ## we do this so the user is not waiting for genes/probes
 ## to be displayed when moving to Differential Expression
 ## Analysis panel
-
 observe({
   platformIndex()
   geneNames()
@@ -120,8 +119,8 @@ geneNames <- reactive ({
 ########################################  
 selectGene <- reactive ({
   if (TRACE) cat("In selectGene reactive...\n")
-  if (is.null(input$selectGenes)) return (NULL)
   gene.column = values.edit$platformGeneColumn
+  if (is.null(input$selectGenes) | is.null(gene.column)) return (NULL)
   #cat("using gene column = ", gene.column, "\n")
   m = match(gene.column,colnames(platInfo()))
   g = grep(paste("^",input$selectGenes,"$",sep=""), as.character(platInfo()[,m]))
