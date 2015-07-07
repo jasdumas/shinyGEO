@@ -12,6 +12,11 @@ observeEvent(input$submitButton, {
   values.edit$platformGeneColumn <- NULL
 })
 
+observeEvent(input$platform, { 
+  values.edit$table <- NULL  
+  values.edit$platformGeneColumn <- NULL
+})
+
 
 observe({
   cat("selected tab = ", input$tabs, "\n")
