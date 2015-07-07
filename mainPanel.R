@@ -1,7 +1,7 @@
 library(shinyBS) # needs to be here also!
 
 mainPanel(
-
+  bsAlert("alert"),
   tags$style(type = "text/css",
              ".well{color: gray; background-color: black}"
   ),
