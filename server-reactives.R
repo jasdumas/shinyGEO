@@ -8,11 +8,13 @@
 values.edit <- reactiveValues(table = NULL, platformGeneColumn = NULL)
 
 observeEvent(input$submitButton, { 
+  closeAlert(session, "geneSymbolAlert")
   values.edit$table <- NULL  
   values.edit$platformGeneColumn <- NULL
 })
 
-observeEvent(input$platform, { 
+observeEvent(input$platform, {
+  closeAlert(session, "geneSymbolAlert")
   values.edit$table <- NULL  
   values.edit$platformGeneColumn <- NULL
 })
@@ -98,7 +100,10 @@ geneNames <- reactive ({
     m = check.names%in%colnames(platInfo()) 
     w = which(m)
     if (length(w) == 0) {
-      stop("Gene Symbol not found in selected Platform\n") 
+      createAlert(session, "alert", alertId = "geneSymbolAlert", title = "Could not find gene symbol", style = "danger",
+                  content = "A gene symbol for this platform could not be found. Please select another platform or analyze another dataset.", append = FALSE)
+      values.edit$platformGeneColumn = NULL
+      return(NULL)
     }
     gene.column = check.names[w[1]]
     values.edit$platformGeneColumn = gene.column
