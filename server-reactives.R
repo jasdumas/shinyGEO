@@ -339,6 +339,8 @@ profiles <- reactive({
 ###########################################
 # Survival Reactives (time, occurance, x)
 ###########################################
+# Note: We should also include a bsAlert to inform 
+# the user to only select unique columns (which they would already do)
 time <- reactive({
   input$survTimeUI
 })
@@ -349,6 +351,25 @@ outcome <- reactive ({
 
 x <- reactive ({
   input$survXUI
+})
+
+#### reactive column selection in summary form for edit bsModal for survival ####
+parse.modal <- reactive ({
+  
+  parse.modal <- data.frame(
+    editClinicalTable()[time()],
+    editClinicalTable()[outcome()], 
+    editClinicalTable()[x()])
+  
+  vars = colnames(parse.modal) # gets the column names of the selected columns
+  a = apply(parse.modal, 2, function(x)levels(as.factor(x))) # loops over the columns and turns the levels into factors
+  
+  # The original format.it function would not be 
+  # needed since the user would need to see all of the column contents to edit
+  
+  a = sapply(a, paste, collapse = ", ")
+  return (cbind(variable = vars, values = a))
+  cat("In parse.modal reactive...\n")
 })
 
 

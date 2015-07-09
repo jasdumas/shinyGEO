@@ -160,7 +160,7 @@ output$survOutcome <- renderUI({
               multiple = F, selectize = TRUE)  
     })
 
-#### Plots
+#### Main Plot with a boxplot placeholder at the moment but it would fully work with a cleaned dataset
 output$kmSurvival <- renderPlot({
   a = 1:25
   boxplot(a)
@@ -170,13 +170,10 @@ output$kmSurvival <- renderPlot({
 })
 
 output$selectedCols <- DT::renderDataTable({ 
-  datatable(data = parse.modal <- data.frame(
-                           editClinicalTable()[time()],
-                           editClinicalTable()[outcome()], 
-                           editClinicalTable()[x()]),       
-                                                         rownames = F)
+  datatable(data = parse.modal(), rownames = F)
   
 }) 
+
 #####
 
    
