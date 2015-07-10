@@ -133,6 +133,7 @@ output$exProfiles <- renderPlot({
   par(mar=c(2+round(max(nchar(sampleNames(dataInput())))/2),4,2,1))
   title <- paste(input$GSE, '/', input$platform, title.detail, sep ='') # need 
   boxplot(x = x, boxwex=0.6, notch=T, main=title, outline=FALSE, las=2, ylab= y.label, col = colors())
+  #ggplot(x)+ geom_boxplot()
   
 })
 )

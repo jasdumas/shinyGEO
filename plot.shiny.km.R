@@ -60,7 +60,8 @@ plot.shiny.km <- function(time, death, x, title = "", legend.loc = "bottomleft",
   }
   
   ## plot graph ##
-  km.group = survfit(Surv(time, death) ~ x)
+  km.group1 = survfit(Surv(time, death) ~ x)
+  km.group = ggsurv(km.group1) # ggplot2
   
   if (is.null(col)) col = 1:n
   plot(km.group, col = col, lty = 1:n, ...)

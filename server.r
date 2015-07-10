@@ -9,6 +9,8 @@ library(survival)
 library(affy)
 library(limma)
 library(shinyBS)
+library(GGally)
+library(ggplot2)
 
 source("stripchart2.R")
 source("plot.shiny.km.R")
