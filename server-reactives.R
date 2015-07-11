@@ -30,10 +30,15 @@ observe({
 dataInput <- reactive({
   # Runs the intial input once the button is pressed from within the 
   # reactive statement
-  if (TRACE) cat("In dataInput reactive...\n")
+  if (TRACE) cat("In dataInput reactive...\n")  
   input$submitButton
   GSE = isolate(gsub(" ", "", input$GSE))   # remove white space
   if (GSE=="") return(NULL)
+  closeAlert(session, "GSE-alert")
+  closeAlert(session, "GPL-alert")
+  cat("creating alert...\n")
+   createAlert(session, "alert", alertId = "GSE-alert", title = "Current Status", style = "info",
+              content = "Downloading Series (GSE) data from GEO", append = TRUE) 
   getGEO(GEO = isolate(GSE), AnnotGPL=FALSE, getGPL = FALSE)  
 })
 
@@ -45,6 +50,9 @@ Platforms <- reactive({
   if (is.null(dataInput())) {
     return(NULL)
   }
+  closeAlert(session, "GSE-alert")
+  createAlert(session, "alert", alertId = "GPL-alert", title = "Current Status", style = "info",
+              content = "Downloading platform (GPL) data from GEO", append = TRUE) 
   as.character(sapply(dataInput(), annotation))    
 })
 
@@ -58,6 +66,7 @@ platformIndex <- reactive({
   }
   if (length(dataInput())==1) return (1)
   m = match(input$platform, as.character(sapply(dataInput(), annotation)))    
+  if (is.na(m)) return(NULL)
   return(m)
 })
 
@@ -121,6 +130,10 @@ selectGene <- reactive ({
   if (TRACE) cat("In selectGene reactive...\n")
   gene.column = values.edit$platformGeneColumn
   if (is.null(input$selectGenes) | is.null(gene.column)) return (NULL)
+  
+  # without this line, this will find all probes that do not
+  # have a matching gene, i.e., the selected gene is ""
+  if (input$selectGenes == "") return(NULL)
   #cat("using gene column = ", gene.column, "\n")
   m = match(gene.column,colnames(platInfo()))
   g = grep(paste("^",input$selectGenes,"$",sep=""), as.character(platInfo()[,m]))
@@ -176,6 +189,7 @@ clinicalInput <- reactive({
 exprInput <- reactive({
   if (TRACE) cat("In exprInput reactive...\n")
   pi = platformIndex()
+  cat("pi = ", pi, "\n")
   if (is.null(dataInput()) | is.null(pi)) return(NULL)
   ans = exprs(dataInput()[[pi]])
   return(ans)
