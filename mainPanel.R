@@ -23,7 +23,7 @@ mainPanel(
 
 
  conditionalPanel(condition="$('html').hasClass('shiny-busy')",                   
-                   img(src="PleaseWait.gif")
+                   img(src="PleaseWait.gif", style = "width:50%")
                  ),
 
  conditionalPanel(condition="!$('html').hasClass('shiny-busy')", 
@@ -67,26 +67,20 @@ mainPanel(
          ),
 
 	navbarMenu("Analyses",
-          tabPanel("Differential Expression Analysis", 
-                   hr(), 
-                   div(style = "display:inline-block; width:30%",
-                      uiOutput('selectGenes')
-                   ),
-                   div(style = "display:inline-block; width:30%",
-                     uiOutput('selectProbes')
-                   ),
-
+             
+	           div(style = "display:inline-block; width:30%",
+	               uiOutput('selectGenes')
+	           ),
+	           div(style = "display:inline-block; width:30%",
+	               uiOutput('selectProbes')
+	           ), 
+             
+	           tags$div(HTML("<hr style = \"position: relative; top: -30px; background-color: red; height:4px\">")),                  
+             
+             tabPanel("Differential Expression Analysis", 
                    uiOutput("selectGroupsMessage"), 
                    plotOutput("plot")),
           tabPanel("Survival Analysis", 
-                   hr(),
-                   div(style = "display:inline-block; width:30%",
-                       uiOutput('selectGenesSurv')
-                   ),
-                   div(style = "display:inline-block; width:30%",
-                       uiOutput('selectProbesSurv')
-                   ),
-                   
                   plotOutput("kmSurvival"))
         ),
           tabPanel("About",
