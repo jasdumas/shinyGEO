@@ -136,12 +136,14 @@ output$exProfiles <- renderPlot({
   #dev.new(width=4+dim(dataInput())[[2]]/5, height=6)
   par(mar=c(2+round(max(nchar(sampleNames(dataInput())))/2),4,2,1))
   title <- paste(isolate(input$GSE), '/', isolate(input$platform), title.detail, sep ='') # need 
-  boxplot(x = x, boxwex=0.6, notch=T, main=title, outline=FALSE, las=2, ylab= y.label, col = colors())
-  #ggplot(x)+ geom_boxplot()
+  #boxplot(x = x, boxwex=0.6, notch=T, main=title, outline=FALSE, las=2, ylab= y.label, col = colors())
+  
+  new <- ggplot(melt(x), aes(as.factor(Var2), value)) + geom_boxplot(outlier.colour = "green")
+  return(new + labs(title = title, y = y.label, x = "")+ theme(axis.text.x = element_text(angle = 90, hjust = 1))) 
   closeAlert(session, "Expression-alert")
   
-})
-)
+}) 
+) 
 
 ####################
 # Survival Analysis 
