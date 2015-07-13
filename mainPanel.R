@@ -67,16 +67,18 @@ mainPanel(
          ),
 
 	navbarMenu("Analyses",
-             
-	           div(style = "display:inline-block; width:30%",
-	               uiOutput('selectGenes')
+
+	           conditionalPanel(condition="input.tabs == 'Differential Expression Analysis' | input.tabs == 'Survival Analysis'",                   
+	                            div(style = "display:inline-block; width:30%",
+	                                uiOutput('selectGenes')
+	                            ),
+	                            div(style = "display:inline-block; width:30%",
+	                                uiOutput('selectProbes')
+	                            ), 
+	                            
+	                            tags$div(HTML("<hr style = \"position: relative; top: -30px; background-color: red; height:4px\">"))                  
 	           ),
-	           div(style = "display:inline-block; width:30%",
-	               uiOutput('selectProbes')
-	           ), 
-             
-	           tags$div(HTML("<hr style = \"position: relative; top: -30px; background-color: red; height:4px\">")),                  
-             
+	           
              tabPanel("Differential Expression Analysis", 
                    uiOutput("selectGroupsMessage"), 
                    plotOutput("plot")),
