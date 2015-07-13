@@ -128,6 +128,8 @@ output$exProfiles <- renderPlot({
   }
   
   closeAlert(session, "GPL-alert")
+
+  cat("create expression alert\n")
   createAlert(session, "alert", alertId = "Expression-alert", title = "Current Status", style = "info",
               content = "Generating boxplot of expression data", append = TRUE) 
   
@@ -137,12 +139,15 @@ output$exProfiles <- renderPlot({
   par(mar=c(2+round(max(nchar(sampleNames(dataInput())))/2),4,2,1))
   title <- paste(isolate(input$GSE), '/', isolate(input$platform), title.detail, sep ='') # need 
   #boxplot(x = x, boxwex=0.6, notch=T, main=title, outline=FALSE, las=2, ylab= y.label, col = colors())
-  
+
   new <- ggplot(melt(x), aes(as.factor(Var2), value)) + geom_boxplot(outlier.colour = "green")
-  return(new + labs(title = title, y = y.label, x = "")+ theme(axis.text.x = element_text(angle = 90, hjust = 1))) 
-  closeAlert(session, "Expression-alert")
+  r = (new + labs(title = title, y = y.label, x = "")+ theme(axis.text.x = element_text(angle = 90, hjust = 1))) 
+  print(r)
   
-}) 
+  closeAlert(session, "Expression-alert")  
+}
+
+) 
 ) 
 
 ####################
