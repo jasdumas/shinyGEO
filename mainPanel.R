@@ -82,8 +82,9 @@ mainPanel(
              tabPanel("Differential Expression Analysis", 
                    uiOutput("selectGroupsMessage"), 
                    plotOutput("plot")),
-          tabPanel("Survival Analysis", 
-                  plotOutput("kmSurvival"))
+          tabPanel("Survival Analysis",
+                   uiOutput("SurvMessage"),
+                   plotOutput("kmSurvival"))
         ),
           tabPanel("About",
             h3("Authors"),

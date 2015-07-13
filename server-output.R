@@ -173,14 +173,6 @@ output$survOutcome <- renderUI({
               multiple = F, selectize = TRUE)  
     })
 
-#### Main Plot with a boxplot placeholder at the moment but it would fully work with a cleaned dataset
-output$kmSurvival <- renderPlot({
-  a = 1:25
-  boxplot(a)
-  # plot.shiny.km(time = time(), death = outcome(), x = x())
-  ## create options for title/labels/colors etc!
-  
-})
 
 output$selectedCols <- DT::renderDataTable({ 
   datatable(data = parse.modal(), rownames = F)
