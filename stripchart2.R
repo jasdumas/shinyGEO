@@ -33,6 +33,11 @@ stripchart2 <- function(x,y, group.names = NULL, jitter = 0.3, line.off = 0.3,
   }
   
   stripchart(s, vertical=TRUE, method = "jitter", jitter = jitter, col = col, pch = 19, group.names=group.names, main = main,  ...)
+  #try.s <- as.data.frame(s)
+  #stripchart3 <- ggplot(try.s, aes(x, y)) + geom_jitter()
+  #print(stripchart3)
+  
+  
   
   if (mark %in% c("mean", "median")) {
     if (mark == "mean") mm = lapply(s,mean, na.rm=TRUE)

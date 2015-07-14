@@ -82,10 +82,19 @@ mainPanel(
              tabPanel("Differential Expression Analysis", 
                    uiOutput("selectGroupsMessage"), 
                    plotOutput("plot")),
-          tabPanel("Survival Analysis",
+             tabPanel("Survival Analysis",
                    uiOutput("SurvMessage"),
                    plotOutput("kmSurvival"))
         ),
+	navbarMenu("Reproducible Research", 
+	         tabPanel("Code", 
+	                  aceEditor("myEditor", "# Version info: R version 3.2.0 (2015-04-16), shiny_0.12.1
+# R scripts generated 
+dataIn <- getGEO(GEO = 'GSE13', AnnotGPL=FALSE, getGPL = FALSE)", 
+	                            mode="r", theme="ambiance",readOnly=T )), 
+	         tabPanel("Report")
+	  
+	),
           tabPanel("About",
             h3("Authors"),
             HTML("<span style = \"font-weight: bold\"> Jasmine Dumas </span>"),

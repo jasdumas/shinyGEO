@@ -11,6 +11,7 @@ library(limma)
 library(shinyBS)
 library(GGally)
 library(ggplot2)
+library(shinyAce)
 
 source("stripchart2.R")
 source("plot.shiny.km.R")
@@ -44,16 +45,16 @@ shinyServer(function(input, output, session){
   })  # end observe
   
   observe({
-    if (length(input$Group1Values) == 0) {  # same condition as DE for now
+    if (!(input$parseEnter)) {  
       output$SurvMessage <-renderUI({HTML("<h1>Please Choose The Columns for Survival Analysis</h1>")})
       output$kmSurvival <-renderPlot({NULL})
     } else  {
       output$SurvMessage <-renderText({""})
       output$kmSurvival <- renderPlot({
-        a = 1:25
-        boxplot(a) # placeholder!
-        # plot.shiny.km(time = time(), death = outcome(), x = x())
-        ## create options for title/labels/colors etc!
+        # placeholder for GEO Survival Analysis!
+        data(lung)
+        lung.surv <- survfit(Surv(time,status) ~ 1, data = lung)
+        plot.shiny.km(time = lung$time, death = lung$status, x = lung$sex)
         
       })
     }

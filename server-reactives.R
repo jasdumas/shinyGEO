@@ -356,20 +356,23 @@ profiles <- reactive({
 # Note: We should also include a bsAlert to inform 
 # the user to only select unique columns (which they would already do)
 time <- reactive({
+  if (TRACE) cat("In time reactive...\n")
   input$survTimeUI
 })
 
 outcome <- reactive ({
+  if (TRACE) cat("In outcome reactive...\n")
   input$survOutcomeUI
 })
 
 x <- reactive ({
+  if (TRACE) cat("In x reactive...\n")
   input$survXUI
 })
 
 #### reactive column selection in summary form for edit bsModal for survival ####
 parse.modal <- reactive ({
-  
+  if (TRACE) cat("In parse.modal reactive...\n")
   parse.modal <- data.frame(
     editClinicalTable()[time()],
     editClinicalTable()[outcome()], 
@@ -383,7 +386,6 @@ parse.modal <- reactive ({
   
   a = sapply(a, paste, collapse = ", ")
   return (cbind(variable = vars, values = a))
-  cat("In parse.modal reactive...\n")
 })
 
 

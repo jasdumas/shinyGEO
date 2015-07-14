@@ -17,7 +17,7 @@ output$selectGenes <- renderUI({
 
 output$selectProbes <- renderUI({
   selectInput("selectProbes", label = "Select Probe", 
-              choices = probeNames(), multiple = F,
+              choice = probeNames(), multiple = F,
               selected = 0)
 })
 
@@ -154,23 +154,21 @@ output$exProfiles <- renderPlot({
 # Survival Analysis 
 ####################
 output$survTime <- renderUI({
-     selectInput("survTimeUI", "Time", choices = ColumnNames(), selected = "")
+     selectInput("survTimeUI", "Time", choice = ColumnNames(), selected = "", multiple = F)
    })
 
 output$survOutcome <- renderUI({
-    selectInput("survOutcomeUI", "Outcome", choices = ColumnNames(), selected = "")
+    selectInput("survOutcomeUI", "Outcome", choice = ColumnNames(), selected = "", multiple = F)
 })
 
     ##############################################
-    # serThis choice parameter depends on whether the user 
+    # This choice parameter depends on whether the user 
     # would select groups by sample name [GSM...] (rownames(editClinicalTable()))
     # or if they need to choose a column that has been edited 
     # ie. stages in a ColumnNames() or groupsForSelectedColumn() [Immature B Cells..]
     ##############################################
     output$survX <- renderUI({
-      selectInput("survXUI", "x", choices = ColumnNames(), 
-              #selected = input$editClinicalTable_rows_selected, 
-              multiple = F, selectize = TRUE)  
+      selectInput("survXUI", "x", choice = ColumnNames(), selected = "", multiple = F)  
     })
 
 
