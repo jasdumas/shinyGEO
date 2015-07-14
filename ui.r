@@ -1,4 +1,4 @@
-
+library(shinyAce)
 library(RCurl)
 
 shinyUI(fluidPage(title = "GEO-AWS",
