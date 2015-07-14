@@ -375,17 +375,18 @@ parse.modal <- reactive ({
   if (TRACE) cat("In parse.modal reactive...\n")
   parse.modal <- data.frame(
     editClinicalTable()[time()],
-    editClinicalTable()[outcome()], 
-    editClinicalTable()[x()])
+    editClinicalTable()[outcome()])#, 
+    #editClinicalTable()[x()])
   
-  vars = colnames(parse.modal) # gets the column names of the selected columns
-  a = apply(parse.modal, 2, function(x)levels(as.factor(x))) # loops over the columns and turns the levels into factors
+  #vars = colnames(parse.modal) # gets the column names of the selected columns
+  #a = apply(parse.modal, 2, function(x)levels(as.factor(x))) # loops over the columns and turns the levels into factors
   
   # The original format.it function would not be 
   # needed since the user would need to see all of the column contents to edit
   
-  a = sapply(a, paste, collapse = ", ")
-  return (cbind(variable = vars, values = a))
+  #a = sapply(a, paste, collapse = ", ")
+  #return (cbind(variable = vars, values = a))
+  parse.modal
 })
 
 
