@@ -88,9 +88,9 @@ mainPanel(
         ),
 	navbarMenu("Reproducible Research", 
 	         tabPanel("Code", 
-	                  aceEditor("myEditor", "# Version info: R version 3.2.0 (2015-04-16), shiny_0.12.1
+	                  aceEditor("myEditor", paste("# Version info: R version 3.2.0 (2015-04-16), shiny_0.12.1
 # R scripts generated 
-dataIn <- getGEO(GEO = 'GSE13', AnnotGPL=FALSE, getGPL = FALSE)", 
+dataIn <- getGEO(GEO = 'GSE13', AnnotGPL=FALSE, getGPL = FALSE)"), 
 	                            mode="r", theme="ambiance",readOnly=T )), 
 	         tabPanel("Report")
 	  

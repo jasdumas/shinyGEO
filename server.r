@@ -39,7 +39,9 @@ shinyServer(function(input, output, session){
     
               y = clinical
               y[!k] = NA
-              stripchart2(x,y, col = NULL)
+              print(stripchart2(x,y))
+              
+              
           })
     }
   })  # end observe

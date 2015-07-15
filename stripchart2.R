@@ -32,11 +32,12 @@ stripchart2 <- function(x,y, group.names = NULL, jitter = 0.3, line.off = 0.3,
     }
   }
   
-  stripchart(s, vertical=TRUE, method = "jitter", jitter = jitter, col = col, pch = 19, group.names=group.names, main = main,  ...)
-  #try.s <- as.data.frame(s)
+  #stripchart(s, vertical=TRUE, method = "jitter", jitter = jitter, col = col, pch = 19, group.names=group.names, main = main,  ...)
+  stripchart3 <- ggplot( melt(s), aes(x = as.factor(L1), y = value)) + geom_jitter()
   #stripchart3 <- ggplot(try.s, aes(x, y)) + geom_jitter()
   #print(stripchart3)
-  
+  return(stripchart3)
+  print(head(melt(s)))
   
   
   if (mark %in% c("mean", "median")) {
