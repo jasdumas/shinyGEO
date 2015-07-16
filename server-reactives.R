@@ -365,9 +365,10 @@ outcome <- reactive ({
   input$survOutcomeUI
 })
 
-x <- reactive ({
+x <- reactive ({  # not seen in sidebar - changed through the gene/probe drop-downs above plot area
   if (TRACE) cat("In x reactive...\n")
-  input$survXUI
+  #input$survXUI
+  x = profiles()[selectedProbe(),]
 })
 
 #### reactive column selection in summary form for edit bsModal for survival ####
@@ -375,17 +376,7 @@ parse.modal <- reactive ({
   if (TRACE) cat("In parse.modal reactive...\n")
   parse.modal <- data.frame(
     editClinicalTable()[time()],
-    editClinicalTable()[outcome()])#, 
-    #editClinicalTable()[x()])
-  
-  #vars = colnames(parse.modal) # gets the column names of the selected columns
-  #a = apply(parse.modal, 2, function(x)levels(as.factor(x))) # loops over the columns and turns the levels into factors
-  
-  # The original format.it function would not be 
-  # needed since the user would need to see all of the column contents to edit
-  
-  #a = sapply(a, paste, collapse = ", ")
-  #return (cbind(variable = vars, values = a))
+    editClinicalTable()[outcome()])
   parse.modal
 })
 

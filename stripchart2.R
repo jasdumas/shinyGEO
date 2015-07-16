@@ -37,7 +37,7 @@ stripchart2 <- function(x,y, group.names = NULL, jitter = 0.3, line.off = 0.3,
   #stripchart3 <- ggplot(try.s, aes(x, y)) + geom_jitter()
   #print(stripchart3)
   return(stripchart3)
-  print(head(melt(s)))
+  #print(head(melt(s)))
   
   
   if (mark %in% c("mean", "median")) {

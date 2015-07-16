@@ -58,6 +58,8 @@ shinyServer(function(input, output, session){
         lung.surv <- survfit(Surv(time,status) ~ 1, data = lung)
         plot.shiny.km(time = lung$time, death = lung$status, x = lung$sex)
         
+        ## working model of true survival plot
+        #plot.shiny.km(time = time(), death = outcome(), x = x())
       })
     }
   }) # end of second observe
