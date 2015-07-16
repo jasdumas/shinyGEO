@@ -162,20 +162,22 @@ output$survOutcome <- renderUI({
     selectInput("survOutcomeUI", "Outcome", choice = ColumnNames(), selected = "", multiple = F)
 })
 
-    ##############################################
-    # This choice parameter depends on whether the user 
-    # would select groups by sample name [GSM...] (rownames(editClinicalTable()))
-    # or if they need to choose a column that has been edited 
-    # ie. stages in a ColumnNames() or groupsForSelectedColumn() [Immature B Cells..]
-    ##############################################
-    output$survX <- renderUI({
-      selectInput("survXUI", "x", choice = ColumnNames(), selected = "", multiple = F)  
-    })
 
+# x is not needed in this way
+#     ##############################################
+#     # This choice parameter depends on whether the user 
+#     # would select groups by sample name [GSM...] (rownames(editClinicalTable()))
+#     # or if they need to choose a column that has been edited 
+#     # ie. stages in a ColumnNames() or groupsForSelectedColumn() [Immature B Cells..]
+#     ##############################################
+#     output$survX <- renderUI({
+#       selectInput("survXUI", "x", choice = ColumnNames(), selected = "", multiple = F)  
+#     })
 
 output$selectedCols <- DT::renderDataTable({ 
-  datatable(data = parse.modal(), rownames = F)
-  
+  datatable(data = parse.modal(), rownames = F,
+		options = list(dom = "Rlrtip", paging = F),
+		filter = 'none')
 }) 
 
 #####

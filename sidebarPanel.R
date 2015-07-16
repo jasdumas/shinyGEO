@@ -28,7 +28,7 @@ sidebarPanel(
                        tags$div(HTML("<hr style = \"background-color: red; height:4px\">")),   
                        uiOutput("survTime"),
                        uiOutput("survOutcome"),
-                       uiOutput("survX"), 
+                       #uiOutput("survX"), not needed here 
                        actionButton("parseButton", "Parse Data"), 
                        
                        shinyBS::bsModal("parseModal", "Selected Survival Analysis Parameters", "parseButton", size = "large",
