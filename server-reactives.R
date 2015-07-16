@@ -365,10 +365,10 @@ outcome <- reactive ({
   input$survOutcomeUI
 })
 
-x <- reactive ({  # not seen in sidebar - changed through the gene/probe drop-downs above plot area
+x <- reactive ({ # not seen in sidebar - changed through the gene/probe drop-downs above plot area
   if (TRACE) cat("In x reactive...\n")
   #input$survXUI
-  x = profiles()[selectedProbe(),]
+  x = rfiles()[selectedProbe(),]
 })
 
 #### reactive column selection in summary form for edit bsModal for survival ####
@@ -376,9 +376,7 @@ parse.modal <- reactive ({
   if (TRACE) cat("In parse.modal reactive...\n")
   parse.modal <- data.frame(
     editClinicalTable()[time()],
-    editClinicalTable()[outcome()])
+    editClinicalTable()[outcome()]) 
   parse.modal
 })
-
-
 

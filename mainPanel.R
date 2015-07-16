@@ -1,4 +1,5 @@
 library(shinyBS) # needs to be here also!
+source("html.R")
 
 mainPanel(
   bsAlert("alert"),
@@ -69,28 +70,46 @@ mainPanel(
 	navbarMenu("Analyses",
 
 	           conditionalPanel(condition="input.tabs == 'Differential Expression Analysis' | input.tabs == 'Survival Analysis'",                   
-	                            div(style = "display:inline-block; width:30%",
-	                                uiOutput('selectGenes')
-	                            ),
-	                            div(style = "display:inline-block; width:30%",
-	                                uiOutput('selectProbes')
-	                            ), 
-	                            
-	                            tags$div(HTML("<hr style = \"position: relative; top: -30px; background-color: red; height:4px\">"))                  
+	                   #bsCollapse(id = "collapseGene", 
+	                    #       bsCollapsePanel("Gene/Probe Selection",
+                              
+                                  div(style = "display:inline-block; width:30%",
+	                                   uiOutput('selectGenes')
+	                                ),
+	                                div(style = "display:inline-block; width:30%",
+	                                  uiOutput('selectProbes')
+	                                )
+	                         #  )
+	                            #tags$div(HTML("<hr style = \"position: relative; top: -30px; background-color: red; height:4px\">"))                  
+	                 # )
 	           ),
+             tabPanel("Differential Expression Analysis",      
+#                      bsCollapse(id = "collapseFormatDE", 
+#                                 bsCollapsePanel("Format Graph", style = "info",
+ 
+                      actionButton("formatDEButton", "Format Graph"),
+    
+          
+                      uiOutput("selectGroupsMessage"), 
+                   plotOutput("plot"),
+formatBSModal("Format", "Format", "formatDEButton", applyID = "applyFormatDE", size = "large",
+                 htmlOutput("formatDE")#, hr(),               
+                 #actionButton("applyFormatDE", "Apply Changes")
+)
+
+
+),
 	           
-             tabPanel("Differential Expression Analysis", 
-                   uiOutput("selectGroupsMessage"), 
-                   plotOutput("plot")),
+	           
              tabPanel("Survival Analysis",
                    uiOutput("SurvMessage"),
                    plotOutput("kmSurvival"))
         ),
 	navbarMenu("Reproducible Research", 
 	         tabPanel("Code", 
-	                  aceEditor("myEditor", paste("# Version info: R version 3.2.0 (2015-04-16), shiny_0.12.1
+	                  aceEditor("myEditor", "# Version info: R version 3.2.0 (2015-04-16), shiny_0.12.1
 # R scripts generated 
-dataIn <- getGEO(GEO = 'GSE13', AnnotGPL=FALSE, getGPL = FALSE)"), 
+dataIn <- getGEO(GEO = 'GSE13', AnnotGPL=FALSE, getGPL = FALSE)", 
 	                            mode="r", theme="ambiance",readOnly=T )), 
 	         tabPanel("Report")
 	  

@@ -1,6 +1,7 @@
 ##########################################################
 # display functions for conditional panels              ##
 ##########################################################
+
 # when platform info is availabe the other drop-down boxes are shown in the sidebar panel
 displayPlatform <-function() {
   if (is.null(Platforms())) return(FALSE)
@@ -18,7 +19,7 @@ output$selectGenes <- renderUI({
 output$selectProbes <- renderUI({
   selectInput("selectProbes", label = "Select Probe", 
               choice = probeNames(), multiple = F,
-              selected = 0)
+              selected = "")
 })
 
 output$platform <- renderUI({
@@ -161,6 +162,7 @@ output$survOutcome <- renderUI({
     selectInput("survOutcomeUI", "Outcome", choice = ColumnNames(), selected = "", multiple = F)
 })
 
+
 # x is not needed in this way
 #     ##############################################
 #     # This choice parameter depends on whether the user 
@@ -173,11 +175,12 @@ output$survOutcome <- renderUI({
 #     })
 
 output$selectedCols <- DT::renderDataTable({ 
-  datatable(data = parse.modal(), rownames = F, 
-            options = list(dom = 'Rlrtip', paging = F),
-            filter = 'none')
+  datatable(data = parse.modal(), rownames = F,
+		options = list(dom = "Rlrtip", paging = F),
+		filter = 'none')
 }) 
 
 #####
 
    
+
