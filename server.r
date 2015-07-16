@@ -15,21 +15,38 @@ library(shinyAce)
 
 source("stripchart2.R")
 source("plot.shiny.km.R")
+
 #options(shiny.deprecation.messages=FALSE)
 
 shinyServer(function(input, output, session){
   
   source("server-reactives.R", local = TRUE)
   source("server-output.R", local = TRUE)
-  
-  observe({ 
-      if (length(input$Group1Values) == 0) {
-          output$selectGroupsMessage <-renderUI({HTML("<h1>Please Choose The Groups to Compare</h1>")})
-          output$plot <-renderPlot({NULL})
+  source("formatDE.R", local = TRUE)
+  observe({
+      if (is.null(input$tabs) | input$tabs!= "Differential Expression Analysis") {
+        return(NULL)
+      }
+
+      PLOT = TRUE
+      
+      if (input$selectProbes == "") {
+        cat("\n\n=====NO GENE=====\n\n")
+        output$selectGroupsMessage <-renderUI({HTML("<h3>Please Select a Gene and Probe to Analyze</h3>")})
+        PLOT = FALSE
+      }    
+      else if (length(input$Group1Values) == 0) {
+          output$selectGroupsMessage <-renderUI({
+            HTML("<h3>Please Choose The Groups to Compare</h3>")}
+            )
+          PLOT = FALSE
+      } 
+      
+      if (!PLOT) {
+              output$plot <-renderPlot({NULL})
       } else  {
           output$selectGroupsMessage <-renderText({""})
           output$plot <- renderPlot({
-                        
               x = profiles()[selectedProbe(),] # effected by data transformation
               iv = input$selectedColumn
               m = match(as.character(iv), colnames(clinicalInput()))  # GD: change grep to match
@@ -39,7 +56,13 @@ shinyServer(function(input, output, session){
     
               y = clinical
               y[!k] = NA
-              stripchart2(x,y, col = NULL)
+              
+              ## make sure levels are in selected order for plot
+              y = factor(y, levels = input$Group1Values)
+              
+              main = paste(input$GSE, input$selectGenes, input$selectProbes, sep = "/")
+                            
+              stripchart2(x,y, col = colorsDE(), group.names = labelsDE(), main = main, ylab = "log2 expression")
           })
     }
   })  # end observe
