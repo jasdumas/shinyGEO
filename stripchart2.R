@@ -40,11 +40,19 @@ stripchart2 <- function(x,y, group.names = NULL, jitter = 0.3, line.off = 0.3,
       main = paste(main, add)
     }
   
+  #gd
+  #stripchart(s, vertical=TRUE, method = "jitter", jitter = jitter, col = col, pch = 19, group.names=group.names, main = main,  ...)
   
-  stripchart(s, vertical=TRUE, method = "jitter", jitter = jitter, col = col, pch = 19, group.names=group.names, main = main,  ...)
-  #try.s <- as.data.frame(s)
-  #stripchart3 <- ggplot(try.s, aes(x, y)) + geom_jitter()
-  #print(stripchart3)
+  #jd
+  stripchart3 <- ggplot(melt(s), aes(x = as.factor(L1), y = value), ...) 
+  #stripchart3 + labs(title = main, x = group.names, y = "log2 expression") 
+  #stripchart3 + theme(axis.text.x = element_text(angle = 90, hjust = 1))
+  return(stripchart3 + 
+           labs(title = main, y = "log2 expression", x="") + 
+           scale_x_discrete(labels=group.names) +
+           geom_point(position = "jitter") +
+          # scale_colour_manual(values = col) +
+           geom_errorbar(stat = "hline", yintercept = "mean", width=0.8,aes(ymax=..y..,ymin=..y..))) 
   
   if (mark %in% c("mean", "median")) {
     if (mark == "mean") mm = lapply(s,mean, na.rm=TRUE)

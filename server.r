@@ -61,9 +61,11 @@ shinyServer(function(input, output, session){
               y = factor(y, levels = input$Group1Values)
               
               main = paste(input$GSE, input$selectGenes, input$selectProbes, sep = "/")
-                            
-              stripchart2(x,y, col = colorsDE(), group.names = labelsDE(), main = main, ylab = "log2 expression")
-          })
+              #gd              
+              #stripchart2(x,y, col = colorsDE(), group.names = labelsDE(), main = main, ylab = "log2 expression")
+              #jd
+              print(stripchart2(x,y, group.names = labelsDE(), main = main, col=colorsDE()))
+              })
     }
   })  # end observe
   
