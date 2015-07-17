@@ -110,7 +110,7 @@ formatBSModal("Format", "Format", "formatDEButton", applyID = "applyFormatDE", s
 	                  aceEditor("myEditor", "# Version info: R version 3.2.0 (2015-04-16), shiny_0.12.1
 # R scripts generated 
 dataIn <- getGEO(GEO = 'GSE13', AnnotGPL=FALSE, getGPL = FALSE)", 
-	                            mode="r", theme="ambiance",readOnly=T )), 
+	                            mode="r", theme="chrome",readOnly=T )), 
 	         tabPanel("Report")
 	  
 	),
