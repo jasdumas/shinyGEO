@@ -5,18 +5,20 @@
 ###################################################
 # Edit table reactiveValues()
 ###################################################
-values.edit <- reactiveValues(table = NULL, platformGeneColumn = NULL)
+values.edit <- reactiveValues(table = NULL, platformGeneColumn = NULL, survivalTable = NULL)
 
 observeEvent(input$submitButton, { 
   closeAlert(session, "geneSymbolAlert")
   values.edit$table <- NULL  
   values.edit$platformGeneColumn <- NULL
+  values.edit$survivalTable <- NULL
 })
 
 observeEvent(input$platform, {
   closeAlert(session, "geneSymbolAlert")
   values.edit$table <- NULL  
   values.edit$platformGeneColumn <- NULL
+  values.edit$survivalTable <- NULL
 })
 
 
@@ -159,11 +161,13 @@ clinicalInput <- reactive({
     return(NULL)
   }
   ### Checks if initial values.edit$table is NULL (which it is set to initially)
-  if (!is.null(values.edit$table)) {
+  if (!is.null(values.edit$survivalTable) & !is.null(values.edit$table)) {
     p = values.edit$table
+    p2 = values.edit$survivalTable
   } else {
     p = as.data.frame(pData(phenoData(object = dataInput()[[platformIndex()]])))
-  }
+    p2 = p
+  } 
   #####################################################################
   #  display only columns that have more than one possible value; this
   #   removes many columns such as contact info. In addition all 
@@ -172,15 +176,24 @@ clinicalInput <- reactive({
   
   RM.COLS = c("status", "last_update_date", "submission_date")
   num.levels = apply(p, 2, function(x) nlevels(as.factor(x)))
-  p = p[,num.levels > 1]
-  m = match(RM.COLS, colnames(p))
-  m=m[!is.na(m)]
-  if (length(m) > 0) p=p[,-m, drop = FALSE]
+  num.levels2 = apply(p2, 2, function(x) nlevels(as.factor(x)))
   
+  p = p[,num.levels > 1]
+  p2 = p2[,num.levels2 > 1]
+  m = match(RM.COLS, colnames(p))
+  m2 = match(RM.COLS, colnames(p2))
+  m=m[!is.na(m)]
+  m2=m2[!is.na(m2)]
+  if (length(m) > 0) p=p[,-m, drop = FALSE]
+  if (length(m2) > 0) p2=p2[,-m2, drop = FALSE]
   m = match(colnames(exprInput()), rownames(p))
+  m2 = match(colnames(exprInput()), rownames(p2))
   p = p[m,]
+  p2 = p2[m2,]
   values.edit$table = p
+  values.edit$survivalTable = p2
   return(p)
+ # return(p2) # I can't return two of the same things in the same reactive
 })
 
 ######################################################
@@ -217,7 +230,6 @@ ColumnNames <- reactive({
 ########################################
 ### Summary of Clinical Data table
 ########################################  
-
 clinicalDataSummary <- reactive({
   if (TRACE) cat("In clinicalDataSummary reactive...\n")
   t = clinicalInput()
@@ -375,8 +387,64 @@ x <- reactive ({ # not seen in sidebar - changed through the gene/probe drop-dow
 parse.modal <- reactive ({
   if (TRACE) cat("In parse.modal reactive...\n")
   parse.modal <- data.frame(
-    editClinicalTable()[time()],
-    editClinicalTable()[outcome()]) 
+    editSelectedCols()[time()],
+    editSelectedCols()[outcome()]) 
   parse.modal
 })
+ 
+#######################################################
+## SURVIVAL::: Find & Replace Method for editing tables 
+######################################################
+# drop-down of column names
+# output$dropModal <- renderUI({
+#   selectInput("drop2", "Column Names", choices = ColumnNames(), selected = "")
+# })
 
+## reactives for textboxes/drop-downs in modal window
+find.str.surv <- reactive({input$survfind})       
+replace.str.surv <- reactive({input$survreplace})
+#column.num <- reactive({as.character(input$drop2)}) replace with parse.modal() to effect entire data frame
+
+editSelectedCols <- reactive({
+  input$parseEnter    
+  if (TRACE) cat("In editSelectedCols reactive...\n")
+  find.str.surv = isolate(find.str.surv())
+  replace.str.surv = isolate(replace.str.surv())
+  #column.num = isolate(column.num())
+  
+  if (find.str.surv == "" & replace.str.surv == "") {   # if there is nothing entered it returns the original table
+    return(values.edit$survivalTable)
+  }
+  exactMatchSurv = isolate(input$exact) # exact match condition
+  
+  if (exactMatchSurv) {    # while default is false
+    find.str.surv = paste("^", find.str.surv, "$", sep = "")
+  }
+  
+  newCols <- values.edit$survivalTable
+  
+  ### if factor, change to character.  Otherwise we can't replace it. ##
+  if (is.factor(newCols[,1:2])) {
+    newCols[,1] = as.character(newCols[,1:2])
+  }
+  
+  ### if the check box for partial match is checked
+  ## TO-DO: I now need adjust for characters ie: \\(months \\)
+  partialReplaceSurv = isolate(input$partial)
+  
+  if (partialReplaceSurv) {                 
+    newCols[[1:2]] = gsub(find.str.surv, replace.str.surv, newCols[[1:2]] ) #, fixed = T)  ## fixed = T for symbols
+    g.total.surv = grep(find.str.surv, newCols[,1:2])  
+    newCols[g.total.surv,1:2] = replace.str.surv 
+    cat("replacing ", find.str.surv, " with ", replace.str.surv)
+  } else {
+    g.total.surv = grep(find.str.surv, newCols[,1:2])  
+    cat("g.total = ", g.total.surv, " \n")
+    newCols[g.total.surv,1:2] = replace.str.surv 
+    cat("replacing ", find.str.surv, " with ", replace.str.surv)
+  }
+  
+  values.edit$survivalTable = newCols
+  return (values.edit$survivalTable)
+  
+}) # end of editSelectedCols() reactive

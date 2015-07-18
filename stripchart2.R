@@ -50,8 +50,8 @@ stripchart2 <- function(x,y, group.names = NULL, jitter = 0.3, line.off = 0.3,
   return(stripchart3 + 
            labs(title = main, y = "log2 expression", x="") + 
            scale_x_discrete(labels=group.names) +
-           geom_point(position = "jitter") +
-          # scale_colour_manual(values = col) +
+           geom_point(position = "jitter", colour = col) + # only works with one group selected
+           #scale_colour_manual(values = c("red","blue", "green")) +
            geom_errorbar(stat = "hline", yintercept = "mean", width=0.8,aes(ymax=..y..,ymin=..y..))) 
   
   if (mark %in% c("mean", "median")) {

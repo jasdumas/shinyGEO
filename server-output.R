@@ -90,7 +90,15 @@ observe({  # observe needed since data object is a reactive function
 observe({
 output$clinicalData <- DT::renderDataTable({ datatable(editClinicalTable(), rownames = TRUE,
                                                    extensions = 'ColReorder',
-                                                   options = list(dom = 'Rlfrtip', ajax = list(url = action1), paging = F),
+                                                   options = list(dom = 'Rlfrtip', ajax = list(url = action1), paging = F, 
+                                                                  columnDefs = list(list(
+                                                                    targets = 1: length(editClinicalTable()), # applies to the entire table
+                                                                    render = JS(
+                                                                      "function(data, type, row, meta) {",
+                                                                      "return type === 'display' && data.length > 15 ?",
+                                                                      "'<span title=\"' + data + '\">' + data.substr(0, 15) + '...</span>' : data;",
+                                                                      "}")
+                                                                  ))), 
                                                    filter = 'top',
                                                    selection = 'multiple')
   })
@@ -162,18 +170,6 @@ output$survOutcome <- renderUI({
     selectInput("survOutcomeUI", "Outcome", choice = ColumnNames(), selected = "", multiple = F)
 })
 
-
-# x is not needed in this way
-#     ##############################################
-#     # This choice parameter depends on whether the user 
-#     # would select groups by sample name [GSM...] (rownames(editClinicalTable()))
-#     # or if they need to choose a column that has been edited 
-#     # ie. stages in a ColumnNames() or groupsForSelectedColumn() [Immature B Cells..]
-#     ##############################################
-#     output$survX <- renderUI({
-#       selectInput("survXUI", "x", choice = ColumnNames(), selected = "", multiple = F)  
-#     })
-
 output$selectedCols <- DT::renderDataTable({ 
   datatable(data = parse.modal(), rownames = F,
 		options = list(dom = "Rlrtip", paging = F),
@@ -182,5 +178,12 @@ output$selectedCols <- DT::renderDataTable({
 
 #####
 
-   
+#output$ace <- renderPrint({
+#  paste("You have selected", input$GSE)
+#   paste(# Version info: R version 3.2.0 (2015-04-16), shiny_0.12.1
+#   # R scripts generated,  
+#   dataIn <- getGEO(GEO = input$GSE, AnnotGPL=FALSE, getGPL = FALSE))
 
+# })
+   
+  
