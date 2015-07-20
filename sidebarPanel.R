@@ -33,15 +33,12 @@ sidebarPanel(
                        
                        shinyBS::bsModal("parseModal", "Selected Survival Analysis Parameters", "parseButton", size = "large",
                                fluidRow(
-                                 column(4, textInput("survfind", label = "Find", value = "") ),
+                                 column(4, textInput("survfind", label = "Find", value = "")),
                                  column(4, textInput("survreplace", label = "Replace", value = "")),
-                                 column(4,actionButton("parseEnter", label = "Submit"), 
-                                        checkboxInput("exact", label = "Exact Match", value = FALSE),
-                                        checkboxInput("partial", label = "Partial Replace", value = FALSE), 
-                                        checkboxInput("fixed", label = "Pattern Symbols", value = FALSE))
-                                        
+                                 column(4, actionButton("parseEnter", label = "Submit"))
                                  ),
                                DT::dataTableOutput("selectedCols")
+                               #print("in parseModal window...")
                                )
                        
       ) # end Conditional Panel
