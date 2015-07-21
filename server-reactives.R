@@ -7,6 +7,12 @@
 ###################################################
 values.edit <- reactiveValues(table = NULL, platformGeneColumn = NULL)
 
+reproducible <-reactiveValues(code = NULL)
+add.line <-function(line) {
+    reproducible$code = paste(isolate(reproducible$code), line, sep = "\n")
+}
+
+
 observeEvent(input$submitButton, { 
   closeAlert(session, "geneSymbolAlert")
   values.edit$table <- NULL  
@@ -19,6 +25,11 @@ observeEvent(input$platform, {
   values.edit$platformGeneColumn <- NULL
 })
 
+
+observeEvent(reproducible$code, {
+     updateAceEditor(session, "myEditor", reproducible$code,
+                         mode="r", theme="chrome")
+ })
 
 observe({
   cat("selected tab = ", input$tabs, "\n")
@@ -39,6 +50,8 @@ dataInput <- reactive({
   cat("creating alert...\n")
    createAlert(session, "alert", alertId = "GSE-alert", title = "Current Status", style = "info",
               content = "Downloading Series (GSE) data from GEO", append = TRUE) 
+  code = paste0("data.series = getGEO(GEO = \"", GSE, "\", AnnotGPL = FALSE, getGPL = FALSE)")
+  add.line(code)
   getGEO(GEO = isolate(GSE), AnnotGPL=FALSE, getGPL = FALSE)  
 })
 
@@ -76,7 +89,13 @@ platformIndex <- reactive({
 platInfo <- reactive({
   if (TRACE) cat("In platInfo reactive...\n")
   if (is.null(Platforms()) | is.null(platformIndex())) return (NULL)
+
+  code = paste0("data.platform = getGEO(\"", Platforms()[platformIndex()],  "\")
+")
+  add.line(code)
+  
   t = Table(getGEO(Platforms()[platformIndex()]))
+  
   k = t[,"ID"]
   common.probes = intersect(row.names(exprInput()), as.character(k))
   n = match(common.probes, k)
@@ -162,6 +181,8 @@ clinicalInput <- reactive({
   if (!is.null(values.edit$table)) {
     p = values.edit$table
   } else {
+    code = paste0("data.p = pData(data.series[[data.index]])")
+    add.line(code)
     p = as.data.frame(pData(phenoData(object = dataInput()[[platformIndex()]])))
   } 
   #####################################################################
@@ -199,6 +220,11 @@ exprInput <- reactive({
   pi = platformIndex()
   cat("pi = ", pi, "\n")
   if (is.null(dataInput()) | is.null(pi)) return(NULL)
+  pl=Platforms()[platformIndex()]
+  code = paste0("data.index = match(\"", pl, "\", sapply(data.series, annotation))")
+  add.line(code)
+  code = paste0("data.expr = exprs(data.series[[data.index]])")
+  add.line(code)
   ans = exprs(dataInput()[[pi]])
   return(ans)
 })
