@@ -390,65 +390,69 @@ profiles <- reactive({
 # the user to only select unique columns (which they would already do)
 time <- reactive({
   if (TRACE) cat("In time reactive...\n")
-  input$survTimeUI
+  isolate(input$survTimeUI)
 })
 
 outcome <- reactive ({
   if (TRACE) cat("In outcome reactive...\n")
-  input$survOutcomeUI
+  isolate(input$survOutcomeUI)
 })
 
 x <- reactive ({ # not seen in sidebar - changed through the gene/probe drop-downs above plot area
   if (TRACE) cat("In x reactive...\n")
   #input$survXUI
-  x = rfiles()[selectedProbe(),]
+  x = profiles()[selectedProbe(),]
 })
 
 #### reactive column selection in summary form for edit bsModal for survival ####
+
 parse.modal <- reactive ({ 
+  input$parseEnter
   if (TRACE) cat("In parse.modal reactive...\n")
   parse.modal <- data.frame(
-    editSelectedCols()[time()],
-    editSelectedCols()[outcome()]) 
-  
+  editSelectedCols()[time()],
+  editSelectedCols()[outcome()])
+  ## removes any null strings present in the rows of the data.frame
+  parse.modal <- parse.modal[!apply(parse.modal, 1, function(x) any(x=="")),] 
   return(parse.modal)
 }) 
- 
+
 #######################################################
 ## SURVIVAL::: Find & Replace Method for editing tables 
 ######################################################
-
-## reactives for textboxes/drop-downs in modal window
 find.str.surv <- reactive({input$survfind})       
 replace.str.surv <- reactive({input$survreplace})
-#column.num <- reactive({as.character(input$drop2)}) replace with parse.modal() to effect entire data frame
-# column.num <- data.frame(time(), outcome())
 
 editSelectedCols <- reactive({
-  input$parseEnter    
+  input$parseEnter  # trigger actionButton 
   if (TRACE) cat("In editSelectedCols reactive...\n")
   find.str.surv = isolate(find.str.surv())
   replace.str.surv = isolate(replace.str.surv())
-  column.num = 1 # to-do: I need to restructure this to apply to the choosen time() & outcome() columns
-  
-  if (find.str.surv == "" & replace.str.surv == "") {   # if there is nothing entered it returns the original table
-    return(values.edit$table)
-  }
- 
+   
   newCols <- values.edit$table
   
-  ### if factor, change to character.  Otherwise we can't replace it. ##
-  if (is.factor(newCols[,column.num])) {
-    newCols[,column.num] = as.character(newCols[,column.num])
+  if (find.str.surv == "" & replace.str.surv == "") {   # if there is nothing entered it returns the selected columns
+    return(newCols)
   }
   
-    newCols[[column.num]] = gsub(find.str.surv, replace.str.surv, newCols[[column.num]] ) #, fixed = T)  ## fixed = T for symbols
-    g.total.surv = grep(find.str.surv, newCols[,column.num])  
-    newCols[g.total.surv,column.num] = replace.str.surv 
-    cat("replacing ", find.str.surv, " with ", replace.str.surv)
- 
+  ### if factor for both columns, change to character.  Otherwise we can't replace it. ##
+  if (is.factor(newCols[,time()]) || is.factor(newCols[,outcome()])) {
+    newCols[,time()] = as.character(newCols[,time()])
+    newCols[,outcome()] = as.character(newCols[,outcome()])
+  }
+  
+  newCols[[time()]] = gsub(find.str.surv, replace.str.surv, newCols[[time()]], fixed = T)  ## fixed = T for symbols
+  g1 = grep(find.str.surv, newCols[,time()])  
+  newCols[g1,time()] = replace.str.surv 
+  cat("replacing time() ", find.str.surv, " with ", replace.str.surv, "\n")
+  
+  ## duplicate of time() partial replace block which applies over the entire selected columns
+  newCols[[outcome()]] = gsub(find.str.surv, replace.str.surv, newCols[[outcome()]], fixed = T)
+  g2 = grep(find.str.surv, newCols[,outcome()])  
+  newCols[g2,outcome()] = replace.str.surv 
+  cat("replacing outcome() ", find.str.surv, " with ", replace.str.surv, "\n")
   
   values.edit$table = newCols
-  return (values.edit$table)
+  return (values.edit$table)  
   
 }) # end of editSelectedCols() reactive

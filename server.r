@@ -77,12 +77,12 @@ shinyServer(function(input, output, session){
       output$SurvMessage <-renderText({""})
       output$kmSurvival <- renderPlot({
         # placeholder for GEO Survival Analysis!
-        data(lung)
-        lung.surv <- survfit(Surv(time,status) ~ 1, data = lung)
-        plot.shiny.km(time = lung$time, death = lung$status, x = lung$sex)
+        #data(lung)
+        #lung.surv <- survfit(Surv(time,status) ~ 1, data = lung)
+        #plot.shiny.km(time = lung$time, death = lung$status, x = lung$sex)
        
 	 ## working model of true survival plot
-         #plot.shiny.km(time = as.double(time()), death = as.integer(outcome()), x = x())
+         return(plot.shiny.km(time = as.double(time()), death = as.integer(outcome()), x = x()))
  
       })
     }
