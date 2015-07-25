@@ -44,15 +44,15 @@ stripchart2 <- function(x,y, group.names = NULL, jitter = 0.3, line.off = 0.3,
   #stripchart(s, vertical=TRUE, method = "jitter", jitter = jitter, col = col, pch = 19, group.names=group.names, main = main,  ...)
   
   #jd
-  stripchart3 <- ggplot(melt(s), aes(x = as.factor(L1), y = value), ...) 
-  #stripchart3 + labs(title = main, x = group.names, y = "log2 expression") 
-  #stripchart3 + theme(axis.text.x = element_text(angle = 90, hjust = 1))
+  m = melt(s)
+  View(m)
+  stripchart3 <- ggplot(m, aes(x = as.factor(L1), y = value, color=L1)) 
   return(stripchart3 + 
            labs(title = main, y = "log2 expression", x="") + 
            scale_x_discrete(labels=group.names) +
-           geom_point(position = "jitter", colour = col) + # only works with one group selected
-           #scale_colour_manual(values = c("red","blue", "green")) +
-           geom_errorbar(stat = "hline", yintercept = "mean", width=0.8,aes(ymax=..y..,ymin=..y..))) 
+           geom_point(position = "jitter", aes(colour = L1)) + # only works with one group selected
+           scale_colour_manual(values = col) +
+           geom_errorbar(stat = "hline", yintercept = "mean", width=0.8,aes(ymax=..y..,ymin=..y..)))
   
   if (mark %in% c("mean", "median")) {
     if (mark == "mean") mm = lapply(s,mean, na.rm=TRUE)

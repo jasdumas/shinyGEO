@@ -148,8 +148,10 @@ output$exProfiles <- renderPlot({
   par(mar=c(2+round(max(nchar(sampleNames(dataInput())))/2),4,2,1))
   title <- paste(isolate(input$GSE), '/', isolate(input$platform), title.detail, sep ='') # need 
   #boxplot(x = x, boxwex=0.6, notch=T, main=title, outline=FALSE, las=2, ylab= y.label, col = colors())
-
-  new <- ggplot(melt(x), aes(as.factor(Var2), value)) + geom_boxplot(outlier.colour = "green")
+  
+  x1 = melt(x)
+  #View(x1)  # to get aes(); X2 column header for GSMXXX values
+  new <- ggplot(x1, aes(as.factor(X2), value)) + geom_boxplot(outlier.colour = "green")
   r = (new + labs(title = title, y = y.label, x = "")+ theme(axis.text.x = element_text(angle = 90, hjust = 1))) 
   print(r)
   
