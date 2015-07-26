@@ -48,7 +48,8 @@ stripchart2 <- function(x,y, group.names = NULL, jitter = 0.3, line.off = 0.3,
   View(m)
   stripchart3 <- ggplot(m, aes(x = as.factor(L1), y = value, color=L1)) 
   return(stripchart3 + 
-           labs(title = main, y = "log2 expression", x="") + 
+           labs(title = main, y = "log2 expression", x="") +
+           theme(legend.position="none") +
            scale_x_discrete(labels=group.names) +
            geom_point(position = "jitter", aes(colour = L1)) + 
            scale_colour_manual(values = col) +
