@@ -82,7 +82,7 @@ shinyServer(function(input, output, session){
         #plot.shiny.km(time = lung$time, death = lung$status, x = lung$sex)
        
 	 ## working model of true survival plot
-         return(plot.shiny.km(time = as.double(time()), death = as.integer(outcome()), x = x()))
+         return(plot.shiny.km(time = as.double(parse.modal()[,1]), death = as.integer(parse.modal()[,2]), x = x()))
  
       })
     }

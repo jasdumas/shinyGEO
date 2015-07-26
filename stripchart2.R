@@ -50,7 +50,7 @@ stripchart2 <- function(x,y, group.names = NULL, jitter = 0.3, line.off = 0.3,
   return(stripchart3 + 
            labs(title = main, y = "log2 expression", x="") + 
            scale_x_discrete(labels=group.names) +
-           geom_point(position = "jitter", aes(colour = L1)) + # only works with one group selected
+           geom_point(position = "jitter", aes(colour = L1)) + 
            scale_colour_manual(values = col) +
            geom_errorbar(stat = "hline", yintercept = "mean", width=0.8,aes(ymax=..y..,ymin=..y..)))
   
