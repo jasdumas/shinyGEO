@@ -142,12 +142,8 @@ output$exProfiles <- renderPlot({
   createAlert(session, "alert", alertId = "Expression-alert", title = "Current Status", style = "info",
               content = "Generating boxplot of expression data", append = TRUE) 
   
-  # set parameters and draw the plot
-  #palette(c("#99d5db", "#d399db"))                       # global palette choices for strip chart too
-  #dev.new(width=4+dim(dataInput())[[2]]/5, height=6)
   par(mar=c(2+round(max(nchar(sampleNames(dataInput())))/2),4,2,1))
   title <- paste(isolate(input$GSE), '/', isolate(input$platform), title.detail, sep ='') # need 
-  #boxplot(x = x, boxwex=0.6, notch=T, main=title, outline=FALSE, las=2, ylab= y.label, col = colors())
   
   x1 = melt(x)
   #View(x1)  # to get aes(); X2 column header for GSMXXX values
@@ -155,7 +151,8 @@ output$exProfiles <- renderPlot({
   r = (new + labs(title = title, y = y.label, x = "")+ theme(axis.text.x = element_text(angle = 90, hjust = 1))) 
   print(r)
   
-  closeAlert(session, "Expression-alert")  
+  closeAlert(session, "Expression-alert")
+  
 }
 
 ) 

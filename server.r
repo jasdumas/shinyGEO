@@ -66,7 +66,9 @@ shinyServer(function(input, output, session){
               #stripchart2(x,y, col = colorsDE(), group.names = labelsDE(), main = main, ylab = "log2 expression")
               #jd
               print(stripchart2(x,y, group.names = labelsDE(), main = main, col=colorsDE()))
-              })
+              
+              }) # end of plot reactive
+          
     }
   })  # end observe
   

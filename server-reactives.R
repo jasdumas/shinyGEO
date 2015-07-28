@@ -7,9 +7,13 @@
 ###################################################
 values.edit <- reactiveValues(table = NULL, platformGeneColumn = NULL)
 
-reproducible <-reactiveValues(code = NULL)
+reproducible <-reactiveValues(code = NULL, report = NULL)
 add.line <-function(line) {
     reproducible$code = paste(isolate(reproducible$code), line, sep = "\n")
+}
+
+add.graph <-function(line) {  ## add graphic info to ace editor for the report
+   reproducible$report = paste(isolate(reproducible$report), line, sep = "\n")
 }
 
 
@@ -30,6 +34,11 @@ observeEvent(reproducible$code, {
      updateAceEditor(session, "myEditor", reproducible$code,
                          mode="r", theme="chrome")
  })
+
+observeEvent(reproducible$report, {
+  updateAceEditor(session, "rmd", reproducible$report, 
+                  mode = "markdown", theme = "chrome")
+})
 
 observe({
   cat("selected tab = ", input$tabs, "\n")
@@ -225,6 +234,19 @@ exprInput <- reactive({
   add.line(code)
   code = paste0("data.expr = exprs(data.series[[data.index]])")
   add.line(code)
+  exp <- paste0(
+    "### Expression Profiles Plot\n", 
+"This plot shows selected expression samples to determine if the chosen
+Gene Series contains samples that are statistically fair to compare.\n",
+    
+    "
+```{r}
+library(ggplot2)
+
+a <- ggplot(iris, aes(x=Sepal.Width, y=Sepal.Length))
+a + geom_point(position = 'jitter')
+```")
+  add.graph(exp) ## test
   ans = exprs(dataInput()[[pi]])
   return(ans)
 })
@@ -380,6 +402,7 @@ profiles <- reactive({
   
   if (input$radio == 2) return (ex <- log2(exprInput()))   # forced Yes
   else return (ex <- exprInput())  # No
+
   
 })
 

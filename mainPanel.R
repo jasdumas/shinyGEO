@@ -106,17 +106,7 @@ mainPanel(
 	         tabPanel("Code", 
 	                  aceEditor("myEditor", value = "hi", mode="r", theme="chrome",readOnly=T )), 
 	         tabPanel("Report", 
-	                  aceEditor("rmd", mode="markdown", 
-value='### Sample KnitR Doc
-This is some markdown text. It may also have embedded R code which will be executed.
-```{r}
-library(ggplot2)
-
-a <- ggplot(iris, aes(x=Sepal.Width, y=Sepal.Length))
-a + geom_point(position = "jitter")
-
-```
-	                                      '),
+	                  aceEditor("rmd", mode="markdown", value='bye',readOnly=T),
 	                            actionButton("eval", "Update"),
 	                            br(), 
 	                            h2("Knitted Output"),
