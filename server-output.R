@@ -178,14 +178,12 @@ output$selectedCols <- DT::renderDataTable({
 		filter = 'none')
 }) 
 
-#####
-
-#output$ace <- renderPrint({
-#  paste("You have selected", input$GSE)
-#   paste(# Version info: R version 3.2.0 (2015-04-16), shiny_0.12.1
-#   # R scripts generated,  
-#   dataIn <- getGEO(GEO = input$GSE, AnnotGPL=FALSE, getGPL = FALSE))
-
-# })
+###################
+# Knitr Report
+###################
+output$knitDoc <- renderUI({
+  input$eval
+  return(isolate(HTML(knit2html(text = input$rmd, fragment.only = TRUE, quiet = TRUE))))
+})  
    
   

@@ -91,7 +91,7 @@ mainPanel(
     
                       uiOutput("selectGroupsMessage"), 
                    plotOutput("plot"),
-formatBSModal("Format", "Format", "formatDEButton", applyID = "applyFormatDE", size = "large",
+                 formatBSModal("Format", "Format", "formatDEButton", applyID = "applyFormatDE", size = "large",
                  htmlOutput("formatDE")#, hr(),               
                  #actionButton("applyFormatDE", "Apply Changes")
 )
@@ -105,9 +105,24 @@ formatBSModal("Format", "Format", "formatDEButton", applyID = "applyFormatDE", s
 	navbarMenu("Reproducible Research", 
 	         tabPanel("Code", 
 	                  aceEditor("myEditor", value = "hi", mode="r", theme="chrome",readOnly=T )), 
-	         tabPanel("Report")
-	  
-	),
+	         tabPanel("Report", 
+	                  aceEditor("rmd", mode="markdown", 
+value='### Sample KnitR Doc
+This is some markdown text. It may also have embedded R code which will be executed.
+```{r}
+library(ggplot2)
+
+a <- ggplot(iris, aes(x=Sepal.Width, y=Sepal.Length))
+a + geom_point(position = "jitter")
+
+```
+	                                      '),
+	                            actionButton("eval", "Update"),
+	                            br(), 
+	                            h2("Knitted Output"),
+	                            htmlOutput("knitDoc")
+	                    )),# end of tab report panel
+	         
           tabPanel("About",
             h3("Authors"),
             HTML("<span style = \"font-weight: bold\"> Jasmine Dumas </span>"),

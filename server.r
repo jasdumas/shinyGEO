@@ -12,6 +12,7 @@ library(shinyBS)
 library(GGally)
 library(ggplot2)
 library(shinyAce)
+library(knitr)
 
 source("stripchart2.R")
 source("plot.shiny.km.R")
@@ -76,13 +77,8 @@ shinyServer(function(input, output, session){
     } else  {
       output$SurvMessage <-renderText({""})
       output$kmSurvival <- renderPlot({
-        # placeholder for GEO Survival Analysis!
-        #data(lung)
-        #lung.surv <- survfit(Surv(time,status) ~ 1, data = lung)
-        #plot.shiny.km(time = lung$time, death = lung$status, x = lung$sex)
-       
-	 ## working model of true survival plot
-         return(plot.shiny.km(time = as.double(parse.modal()[,1]), death = as.integer(parse.modal()[,2]), x = x()))
+
+      return(plot.shiny.km(time = as.double(parse.modal()[,1]), death = as.integer(parse.modal()[,2]), x = x()))
  
       })
     }
