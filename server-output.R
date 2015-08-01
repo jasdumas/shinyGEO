@@ -179,7 +179,7 @@ output$selectedCols <- DT::renderDataTable({
 # Knitr Report
 ###################
 output$knitDoc <- renderUI({
-  input$eval
+  #input$eval # i don't want it dependent on a button for upgrades...possibly for creation
   return(isolate(HTML(knit2html(text = input$rmd, fragment.only = TRUE, quiet = TRUE))))
 })  
    

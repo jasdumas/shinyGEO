@@ -105,12 +105,12 @@ mainPanel(
 	navbarMenu("Reproducible Research", 
 	         tabPanel("Code", 
 	                  aceEditor("myEditor", value = "hi", mode="r", theme="chrome",readOnly=T )), 
-	         tabPanel("Report", 
-	                  aceEditor("rmd", mode="markdown", value='bye',readOnly=T),
-	                            actionButton("eval", "Update"),
-	                            br(), 
-	                            h2("Knitted Output"),
-	                            htmlOutput("knitDoc")
+	         tabPanel("Report",
+	                  h2("Knitted Output"),
+	                  htmlOutput("knitDoc"),
+	                  #actionButton("eval", "Update"),
+	                  aceEditor("rmd", mode="markdown", value='bye',readOnly=T, height="300px") # make this not visible
+	                            
 	                    )),# end of tab report panel
 	         
           tabPanel("About",

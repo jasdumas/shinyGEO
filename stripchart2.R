@@ -44,7 +44,7 @@ stripchart2 <- function(x,y, group.names = NULL, jitter = 0.3, line.off = 0.3,
   #stripchart(s, vertical=TRUE, method = "jitter", jitter = jitter, col = col, pch = 19, group.names=group.names, main = main,  ...)
   
   #jd
-  m = melt(s)
+  m = melt(s, na.rm=TRUE)
   View(m)
   stripchart3 <- ggplot(m, aes(x = as.factor(L1), y = value, color=L1)) 
   return(stripchart3 + 

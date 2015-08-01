@@ -335,7 +335,6 @@ find.str <- reactive({input$find})
 replace.str <- reactive({input$replace})
 column.num <- reactive({as.character(input$drop2)}) 
 
-## editClinicalTable uses grep as a all-or-nothing replacement -> soon to include gsub for changing parts of cells!   
 editClinicalTable <- reactive({
   input$Enter    
   if (TRACE) cat("In editClinicalTable reactive...\n")
