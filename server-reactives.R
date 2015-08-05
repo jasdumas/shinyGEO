@@ -5,7 +5,7 @@
 ###################################################
 # Edit table reactiveValues()
 ###################################################
-values.edit <- reactiveValues(table = NULL, platformGeneColumn = NULL)
+values.edit <- reactiveValues(table = NULL, platformGeneColumn = NULL, original = NULL)
 
 reproducible <-reactiveValues(code = NULL, report = NULL)
 
@@ -222,6 +222,40 @@ clinicalInput <- reactive({
   return(p)
 
 })
+# to-do commit for a revert button for the survival analysis table
+###########################
+### Original Clinical Table 
+###########################
+# originalTable <- reactive({
+#   if (TRACE) cat("In clinicalInput reactive...\n")
+#   if (is.null(dataInput()) | is.null(platformIndex())) {
+#     return(NULL)
+#   }
+#   ### Checks if initial values.edit$table is NULL (which it is set to initially)
+#   if (!is.null(values.edit$original)) {
+#     p = values.edit$original
+#   } else {
+#     p = as.data.frame(pData(phenoData(object = dataInput()[[platformIndex()]])))
+#   } 
+#   #####################################################################
+#   #  display only columns that have more than one possible value; this
+#   #   removes many columns such as contact info. In addition all 
+#   #   columns specified by RM.COLS will be removed
+#   #####################################################################
+#   
+#   RM.COLS = c("status", "last_update_date", "submission_date")
+#   num.levels = apply(p, 2, function(x) nlevels(as.factor(x)))
+#   p = p[,num.levels > 1]
+#   m = match(RM.COLS, colnames(p))
+#   m=m[!is.na(m)]
+#   if (length(m) > 0) p=p[,-m, drop = FALSE]
+#   m = match(colnames(exprInput()), rownames(p))
+#   p = p[m,]
+#   values.edit$original = p
+#   return(p)
+#   
+# })
+
 
 ######################################################
 # exprInput - expression data for selected platform
@@ -402,13 +436,13 @@ profiles <- reactive({
 time <- reactive({
   if (TRACE) cat("In time reactive...\n")
   #input$parseButton
-  input$survTimeUI
+  isolate(input$survTimeUI)
 })
 
 outcome <- reactive ({
   if (TRACE) cat("In outcome reactive...\n")
   #input$parseButton # initial launch of "parse data" button, trial without isolate
-  input$survOutcomeUI
+  isolate(input$survOutcomeUI) # keeping for now
 })
 
 x <- reactive ({ # not seen in sidebar - changed through the gene/probe drop-downs above plot area
@@ -442,6 +476,12 @@ editSelectedCols <- reactive({
   replace.str.surv = isolate(replace.str.surv())
    
   newCols <- values.edit$table
+  
+#   try.this <- values.edit$original
+#   
+#   if (input$undo) { # if the revert button is pressed it returns the original data table
+#     return(try.this)
+#   }
   
   if (find.str.surv == "" & replace.str.surv == "") {   # if there is nothing entered it returns the selected columns
     return(newCols)

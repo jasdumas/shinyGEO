@@ -35,7 +35,8 @@ sidebarPanel(
                                fluidRow(
                                  column(4, textInput("survfind", label = "Find", value = "")),
                                  column(4, textInput("survreplace", label = "Replace", value = "")),
-                                 column(4, actionButton("parseEnter", label = "Submit"))
+                                 column(4, actionButton("parseEnter", label = "Submit"), 
+                                           actionButton("undo", label="Revert Changes"))
                                  ),
                                DT::dataTableOutput("selectedCols")
                                #print("in parseModal window...")
