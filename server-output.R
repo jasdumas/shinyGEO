@@ -161,6 +161,7 @@ output$exProfiles <- renderPlot({
 ####################
 # Survival Analysis 
 ####################
+observe({
 output$survTime <- renderUI({
      selectInput("survTimeUI", "Time", choice = ColumnNames(), selected = "", multiple = F)
    })
@@ -169,17 +170,21 @@ output$survOutcome <- renderUI({
     selectInput("survOutcomeUI", "Outcome", choice = ColumnNames(), selected = "", multiple = F)
 })
 
+})
+
 output$selectedCols <- DT::renderDataTable({ 
   datatable(data = parse.modal(), rownames = F,
 		options = list(dom = "Rlrtip", paging = F),
 		filter = 'none')
 }) 
 
+
 ###################
 # Knitr Report
 ###################
 output$knitDoc <- renderUI({
   #input$eval # i don't want it dependent on a button for upgrades...possibly for creation
+  input$DEadd
   return(isolate(HTML(knit2html(text = input$rmd, fragment.only = TRUE, quiet = TRUE))))
 })  
    

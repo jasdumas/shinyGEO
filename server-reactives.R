@@ -8,6 +8,8 @@
 values.edit <- reactiveValues(table = NULL, platformGeneColumn = NULL)
 
 reproducible <-reactiveValues(code = NULL, report = NULL)
+
+### functions to append/aggregate a new line to the aceEditor
 add.line <-function(line) {
     reproducible$code = paste(isolate(reproducible$code), line, sep = "\n")
 }
@@ -36,7 +38,7 @@ observeEvent(reproducible$code, {
  })
 
 observeEvent(reproducible$report, {
-  updateAceEditor(session, "rmd", reproducible$report, 
+     updateAceEditor(session, "rmd", reproducible$report, 
                   mode = "markdown", theme = "chrome")
 })
 
@@ -234,19 +236,6 @@ exprInput <- reactive({
   add.line(code)
   code = paste0("data.expr = exprs(data.series[[data.index]])")
   add.line(code)
-  exp <- paste0(
-    "### Expression Profiles Plot\n", 
-"This plot shows selected expression samples to determine if the chosen
-Gene Series contains samples that are statistically fair to compare.\n",
-    
-    "
-```{r}
-library(ggplot2)
-
-a <- ggplot(iris, aes(x=Sepal.Width, y=Sepal.Length))
-a + geom_point(position = 'jitter')
-```")
-  add.graph(exp) ## test
   ans = exprs(dataInput()[[pi]])
   return(ans)
 })
@@ -412,17 +401,18 @@ profiles <- reactive({
 # the user to only select unique columns (which they would already do)
 time <- reactive({
   if (TRACE) cat("In time reactive...\n")
-  isolate(input$survTimeUI)
+  #input$parseButton
+  input$survTimeUI
 })
 
 outcome <- reactive ({
   if (TRACE) cat("In outcome reactive...\n")
-  isolate(input$survOutcomeUI)
+  #input$parseButton # initial launch of "parse data" button, trial without isolate
+  input$survOutcomeUI
 })
 
 x <- reactive ({ # not seen in sidebar - changed through the gene/probe drop-downs above plot area
   if (TRACE) cat("In x reactive...\n")
-  #input$survXUI
   x = profiles()[selectedProbe(),]
 })
 
@@ -478,3 +468,26 @@ editSelectedCols <- reactive({
   return (values.edit$table)  
   
 }) # end of editSelectedCols() reactive
+
+##################
+# Append to Report
+##################
+observeEvent(input$DEadd, {
+  if (TRACE) cat("In report Append Observe...\n")
+
+  exp <- paste0(
+    "### Expression Profiles Plot\n", 
+    "This plot shows selected expression samples to determine if the chosen
+    Gene Series contains samples that are statistically fair to compare.\n",
+    
+    "
+    ```{r}
+    library(ggplot2)
+    
+    a <- ggplot(iris, aes(x=Sepal.Width, y=Sepal.Length))
+    a + geom_point(position = 'jitter')
+    
+    ```
+    ")
+  add.graph(exp)
+})

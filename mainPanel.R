@@ -88,6 +88,7 @@ mainPanel(
 #                                 bsCollapsePanel("Format Graph", style = "info",
  
                       actionButton("formatDEButton", "Format Graph"),
+                      actionButton("DEadd", "Append to Report"),
     
                       uiOutput("selectGroupsMessage"), 
                    plotOutput("plot"),
@@ -100,6 +101,7 @@ mainPanel(
 	           
              tabPanel("Survival Analysis",
                    uiOutput("SurvMessage"),
+                   actionButton("Survadd", "Append to Report"),
                    plotOutput("kmSurvival"))
         ),
 	navbarMenu("Reproducible Research", 
