@@ -170,7 +170,12 @@ output$survOutcome <- renderUI({
     selectInput("survOutcomeUI", "Outcome", choice = ColumnNames(), selected = "", multiple = F)
 })
 
-})
+# this prevents the resetting of the drop-down columns after the action is pressed on the surv modal
+updateSelectInput(session, "survTimeUI", label = "Time", choice = ColumnNames(), selected = input$survTimeUI )
+updateSelectInput(session, "survOutcomeUI", label = "Outcome", choice = ColumnNames(), selected = input$survOutcomeUI )
+
+
+}) # end of observe for time/outcome
 
 output$selectedCols <- DT::renderDataTable({ 
   datatable(data = parse.modal(), rownames = F,

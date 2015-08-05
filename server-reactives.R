@@ -435,14 +435,12 @@ profiles <- reactive({
 # the user to only select unique columns (which they would already do)
 time <- reactive({
   if (TRACE) cat("In time reactive...\n")
-  #input$parseButton
-  isolate(input$survTimeUI)
+  input$survTimeUI
 })
 
 outcome <- reactive ({
   if (TRACE) cat("In outcome reactive...\n")
-  #input$parseButton # initial launch of "parse data" button, trial without isolate
-  isolate(input$survOutcomeUI) # keeping for now
+ input$survOutcomeUI
 })
 
 x <- reactive ({ # not seen in sidebar - changed through the gene/probe drop-downs above plot area
