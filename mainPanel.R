@@ -108,12 +108,17 @@ mainPanel(
 	         tabPanel("Code", 
 	                  aceEditor("myEditor", value = "hi", mode="r", theme="chrome",readOnly=T )), 
 	         tabPanel("Report",
-	                  h2("Knitted Output"),
-	                  htmlOutput("knitDoc"),
-	                  #actionButton("eval", "Update"),
-	                  aceEditor("rmd", mode="markdown", value='bye',readOnly=T, height="300px") # make this not visible
+	                  #fluidRow( 
+	                    #column(2, 
+	                  h2("Reproducible Report for GEO-AWS"), htmlOutput("knitDoc"),
+	                          # ),
+	                    #column(10, 
+	                  aceEditor("rmd", mode="markdown", value='',readOnly=T, height="300px")
+	                           #) 
+	                   
 	                            
-	                    )),# end of tab report panel
+	                   # ) # fluid row
+	                  )), # end of tab report panel
 	         
           tabPanel("About",
             h3("Authors"),

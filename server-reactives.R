@@ -511,21 +511,82 @@ editSelectedCols <- reactive({
 # Append to Report
 ##################
 observeEvent(input$DEadd, {
-  if (TRACE) cat("In report Append Observe...\n")
+  if (TRACE) cat("In report Append Observe for Diff. Expression...\n")
 
-  exp <- paste0(
+  initialCode <- paste0(
     "### Expression Profiles Plot\n", 
-    "This plot shows selected expression samples to determine if the chosen
-    Gene Series contains samples that are statistically fair to compare.\n",
-    
+    "This plot visualizes selected (or if the samples are < 30 all of the samples) expression samples to determine if the chosen
+    Gene Series contains samples that are statistically fair to compare. This is a integral first step in decideding
+    whether or not to use the Gene Accession number for the Statisitcal analysis in this web application.\n",
     "
-    ```{r}
-    library(ggplot2)
+    ```{r, echo=FALSE}
     
-    a <- ggplot(iris, aes(x=Sepal.Width, y=Sepal.Length))
-    a + geom_point(position = 'jitter')
+    data.series = getGEO(GEO = \"", input$GSE, "\", AnnotGPL = FALSE, getGPL = FALSE)
+    data.platform = getGEO(\"", Platforms()[platformIndex()],  "\")
+    data.index = match(\"", Platforms()[platformIndex()], "\", sapply(data.series, annotation))
+    data.p = pData(data.series[[data.index]])
+    data.expr = exprs(data.series[[data.index]])
     
     ```
-    ")
+    ") # end of paste
+  add.graph(initialCode)
+  
+  exp <- paste0(
+    "
+    ```{r, echo=FALSE}
+    library(shiny)
+    x = \"", profiles(), "\"
+    if (is.null(x)) return(NULL)
+    n = ncol(x)
+    if (n > 30) {
+    s = sample(1:n, 30)
+    x = x[,s]
+    }
+
+    if (n > 30) {
+    title.detail = 'selected samples'
+    } else {
+    title.detail = 'samples'
+    }
+
+    if (\"",input$radio == 1, "\" | \"",input$radio == 2, "\") {
+     y.label = 'log2 Expression'       
+     } else {
+     y.label = 'Expression'
+     }
+    
+    par(mar=c(2+round(max(nchar(sampleNames( \"",dataInput(), "\")))/2),4,2,1)),
+    title <- paste(isolate(\"", input$GSE, "\"), '/', isolate(\"",input$platform, "\") , title.detail, sep ='') 
+    x1 = melt(x)
+    
+    new <- ggplot(x1, aes(as.factor(Var2), value)) + geom_boxplot(outlier.colour = 'green')
+    r = (new + labs(title = 'title', y = y.label, x = '')+ theme(axis.text.x = element_text(angle = 90, hjust = 1))) 
+    print(r)
+
+    ```
+    "
+    ) # end of paste
   add.graph(exp)
-})
+}) # end of observeEvent for DE
+
+## Survival Plot report button
+observeEvent(input$Survadd, {
+  if (TRACE) cat("In report Append Observe for Survival...\n")
+  
+  survCode <- paste0(
+    "### Survival Analysis Plot", 
+    
+    "
+    ```{r, KM.png, echo=FALSE}
+    summary(iris)
+    library(survival)
+    data(lung)
+    lung.surv <- survfit(Surv(time,status) ~ 1, data = lung)
+    print(ggsurv(lung.surv))
+
+    ```
+    "
+    ) # end of paste
+  add.graph(survCode)
+  
+}) # end of observeEvent
