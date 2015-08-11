@@ -528,14 +528,30 @@ observeEvent(input$DEadd, {
     data.expr = exprs(data.series[[data.index]])
     
     ```
-    ") # end of paste
+    ") # end of paste of intial code download
   add.graph(initialCode)
   
   exp <- paste0(
     "
     ```{r, echo=FALSE}
     library(shiny)
-    x = \"", profiles(), "\"
+    library(Biobase)
+    
+    ex <- data.expr
+    if (is.null(ex)) return(NULL)
+    qx <- as.numeric(quantile(ex, c(0., 0.25, 0.5, 0.75, 0.99, 1.0), na.rm=T))
+    LogC <- (qx[5] > 100) ||
+    (qx[6]-qx[1] > 50 && qx[2] > 0) ||
+    (qx[2] > 0 && qx[2] < 1 && qx[4] > 1 && qx[4] < 2)
+    if (LogC & \"",input$radio == 1, "\") { 
+    ex[which(ex <= 0)] <- NaN
+    return (ex <- log2(ex)) }    
+    
+    if (\"",input$radio == 2, "\") {
+      return (ex <- log2(data.expr))   # forced Yes
+    } else { return (ex <- data.expr)  # No
+            }
+    x = ex
     if (is.null(x)) return(NULL)
     n = ncol(x)
     if (n > 30) {
@@ -550,26 +566,31 @@ observeEvent(input$DEadd, {
     }
 
     if (\"",input$radio == 1, "\" | \"",input$radio == 2, "\") {
-     y.label = 'log2 Expression'       
-     } else {
-     y.label = 'Expression'
-     }
+    y.label = 'log2 Expression'       
+    } else {
+    y.label = 'Expression'
+    }
     
-    par(mar=c(2+round(max(nchar(sampleNames( \"",dataInput(), "\")))/2),4,2,1)),
+    par(mar=c(2+round(max(nchar(sampleNames( \"",input$GSE, "\")))/2),4,2,1)),
     title <- paste(isolate(\"", input$GSE, "\"), '/', isolate(\"",input$platform, "\") , title.detail, sep ='') 
     x1 = melt(x)
-    
     new <- ggplot(x1, aes(as.factor(Var2), value)) + geom_boxplot(outlier.colour = 'green')
-    r = (new + labs(title = 'title', y = y.label, x = '')+ theme(axis.text.x = element_text(angle = 90, hjust = 1))) 
+    r = (new + labs(title = title, y = y.label, x = '') + 
+    theme(axis.text.x = element_text(angle = 90, hjust = 1))) 
     print(r)
 
     ```
     "
     ) # end of paste
   add.graph(exp)
+  
+# add code for Differential Expression Plot
+  
 }) # end of observeEvent for DE
 
-## Survival Plot report button
+##################################
+## Survival Plot Append to report 
+#################################
 observeEvent(input$Survadd, {
   if (TRACE) cat("In report Append Observe for Survival...\n")
   
