@@ -4,14 +4,14 @@ The Gene Expression Omnibus Analysis with Shiny (Project Name: GEO-AWS) is a web
 
 ## Installation
 1. Fork a copy!
-
 2. Clone to your desktop
-3. if you don't have these packages already, put the following into your [RStudio](http://www.rstudio.com/) console `install.packages(c("DT", "shiny", "reshape2", "survival", "shinyBS", "GGally", "ggplot2", "shinyAce"))`
+3. if you don't have these packages already, put the following into your [RStudio](http://www.rstudio.com/) console `install.packages(c("DT", "shiny", "reshape2", "survival", "shinyBS", "GGally", "ggplot2", "shinyAce", "knitr"))`
   4.  Bioconductor package are downloaded differently. Place the following into the console
   `source("http://bioconductor.org/biocLite.R")`                                                                       
     `biocLite(c("GEOquery", "Biobase", "affy", "limma"))`
 
-5. In the console `library(shiny)`then `runApp("GEO-AWS")`
+5. In the console `library(shiny)` then `runApp("GEO-AWS")`
+6. Feel free to test out the tool functionality by entering the GEO Accession number: [GSE19915](http://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE19915) which includes survival characterstics to generate Kaplan-Meier curves under the Analyses tab menu.
 
 
 ## Find out more
