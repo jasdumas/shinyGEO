@@ -194,4 +194,13 @@ output$knitDoc <- renderUI({
   #isolate(HTML(knit2html(text = input$rmd, fragment.only = TRUE, quiet = TRUE))) # trial without return 
 })  
    
-  
+### Download knitr report ###
+output$downloadData <- downloadHandler(
+  filename = function() { 
+    paste(date(), '.csv', sep='') 
+  },
+  content = function(file) {
+    write.csv(dataInput(), file)
+  }
+)
+
