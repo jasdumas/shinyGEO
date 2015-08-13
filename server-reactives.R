@@ -507,17 +507,14 @@ editSelectedCols <- reactive({
   
 }) # end of editSelectedCols() reactive
 
-##################
-# Append to Report
-##################
-observeEvent(input$DEadd, {
-  if (TRACE) cat("In report Append Observe for Diff. Expression...\n")
+######################################
+# Expression Profiles Append to Report
+######################################
+observeEvent(input$exprAdd, {
+  if (TRACE) cat("In report Append for expression profiles...\n")
 
   initialCode <- paste0(
     "### Expression Profiles Plot\n", 
-    "This plot visualizes selected (or if the samples are < 30 all of the samples) expression samples to determine if the chosen
-    Gene Series contains samples that are statistically fair to compare. This is a integral first step in decideding
-    whether or not to use the Gene Accession number for the Statisitcal analysis in this web application.\n",
     "
     ```{r, echo=FALSE}
     
@@ -533,9 +530,10 @@ observeEvent(input$DEadd, {
   
   exp <- paste0(
     "
-    ```{r, echo=FALSE}
+    ```{r, expr.png, echo=FALSE}
     library(shiny)
     library(Biobase)
+    library(ggplot2)
     
     ex <- data.expr
     if (is.null(ex)) return(NULL)
@@ -571,7 +569,7 @@ observeEvent(input$DEadd, {
     y.label = 'Expression'
     }
     
-    par(mar=c(2+round(max(nchar(sampleNames( \"",input$GSE, "\")))/2),4,2,1)),
+    #par(mar=c(2+round(max(nchar(sampleNames( \"",input$GSE, "\")))/2),4,2,1))
     title <- paste(isolate(\"", input$GSE, "\"), '/', isolate(\"",input$platform, "\") , title.detail, sep ='') 
     x1 = melt(x)
     new <- ggplot(x1, aes(as.factor(Var2), value)) + geom_boxplot(outlier.colour = 'green')
@@ -584,9 +582,22 @@ observeEvent(input$DEadd, {
     ) # end of paste
   add.graph(exp)
   
-# add code for Differential Expression Plot
+}) # end of observeEvent for expression profiles plot 
+
+##################################
+## Diff. Expression Append to report 
+#################################
+observeEvent(input$DEadd, {
+  if (TRACE) cat("In report append DE...\n")
+  
+  fromServer <- paste0(
+    "### Differential Expression Plot"
+    )
+  
+  add.graph(fromServer)
   
 }) # end of observeEvent for DE
+
 
 ##################################
 ## Survival Plot Append to report 
