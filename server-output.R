@@ -54,6 +54,9 @@ selectInput('selectedColumn', 'Selected Column',
   
 })
 
+
+#output$test2 <- renderText(paste0("row = ", input$clinicalData_rows_selected))
+
 ####################################################################
 ## renders drop-down menus (server-side) for clinical group selection
 ####################################################################
@@ -78,33 +81,58 @@ observe({  # observe needed since data object is a reactive function
                                                                  selection = 'single') 
     
   })
+
   
   dd = clinicalDataSummary()
   action = dataTableAjax(session, data=dd, rownames = TRUE) # for the row_output as characters
   
 })
 
-######################################################################
-## displays the full Clinical Data Table - currently with multi-select
-#####################################################################
-observe({
-output$clinicalData <- DT::renderDataTable({ datatable(editClinicalTable(), rownames = TRUE,
-                                                   extensions = 'ColReorder',
-                                                   options = list(dom = 'Rlfrtip', ajax = list(url = action1), paging = F, 
-                                                                  columnDefs = list(list(
-                                                                    targets = 1: length(editClinicalTable()), # applies to the entire table
-                                                                    render = JS(
-                                                                      "function(data, type, row, meta) {",
-                                                                      "return type === 'display' && data.length > 15 ?",
-                                                                      "'<span title=\"' + data + '\">' + data.substr(0, 15) + '...</span>' : data;",
-                                                                      "}")
-                                                                  ))), 
-                                                   filter = 'top',
-                                                   selection = 'multiple')
+###########################################################################################
+## Reactive for displaying the dataTable, since same display will be used multiple times
+##########################################################################################
+displayDataTable <-reactive({
+  DT::renderDataTable({ datatable(editClinicalTable(), rownames = TRUE,
+                                                      extensions = 'ColReorder',
+                                                      options = list(dom = 'Rlfrtip', #ajax = list(url = action1), 
+                                                                     paging = F, 
+                                                                     searchHighlight = TRUE,
+                                                                     columnDefs = list(list(
+                                                                       targets = 1: ncol(editClinicalTable()), # applies to the entire table
+                                                                       render = JS(
+                                                                         "function(data, type, row, meta) {",
+                                                                         "return type == 'display' && data.length > 20 ?",
+                                                                         "'<span title=\"' + data + '\">' + data.substr(0, 20) + '...</span>' : data;",
+                                                                         "}")
+                                                                     ))), 
+                                                      select = list(target = "column"),
+                                                      filter = 'none')
   })
+})
 
+
+##############################################
+# set output variables to display the table
+##############################################
+observe({
+
+output$clinicalDataFAKE <- 
+  DT::renderDataTable({ datatable(iris, rownames = TRUE,
+                                  options = list(searchHighlight=TRUE),
+                                  select = list(target = "column"),
+                                  
+                                  filter = "top"
+                                 )
+                    })
+
+
+output$clinicalData <- displayDataTable()
+output$clinicalDataForSurvival <- displayDataTable()
+
+#output$test <- renderText(paste0("col = ", colnames(editClinicalTable())[input$clinicalData_columns_selected]))
+                          
 di = clinicalInput()
-action1 = dataTableAjax(session, data=di, rownames = TRUE)
+#action1 = dataTableAjax(session, data=di, rownames = TRUE)
 
 })
 
@@ -159,20 +187,37 @@ output$exProfiles <- renderPlot({
 ) 
 
 ####################
-# Survival Analysis 
 ####################
 observe({
+
+  val1 = input$survTimeUI
+  val2 = input$survOutcomeUI
+    
+colNames = colnames(editClinicalTable())
+
+if (!is.null(colNames) & !is.null(val1) & !is.null(val2)) {
+  vals = colNames[input$clinicalDataForSurvival_columns_selected]
+  cat("vals = ", vals, "\n")
+  if (length(vals) == 1) {
+    val1 = vals[1]
+    val2 = NULL
+  } else if (length(vals) == 2) {
+    val1 = vals[1]
+    val2 = vals[2]
+  }
+}
+
 output$survTime <- renderUI({
-     selectInput("survTimeUI", "Time", choice = ColumnNames(), selected = "", multiple = F)
+     selectInput("survTimeUI", "Time", choice = ColumnNames(), selected = val1, multiple = F)
    })
 
 output$survOutcome <- renderUI({
-    selectInput("survOutcomeUI", "Outcome", choice = ColumnNames(), selected = "", multiple = F)
+    selectInput("survOutcomeUI", "Outcome", choice = ColumnNames(), val2, multiple = F)
 })
 
 # this prevents the resetting of the drop-down columns after the action is pressed on the surv modal
-updateSelectInput(session, "survTimeUI", label = "Time", choice = ColumnNames(), selected = input$survTimeUI )
-updateSelectInput(session, "survOutcomeUI", label = "Outcome", choice = ColumnNames(), selected = input$survOutcomeUI )
+#updateSelectInput(session, "survTimeUI", label = "Time", choice = ColumnNames(), selected = input$survTimeUI )
+#updateSelectInput(session, "survOutcomeUI", label = "Outcome", choice = ColumnNames(), selected = input$survOutcomeUI )
 
 
 }) # end of observe for time/outcome

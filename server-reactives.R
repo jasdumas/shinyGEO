@@ -2,6 +2,7 @@
 ## Reactives
 #############################################################################
 
+data(iris)
 ###################################################
 # Edit table reactiveValues()
 ###################################################
@@ -396,7 +397,8 @@ editClinicalTable <- reactive({
     newClinical[g.total,column.num] = replace.str 
     cat("replacing ", find.str, " with ", replace.str)
   }
-    
+
+  cat("replacing table..\n")    
   values.edit$table = newClinical
   return (values.edit$table)
   
@@ -611,16 +613,46 @@ observeEvent(input$Survadd, {
     "### Survival Analysis Plot", 
     
     "
-    ```{r, KM.png, echo=FALSE}
+    ```{r, echo=FALSE}
     summary(iris)
     library(survival)
-    data(lung)
-    lung.surv <- survfit(Surv(time,status) ~ 1, data = lung)
-    print(ggsurv(lung.surv))
+    plot(iris$Sepal.Length, iris$Sepal.Width)
+    #data(lung)
+    #lung.surv <- survfit(Surv(time,status) ~ 1, data = lung)
+    #print(ggsurv(lung.surv))
 
     ```
     "
     ) # end of paste
-  add.graph(survCode)
+
+  code1 = "### Survival Analysis Plot"
+  code2 =   "
+    ```{r, echo=FALSE}
+    summary(iris)
+    plot(1:10)
+    library(survival)
+    #plot(iris$Sepal.Length, iris$Sepal.Width)
+    #data(lung)
+    #lung.surv <- survfit(Surv(time,status) ~ 1, data = lung)
+    #print(ggsurv(lung.surv))
+    ```"
+  
+  #add.graph(code1)
+# cat("adding: ", code2, "\n")
+#  add.graph(code2)
+
+  code = "
+  ```{r,echo=TRUE}
+  summary(iris)
+  plot(iris$Sepal.Length, iris$Sepal.Width)
+  #plot(1:10, type = 'l', col = \"red\")
+  library(survival)
+    data(lung)
+    lung.surv <- survfit(Surv(time,status) ~ 1, data = lung)
+    print(ggsurv(lung.surv))
+ ```"
+  add.graph(code)
+
+#  add.graph(survCode)
   
 }) # end of observeEvent
