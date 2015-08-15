@@ -10,6 +10,8 @@ displayPlatform <-function() {
 output$displayPlatform <- renderText(displayPlatform())
 outputOptions(output, 'displayPlatform', suspendWhenHidden=FALSE)
 
+
+
 output$selectGenes <- renderUI({
   selectInput("selectGenes", label = "Select Gene",
               choice = geneNames(), multiple = F,
@@ -24,20 +26,6 @@ output$selectProbes <- renderUI({
 
 output$platform <- renderUI({
   selectInput('platform', 'Platform', Platforms(), multiple = F, selectize = FALSE)        
-})
-
-
-#### Survival Analysis duplicates of Gene and Probe selection
-output$selectGenesSurv <- renderUI({
-  selectInput("selectGenesSurv", label = "Select Gene",
-              choice = geneNames(), multiple = F,
-              selected = 0)
-})
-
-output$selectProbesSurv <- renderUI({
-  selectInput("selectProbesSurv", label = "Select Probe", 
-              choices = probeNames(), multiple = F,
-              selected = 0)
 })
 
 
@@ -95,6 +83,8 @@ displayDataTable <-reactive({
   DT::renderDataTable({ datatable(editClinicalTable(), rownames = TRUE,
                                                       extensions = 'ColReorder',
                                                       options = list(dom = 'Rlfrtip', #ajax = list(url = action1), 
+                                                                     scrollX = T,
+                                                                     scrollY = "400px",
                                                                      paging = F, 
                                                                      searchHighlight = TRUE,
                                                                      columnDefs = list(list(

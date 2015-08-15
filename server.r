@@ -74,7 +74,7 @@ shinyServer(function(input, output, session){
   
   observe({
     if (!(input$parseEnter)) {  
-      output$SurvMessage <-renderUI({HTML("<h1>Please Choose The Columns for Survival Analysis</h1>")})
+      output$SurvMessage <-renderUI({HTML("<h3>Please Choose The Columns for Survival Analysis</h3>")})
       output$kmSurvival <-renderPlot({NULL})
     } else  {
       output$SurvMessage <-renderText({""})

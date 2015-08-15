@@ -13,11 +13,11 @@ source("html.R")
    ### ONLY DISPLAY REST AFTER PLATFORM IS SELECTED 
    #######################################################################
       
-   conditionalPanel(condition = "input.tabs == 'Report'", 
-                    tags$div(HTML("<hr style = \"background-color: red; height:4px\">")),
-                    downloadButton('downloadData', 'Download Report')
-   ), # end of report conditional panel
-   
+#    conditionalPanel(condition = "input.tabs == 'Report'", 
+#                     tags$div(HTML("<hr style = \"background-color: red; height:4px\">")),
+#                     downloadButton('downloadData', 'Download Report')
+#    ), # end of report conditional panel
+#    
    ############################################################
    # Navigation Bar
    ############################################################
@@ -52,52 +52,79 @@ source("html.R")
                 div(style = "position: relative; top: -20px", HTML("<hr style = \"background-color: black; height:3px;\">")),
                 
                 bsAlert("alert"),
-                conditionalPanel(condition="$('html').hasClass('shiny-busy')",                   
+                conditionalPanel(condition="$('html').hasClass('shiny-busy')",  
+                                 div(style = "position:center; width:100%; height:100; text-align:center",
                                  img(src="PleaseWait.gif", style = "width:50%")
+                                 )
                 )
-                
-                
                 
               ), # end navbarPage header 
               
               ############################################################
               # Expression Profiles
               ############################################################
-              tabPanel("Expression Profiles", hr(), helpText("Determine if these samples are fair to compare by observing the graphical appearance of the stripchart and the boxplot values"), 
-                       radioButtons("radio", label = "Apply log transformation to the data", 
+              ### add a contiional panel that only show this once loaded
+              tabPanel("Expression Profiles", icon =icon("bars"),
+                       conditionalPanel(condition = "!input.platform == ''",
+                       helpText("Determine if these samples are fair to compare by observing the graphical appearance of the stripchart and the boxplot values."), 
+                       radioButtons("radio", label = "Select a method of log transformation to apply to the data", 
                                     choices = list("Auto-Detect" = 1, "Yes" = 2, "No" = 3), 
-                                    selected = 1), actionButton("exprAdd", "Append to Report"),
+                                    selected = 1, inline = TRUE), actionButton("exprAdd", "Append to Report"),
                        plotOutput("exProfiles") 
-              ),
+             ) 
+             
+             ),
               ############################################################
               # Clinical Data
               ############################################################
-              navbarMenu("Clinical Data", 
-                         tabPanel("Clinical Data Summary", hr(), DT::dataTableOutput("clinicalDataSummary")),
-                         tabPanel("Full Data Table", hr(), 
+              navbarMenu("Clinical Data", icon = icon("table"), 
+                         tabPanel("Clinical Data Summary", DT::dataTableOutput("clinicalDataSummary")),
+                         tabPanel("Full Data Table",  
                                   actionButton("tabBut", "Edit Data Table"),
-                                  DT::dataTableOutput("clinicalData"))
+                                  DT::dataTableOutput("clinicalData"), 
+                                  shinyBS::bsModal("modalExample", "Edit Data Table", "tabBut", size = "small",
+                                                   uiOutput("dropModal"),
+                                                   textInput("find", label = "Find", value = ""),
+                                                   checkboxInput("checkbox", label = "Exact Match", value = FALSE),
+                                                   textInput("replace", label = "Replace", value = ""),
+                                                   checkboxInput("survCheckbox", label = "Partial Replace", value = FALSE),  ### for survival analysis
+                                                   actionButton("Enter", label = "Submit")))
               ),
               
               ############################################################
               # Analyses
               ############################################################
-              navbarMenu("Analyses",
-                         conditionalPanel(condition=1, #"input.tabs == 'Differential Expression Analysis' | input.tabs == 'Survival Analysis'",                   
+              navbarMenu("Analyses", icon = icon("bar-chart-o"),
+                         conditionalPanel(condition= "!input.platform == ''", # only display the gene/probe selection after GSE download
+                                          #condition=1
+                                          #"input.tabs == 'Differential Expression Analysis' | input.tabs == 'Survival Analysis'",                   
                                           #bsCollapse(id = "collapseGene", 
                                           #       bsCollapsePanel("Gene/Probe Selection",
+                                          
+                           conditionalPanel(condition = "input.tabs == 'Differential Expression Analysis' | input.tabs == 'Survival Analysis'", 
                                           
                                           div(style = "display:inline-block; width:30%",
                                               uiOutput('selectGenes')
                                           ),
                                           div(style = "display:inline-block; width:30%",
                                               uiOutput('selectProbes')
-                                          )
+                                          ) 
                                           
+                                          ),
+                                         div(style = "display:inline-block; width:30%", 
+                            conditionalPanel(condition = "input.tabs == 'Report'", 
+                                              downloadButton('downloadData', 'Download Report')
+                                          )
+                            )
                          ),
-                         tabPanel("Differential Expression Analysis",      
-                                  uiOutput('selectedColumn'),
-                                  uiOutput('selectedGroups'), 
+                         tabPanel("Differential Expression Analysis",  
+                                  div(style = "display:inline-block; width:30%",
+                                      uiOutput('selectedColumn')
+                                      ),
+                                  
+                                  div(style = "display:inline-block; width:30%",
+                                      uiOutput('selectedGroups')
+                                     ),
                                   
                                   actionButton("formatDEButton", "Format Graph"),
                                   actionButton("DEadd", "Append to Report"),
@@ -126,23 +153,16 @@ source("html.R")
                                   ),
                                   
                                   
-                                  shinyBS::bsModal("modalExample", "Edit Data Table", "tabBut", size = "small",
-                                                   uiOutput("dropModal"),
-                                                   textInput("find", label = "Find", value = ""),
-                                                   checkboxInput("checkbox", label = "Exact Match", value = FALSE),
-                                                   textInput("replace", label = "Replace", value = ""),
-                                                   checkboxInput("survCheckbox", label = "Partial Replace", value = FALSE),  ### for survival analysis
-                                                   actionButton("Enter", label = "Submit")),
                                   
+                                  tags$div(HTML("<hr style = \"background-color: red; height:4px\">")), 
                                   uiOutput("SurvMessage"),
                                   actionButton("Survadd", "Append to Report"),
-                                  tags$div(HTML("<hr style = \"background-color: red; height:4px\">")),   
                                   shinyBS::bsModal("parseModal", "Selected Survival Analysis Parameters", "parseButton", size = "large",
                                                            fluidRow(
                                                              column(4, textInput("survfind", label = "Find", value = "")),
                                                              column(4, textInput("survreplace", label = "Replace", value = "")),
                                                              column(4, actionButton("parseEnter", label = "Submit"), 
-                                                                    actionButton("undo", label="Revert Changes"))
+                                                                    actionButton("undo", label="Revert Changes")) # not valid as a revert yet
                                                            ),
                                                            DT::dataTableOutput("selectedCols")
                                                            #print("in parseModal window...")
@@ -152,35 +172,48 @@ source("html.R")
                         
                          
               ),
-              navbarMenu("Reproducible Research", 
+              navbarMenu("Reproducible Research", icon = icon("book"),
                          tabPanel("Code", 
-                                  aceEditor("myEditor", value = "", mode="r", theme="chrome",readOnly=T )), 
+                                  aceEditor("myEditor", value = "", mode="r", theme="chrome",readOnly=T, height ="500px" )), 
                          tabPanel("Report",
+                                  
                                   fluidRow( 
-                                    column(2, 
-                                           h4("Reproducible Report for GEO-AWS"), htmlOutput("knitDoc") #,
+                                    column(8, 
+                                           h3("Reproducible Report for GEO-AWS"), htmlOutput("knitDoc") #,
                                     ),
-                                    column(10, 
-                                           aceEditor("rmd", mode="markdown", value='',readOnly=T, height="400px")
+                                    column(4, h3("Ace Editor"),
+                                           aceEditor("rmd", mode="markdown", value='',readOnly=T, height="500px")
                                     ) 
                                     
                                   ) # fluid row
                          )), # end of tab report panel
               
-              tabPanel("About",
-                       h3("Gene Expression Omnibus Analysis with Shiny (GEO-AWS)"), 
-                       p("Gene Expression Omnibus (GEO) is a public functional genomics data repository supporting MIAME-compliant data submissions.
-                         Array- and sequence-based data are accepted. Tools are provided to help users query and download 
-                         experiments and curated gene expression profiles."),
-                       p("1) Choose your GEO Series (GSExxx) number which is an original submitter-supplied record that summarizes a study.",
-                         a("Repository Series Browser", href="http://www.ncbi.nlm.nih.gov/geo/browse/?view=series")),
-                       p("2) If necessary, select the Platform you would like to analyze"),
-                       p("3) Select the groups you would like to compare"),
+              tabPanel("About", icon = icon("info-circle"),
+                       h3("Directions on Usage"),
+                       #p("Gene Expression Omnibus (GEO) is a public functional genomics data repository supporting MIAME-compliant data submissions.
+                      #   Array- and sequence-based data are accepted. Tools are provided to help users query and download 
+                       #  experiments and curated gene expression profiles."),
+                      tags$ol(
+                        tags$li("Choose your GEO Accession Number (GSExxx) which is an original submitter-supplied record that summarizes a study from the ", 
+                                a("GEO Repository", href =" http://www.ncbi.nlm.nih.gov/geo/browse/?view=series")),
+                        tags$li("Select the Platform"),
+                        tags$li("View Expression Profiles and Determine Data Transfomation Method"),
+                        tags$li("View Clinical/Phenotypic Data and Select a Characteristic Column"), 
+                        tags$li("Select Gene and Probe"), 
+                        tags$li("Select Groups from the Selected Characteristic Column"), 
+                        tags$li("Format Differential Expression Analysis Plot"), 
+                        tags$li("Select Characteristic Column that contains info on 'Time' to Event"),
+                        tags$li("Select Characteristic Column that contains info on 'Outcome' at Event"),
+                        tags$li("Format 'Time' and 'Outcome' Columns"), 
+                        tags$li("View Survival Analysis Kaplam-Meier Plot"), 
+                        tags$li("Append Desired Plots to the Reporducible Report")
+                      ),
+                    
                        hr(),  
                        
                        h3("Authors"),
                        HTML("<span style = \"font-weight: bold\"> Jasmine Dumas </span>"),
-                       HTML("is a MSc. Graduate Student in the Predictive Analytics program at DePaul University.
+                       HTML("is a MSc. Graduate Student in the Predictive Analytics program at DePaul University (Chicago, IL).
                             Jasmine has a BSE in Biomedical Engineering from the University of Hartford
                             and a Professional Certificate in Medical Product Develpment from UCI Extension."), 
                        a("Github Profile", href ="https://github.com/jasdumas"), HTML("<span class= \"label label-primary\">Package Maintainer</span>"),
@@ -197,7 +230,7 @@ source("html.R")
                        HTML("<span style = \"font-weight: bold\"> Ken-Heng Henry Liao </span>"),
                        HTML("is currently an undergrad student in Computer Science at Eastern Connecticut State University (Wilimantic, CT). He also has a BS in Mathematics. 
                             His previous and continuing study includes automatic summarization and its related information management. In assistance to Dr. Dancik's bioinformatic research, 
-                            he hopes to help create a public tool that enable researchers to efficiently analyze genetic data; and at some point, a genious will cure cancer with this tool."), HTML("<span class= \"label label-info\">Contributor</span>"),
+                            he hopes to help create a public tool that enable researchers to efficiently analyze genetic data; and at some point, a genius will cure cancer with this tool."), HTML("<span class= \"label label-info\">Contributor</span>"),
                        br(), br(),
                        
                        HTML("<span style = \"font-weight: bold\"> Branden A. Spratt </span>"),
@@ -210,11 +243,12 @@ source("html.R")
             He has also earned his Craftsman for working Electrical and Enviromental systems on aircraft, as well as having an A.S. in Computer 
             Technology from Manchester Community College."), HTML("<span class= \"label label-info\">Contributor</span>")
                        )
-                       ), # end NavBar Page
+                       ) #, # end NavBar Page
    
-   conditionalPanel(condition="$('html').hasClass('shiny-busy')",                    
-                    tags$div(br(), h1("Processing, please wait...", align = "center"),id="loadmessage")
-   )
+# duplicate please wait message not needed
+   #conditionalPanel(condition="$('html').hasClass('shiny-busy')",                    
+    #                tags$div(br(), h1("Processing, please wait...", align = "center"),id="loadmessage")
+   #)
   
   
    ) # end fluidPage and shinyUI
