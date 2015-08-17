@@ -74,22 +74,6 @@ source("html.R")
              ) 
              
              ),
-              ############################################################
-              # Clinical Data
-              ############################################################
-              navbarMenu("Clinical Data", icon = icon("table"), 
-                         tabPanel("Clinical Data Summary", DT::dataTableOutput("clinicalDataSummary")),
-                         tabPanel("Full Data Table",  
-                                  actionButton("tabBut", "Edit Data Table"),
-                                  DT::dataTableOutput("clinicalData"), 
-                                  shinyBS::bsModal("modalExample", "Edit Data Table", "tabBut", size = "small",
-                                                   uiOutput("dropModal"),
-                                                   textInput("find", label = "Find", value = ""),
-                                                   checkboxInput("checkbox", label = "Exact Match", value = FALSE),
-                                                   textInput("replace", label = "Replace", value = ""),
-                                                   checkboxInput("survCheckbox", label = "Partial Replace", value = FALSE),  ### for survival analysis
-                                                   actionButton("Enter", label = "Submit")))
-              ),
               
               ############################################################
               # Analyses
@@ -102,15 +86,19 @@ source("html.R")
                                           #       bsCollapsePanel("Gene/Probe Selection",
                                           
                            conditionalPanel(condition = "input.tabs == 'Differential Expression Analysis' | input.tabs == 'Survival Analysis'", 
-                                          
-                                          div(style = "display:inline-block; width:30%",
-                                              uiOutput('selectGenes')
-                                          ),
-                                          div(style = "display:inline-block; width:30%",
-                                              uiOutput('selectProbes')
-                                          ) 
-                                          
-                                          ),
+                                            
+                                            bsCollapse(id = "GeneSelection", open = "Select a Gene and Probe",
+                                                       bsCollapsePanel("Select a Gene and Probe",
+                                                                       div(style = "display:inline-block; width:30%",
+                                                                           uiOutput('selectGenes')
+                                                                       ),
+                                                                       div(style = "display:inline-block; width:30%",
+                                                                           uiOutput('selectProbes')
+                                                                       )
+                                                       )
+                                            )
+                                            ),
+                                        
                                          div(style = "display:inline-block; width:30%", 
                             conditionalPanel(condition = "input.tabs == 'Report'", 
                                               downloadButton('downloadData', 'Download Report')
@@ -118,13 +106,25 @@ source("html.R")
                             )
                          ),
                          tabPanel("Differential Expression Analysis",  
-                                  div(style = "display:inline-block; width:30%",
-                                      uiOutput('selectedColumn')
-                                      ),
+                                                                   
+                                  #div(style = "display:inline-block; width:10%",
+                                  #    uiOutput('selectedColumn', inline = TRUE)
+                                  #),
                                   
-                                  div(style = "display:inline-block; width:30%",
-                                      uiOutput('selectedGroups')
-                                     ),
+                                  #div(style = "display:inline-block; width:70%",
+                                  #    uiOutput('selectedGroups', inline = TRUE)
+                                  #),
+                                  
+                                  uiOutput("selectedColumn", container = div, style = "display:inline-block; width: 20%"),
+                                  uiOutput("selectedGroups", container = div, style = "display:inline-block; width: 75%"),
+                                  
+                                  bsCollapse(id = "DiffExpDataTable",
+                                             bsCollapsePanel("View clinical data table",
+                                                             DT::dataTableOutput("clinicalDataForDiffExp")
+                                             )
+                                  ),
+                                  
+                                  
                                   
                                   actionButton("formatDEButton", "Format Graph"),
                                   actionButton("DEadd", "Append to Report"),
@@ -172,6 +172,28 @@ source("html.R")
                         
                          
               ),
+             
+             
+             ############################################################
+             # Clinical Data
+             ############################################################
+             navbarMenu("Clinical Data", icon = icon("table"), 
+                        tabPanel("Clinical Data Summary", DT::dataTableOutput("clinicalDataSummary")),
+                        tabPanel("Full Data Table",  
+                                 actionButton("tabBut", "Edit Data Table"),
+                                 DT::dataTableOutput("clinicalData"), 
+                                 shinyBS::bsModal("modalExample", "Edit Data Table", "tabBut", size = "small",
+                                                  uiOutput("dropModal"),
+                                                  textInput("find", label = "Find", value = ""),
+                                                  checkboxInput("checkbox", label = "Exact Match", value = FALSE),
+                                                  textInput("replace", label = "Replace", value = ""),
+                                                  checkboxInput("survCheckbox", label = "Partial Replace", value = FALSE),  ### for survival analysis
+                                                  actionButton("Enter", label = "Submit")))
+             ),
+             
+             ############################################################
+             # Reproducible Research
+             ############################################################
               navbarMenu("Reproducible Research", icon = icon("book"),
                          tabPanel("Code", 
                                   aceEditor("myEditor", value = "", mode="r", theme="chrome",readOnly=T, height ="500px" )), 
