@@ -227,7 +227,7 @@ source("html.R")
                         tags$li("Select Characteristic Column that contains info on 'Time' to Event"),
                         tags$li("Select Characteristic Column that contains info on 'Outcome' at Event"),
                         tags$li("Format 'Time' and 'Outcome' Columns"), 
-                        tags$li("View Survival Analysis Kaplam-Meier Plot"), 
+                        tags$li("View Survival Analysis Kaplan-Meier Plot"), 
                         tags$li("Append Desired Plots to the Reporducible Report")
                       ),
                     

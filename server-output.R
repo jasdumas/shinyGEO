@@ -87,7 +87,7 @@ displayDataTable <-reactive({
   DT::renderDataTable({ datatable(editClinicalTable(), rownames = TRUE,
                                                       extensions = 'ColReorder',
                                                       options = list(dom = 'Rlfrtip', #ajax = list(url = action1), 
-                                                                 #    scrollX = TRUE,
+                                                                    scrollX = "auto",
                                                                      scrollY = "400px",
                                                                      paging = F, 
                                                                      searchHighlight = TRUE,
