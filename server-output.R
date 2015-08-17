@@ -11,7 +11,6 @@ output$displayPlatform <- renderText(displayPlatform())
 outputOptions(output, 'displayPlatform', suspendWhenHidden=FALSE)
 
 
-
 output$selectGenes <- renderUI({
   selectInput("selectGenes", label = "Select Gene",
               choice = geneNames(), multiple = F,
@@ -32,16 +31,19 @@ output$platform <- renderUI({
 ################################################
 ### Renders drop-down menu for variables/columns 
 ################################################  
-output$selectedColumn <- renderUI({
+observe({
+  colNames = colnames(editClinicalTable())
+  val = colNames[input$clinicalDataForDiffExp_columns_selected]
   
-# show possible choices (column names)
-selectInput('selectedColumn', 'Selected Column', 
-            choices = ColumnNames(),
-            selected = input$clinicalDataSummary_row_last_clicked, multiple = F, selectize = FALSE
+  cat("selected column  = ", val, "\n")
+  output$selectedColumn <- renderUI({  
+      # show possible choices (column names)
+      selectInput('selectedColumn', 'Selected Column', 
+            choices = ColumnNames(), #width='20%',
+            selected = val, multiple = F, selectize = FALSE
     )
-  
+  })
 })
-
 
 #output$test2 <- renderText(paste0("row = ", input$clinicalData_rows_selected))
 
@@ -52,6 +54,7 @@ output$selectedGroups <- renderUI({
   selectInput('Group1Values','Select Groups for Comparison', 
               choices = groupsForSelectedColumn(), multiple=TRUE,
               selected = defaultGroupsForSelectedColumn(),
+              width='80%',
               selectize = TRUE
               
   )
@@ -80,10 +83,11 @@ observe({  # observe needed since data object is a reactive function
 ## Reactive for displaying the dataTable, since same display will be used multiple times
 ##########################################################################################
 displayDataTable <-reactive({
+  
   DT::renderDataTable({ datatable(editClinicalTable(), rownames = TRUE,
                                                       extensions = 'ColReorder',
                                                       options = list(dom = 'Rlfrtip', #ajax = list(url = action1), 
-                                                                     scrollX = T,
+                                                                 #    scrollX = TRUE,
                                                                      scrollY = "400px",
                                                                      paging = F, 
                                                                      searchHighlight = TRUE,
@@ -115,11 +119,11 @@ output$clinicalDataFAKE <-
                                  )
                     })
 
-
 output$clinicalData <- displayDataTable()
 output$clinicalDataForSurvival <- displayDataTable()
+output$clinicalDataForDiffExp <- displayDataTable()
 
-#output$test <- renderText(paste0("col = ", colnames(editClinicalTable())[input$clinicalData_columns_selected]))
+#output$test <- renderText(paste0("col = ", colnames(editClinicalTable())[input$clinicalDataForDiffExp_columns_selected]))
                           
 di = clinicalInput()
 #action1 = dataTableAjax(session, data=di, rownames = TRUE)
@@ -209,8 +213,8 @@ output$survOutcome <- renderUI({
 #updateSelectInput(session, "survTimeUI", label = "Time", choice = ColumnNames(), selected = input$survTimeUI )
 #updateSelectInput(session, "survOutcomeUI", label = "Outcome", choice = ColumnNames(), selected = input$survOutcomeUI )
 
-
 }) # end of observe for time/outcome
+
 
 output$selectedCols <- DT::renderDataTable({ 
   datatable(data = parse.modal(), rownames = F,
