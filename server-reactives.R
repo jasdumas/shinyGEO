@@ -604,7 +604,7 @@ observeEvent(input$DEadd, {
 ```{r, echo = FALSE}
 
 stripchart2 <- function(x,y, group.names = NULL, jitter = 0.3, line.off = 0.3, 
-lwd = 5, col = NULL, main = '', mark = 'mean' ...) {
+lwd = 5, col = NULL, main = '', mark = 'mean') {
 
 s = split(x,y)
 if (is.null(group.names)) group.names = names(s)
