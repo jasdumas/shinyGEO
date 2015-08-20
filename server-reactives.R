@@ -2,7 +2,6 @@
 ## Reactives
 #############################################################################
 
-data(iris)
 ###################################################
 # Edit table reactiveValues()
 ###################################################
@@ -510,15 +509,27 @@ editSelectedCols <- reactive({
 }) # end of editSelectedCols() reactive
 
 ######################################
-# Expression Profiles Append to Report
+# Initial Code Append to Report
 ######################################
 observeEvent(input$exprAdd, {
-  if (TRACE) cat("In report Append for expression profiles...\n")
-
+  if (TRACE) cat("In Initial...\n")
   initialCode <- paste0(
-    "### Expression Profiles Plot\n", 
+     
     "
-    ```{r, echo=FALSE}
+```{r, echo=FALSE}
+library(DT)  ## tested on development version 0.1.32
+library(shiny)
+library(GEOquery)
+library(Biobase)
+library(reshape2)
+library(survival)
+library(affy)
+library(limma)
+library(shinyBS)
+library(GGally)
+library(ggplot2)
+library(shinyAce)
+library(knitr)
 data.series = getGEO(GEO = \"", input$GSE, "\", AnnotGPL = FALSE, getGPL = FALSE)
 data.platform = getGEO(\"", Platforms()[platformIndex()],  "\")
 data.index = match(\"", Platforms()[platformIndex()], "\", sapply(data.series, annotation))
@@ -527,13 +538,18 @@ data.expr = exprs(data.series[[data.index]])
 ```
     ") # end of paste of intial code download
   add.graph(initialCode)
+})
+
+######################################
+# Expression Profiles Append to Report
+######################################
+observeEvent(input$exprAdd, {
+  if (TRACE) cat("In report Append for expression profiles...\n")
   
-  exp <- paste0(
+  exp <- paste0( "#### Expression Profiles Plot\n",
     "
 ```{r, expr.png, echo=FALSE}
-library(shiny)
-library(Biobase)
-library(ggplot2)
+
 ex <- data.expr
 if (is.null(ex)) return (NULL)
 qx <- as.numeric(quantile(ex, c(0., 0.25, 0.5, 0.75, 0.99, 1.0), na.rm=T))
@@ -572,11 +588,9 @@ geom_boxplot(outlier.colour = 'green') +
 labs(title = title, y = y.label, x = '') + 
 theme(axis.text.x = element_text(angle = 90, hjust = 1)) 
 print(r)
-    ```
-    "
-    ) # end of paste
+```
+") # end of paste
   add.graph(exp)
-  
 }) # end of observeEvent for expression profiles plot 
 
 ##################################
@@ -584,15 +598,90 @@ print(r)
 #################################
 observeEvent(input$DEadd, {
   if (TRACE) cat("In report append DE...\n")
-  
-  fromServer <- paste0(
-    "### Differential Expression Plot"
-    )
-  
-  add.graph(fromServer)
-  
-}) # end of observeEvent for DE
+  s2function <- paste0("#### Differential Expression Plot",
+                       
+"
+```{r, echo = FALSE}
 
+stripchart2 <- function(x,y, group.names = NULL, jitter = 0.3, line.off = 0.3, 
+lwd = 5, col = NULL, main = '', mark = 'mean' ...) {
+
+s = split(x,y)
+if (is.null(group.names)) group.names = names(s)
+if (is.null(col)) col = 1:length(s)
+add = NULL
+if (length(s) == 2) {
+m = lapply(s,mean, na.rm=TRUE)
+fc = round(2**(m[[2]] - m[[1]]), 2)
+t = t.test(s[[1]], s[[2]])
+p = round(t$p.value, 3)   
+if (p < 0.001) {
+p = '(P < 0.001)'
+} else {
+p = paste0('(P = ', p, ')')
+}
+add = paste('\nFC = ', fc, p, collapse = '')
+} else if (length(s) > 2) {
+l = lm(x~y); l = summary(l)
+p = 1-pf(l$fstatistic[1], l$fstatistic[2], l$fstatistic[3])
+p = round(p, 3)
+if (p < 0.001) {
+add = '\nP < 0.001'
+} else {
+add = paste0('\nP = ', p)
+}
+} 
+if (is.null(main)) {
+main = '' 
+} else {
+main = paste(main, add)
+}
+me = melt(s, na.rm=TRUE)
+stripchart3 <- ggplot(me, aes(x = as.factor(L1), y = value, color=L1)) 
+return(stripchart3 + 
+labs(title = main, y = 'log2 expression', x='') +
+theme(legend.position='none') +
+scale_x_discrete(labels=group.names) +
+geom_point(position = 'jitter', aes(colour = L1)) + 
+scale_colour_manual(values = col) +
+geom_errorbar(stat = 'hline', yintercept = 'mean', width=0.8,aes(ymax=..y..,ymin=..y..)))
+if (mark %in% c('mean', 'median')) {
+if (mark == 'mean') mm = lapply(s,mean, na.rm=TRUE)
+if (mark == 'median') mm = lapply(s, median, na.rm=TRUE)
+for (i in 1:length(mm)) {
+lines(c(i-line.off, i+line.off), c(mm[[i]], mm[[i]]), lwd = lwd)
+    }
+  }
+}
+
+```
+")
+
+  
+add.graph(s2function)
+  
+  s3plot <- paste0(
+"
+```{r, DE.png, echo = FALSE} 
+
+yeah = match(as.character(\"",input$selectProbes, "\"),rownames(data.expr))
+x = data.expr[yeah,] 
+iv = as.character(\"", input$selectedColumn, "\")
+m = match(as.character(iv), colnames(data.p)) 
+clinical = as.character(data.p[,m])  
+selected = as.character(\"", input$Group1Values,"\")
+k = clinical %in% selected
+y = clinical
+y[!k] = NA
+y = factor(y, levels = input$Group1Values )
+main = paste(input$GSE, input$selectGenes, input$selectProbes, sep = '\')
+print(stripchart2(x,y, group.names = labelsDE(), main = main, col=colorsDE()))
+
+```
+")
+add.graph(s3plot)
+
+}) # end of observeEvent for DE
 
 ##################################
 ## Survival Plot Append to report 

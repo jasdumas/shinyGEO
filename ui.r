@@ -200,10 +200,11 @@ source("html.R")
                          tabPanel("Report",
                                   
                                   fluidRow( 
-                                    column(8, 
-                                           h3("Reproducible Report for GEO-AWS"), htmlOutput("knitDoc") #,
+                                    column(7, 
+                                           HTML("<span style = \"color: blue; font-size: 22px\"> GEO-AWS Report </span>"),
+                                           htmlOutput("knitDoc") #,
                                     ),
-                                    column(4, h3("Ace Editor"),
+                                    column(5, HTML("<span style = \"color: blue; font-size: 22px\"> Ace Editor </span>"),
                                            aceEditor("rmd", mode="markdown", value='',readOnly=T, height="500px")
                                     ) 
                                     

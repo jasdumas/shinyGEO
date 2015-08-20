@@ -236,10 +236,23 @@ output$knitDoc <- renderUI({
 ### Download knitr report ###
 output$downloadData <- downloadHandler(
   filename = function() { 
-    paste(date(), '.csv', sep='') 
+    paste(date(), '.pdf', sep='') 
   },
+  
   content = function(file) {
-    write.csv(dataInput(), file)
+    src <- normalizePath('report.Rmd')
+    
+    # temporarily switch to the temp dir, in case you do not have write
+    # permission to the current working directory
+    owd <- setwd(tempdir())
+    on.exit(setwd(owd))
+    file.copy(src, 'report.Rmd')
+  
+    library(rmarkdown)
+    
+    out <- render('report.Rmd')
+    file.rename(out, file)
+  
   }
 )
 
