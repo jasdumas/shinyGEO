@@ -511,7 +511,7 @@ editSelectedCols <- reactive({
 ######################################
 # Initial Code Append to Report
 ######################################
-observeEvent(input$exprAdd, {
+observeEvent(profiles(),  {
   if (TRACE) cat("In Initial...\n")
   initialCode <- paste0(
      
@@ -537,7 +537,13 @@ data.p = pData(data.series[[data.index]])
 data.expr = exprs(data.series[[data.index]])
 ```
     ") # end of paste of intial code download
+  
   add.graph(initialCode)
+  
+  if (identical(initialCode, initialCode)) { # if the GSE and platform are the same, don't keep adding the same info
+    add.graph("")
+  }
+  
 })
 
 ######################################
@@ -545,7 +551,7 @@ data.expr = exprs(data.series[[data.index]])
 ######################################
 observeEvent(input$exprAdd, {
   if (TRACE) cat("In report Append for expression profiles...\n")
-  
+
   exp <- paste0( "#### Expression Profiles Plot\n",
     "
 ```{r, expr.png, echo=FALSE}
@@ -591,6 +597,10 @@ print(r)
 ```
 ") # end of paste
   add.graph(exp)
+  
+  if (identical(exp, exp)) { # if the GSE and platform are the same, don't keep adding the same info
+    add.graph("")
+  }
 }) # end of observeEvent for expression profiles plot 
 
 ##################################
@@ -657,8 +667,11 @@ lines(c(i-line.off, i+line.off), c(mm[[i]], mm[[i]]), lwd = lwd)
 ```
 ")
 
-  
 add.graph(s2function)
+
+if (identical(s2function, s2function)) { 
+  add.graph("")
+}
   
   s3plot <- paste0(
 "
@@ -680,6 +693,11 @@ print(stripchart2(x,y, group.names = labelsDE(), main = main, col=colorsDE()))
 ```
 ")
 add.graph(s3plot)
+
+if (identical(s3plot, s3plot)) { 
+  add.graph("")
+}
+
 
 }) # end of observeEvent for DE
 
@@ -758,9 +776,15 @@ add.graph(survfunction)
 survComment <- paste0("
                       
 ```{r, surv.png, echo = FALSE}
-print(plot.shiny.km(time = as.double(parse.modal()[,1]), death = as.integer(parse.modal()[,2]), x = x()))
+hi = match(as.character(\"",input$selectProbes, "\"),rownames(data.expr))
+x = data.expr[hi,]
+print(plot.shiny.km(time = as.double( \"", parse.modal(),"\" [,1]), death = as.integer(\"", parse.modal(), "\" [,2]), x = x)
  
 ```
 ")
 add.graph(survComment)
+
+if (identical(survComment, survComment)) { 
+  add.graph("")
+}
 }) # end of observeEvent
