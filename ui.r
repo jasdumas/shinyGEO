@@ -43,7 +43,12 @@ source("html.R")
                 #                textOutput("displayPlatform")
                 # ), 
                 div(style = "display:inline-block; width: 30%",
-                    uiOutput('platform')  
+                    uiOutput('platform', style = "display:inline-block; width:50%"),
+                    actionButton("PlatformInfoButton", "Platform Information") 
+                ),
+                
+                shinyBS::bsModal("PlatformLinks", "Available Platforms (More Information", "PlatformInfoButton", size = "small",
+                                 uiOutput("PlatformLinks")
                 ),
                 
                 uiOutput("test"),

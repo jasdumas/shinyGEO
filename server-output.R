@@ -23,9 +23,25 @@ output$selectProbes <- renderUI({
               selected = "")
 })
 
-output$platform <- renderUI({
-  selectInput('platform', 'Platform', Platforms(), multiple = F, selectize = FALSE)        
+PlatformLinks <- reactive({
+  pl = Platforms()
+  if (is.null(pl)) return(NULL)
+  pl = paste0("<a target = \"_blank\" href = \"http://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=", 
+         pl, "\">", pl, "</a>")
+  pl = paste0("<p>",pl, "</p>")
+  pl = paste0(pl, collapse = "")
+  beg ="<p>Click on the links below for more information about the availalbe platforms:</p>"
+  paste0(beg, pl)
 })
+
+output$PlatformLinks <-renderUI( {
+  HTML(PlatformLinks())
+})
+
+output$platform <- renderUI({
+  selectInput('platform', 'Platform', Platforms(), multiple = F, selectize = TRUE)        
+})
+
 
 
 ################################################

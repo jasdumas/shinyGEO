@@ -89,6 +89,7 @@ platformIndex <- reactive({
     return(NULL)
   }
   if (length(dataInput())==1) return (1)
+  cat("matching platform = ", input$platform, "\n")
   m = match(input$platform, as.character(sapply(dataInput(), annotation)))    
   if (is.na(m)) return(NULL)
   return(m)
