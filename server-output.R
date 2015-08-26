@@ -39,7 +39,7 @@ output$PlatformLinks <-renderUI( {
 })
 
 output$platform <- renderUI({
-  selectInput('platform', 'Platform', Platforms(), multiple = F, selectize = TRUE)        
+  selectInput('platform', 'Platform', Platforms(), multiple = F, selectize = FALSE)        
 })
 
 
