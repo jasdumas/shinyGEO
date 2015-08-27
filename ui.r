@@ -32,8 +32,13 @@ source("html.R")
                 ),
               
                 div(style = "display:inline-block; width: 30%",
-                    textInput("GSE", 
-                              HTML("<span style = \"color:red;font-weight:bold\">GEO Accession Number </span>"), "")
+#                    uiOutput("GSE")
+                    selectizeInput('GSE', label = NULL, choices = NULL, 
+                                   options = list(placeholder = "Please enter a GSE accession number",
+                                                  maxOptions = 1000)
+                                   )                    
+                    #textInput("GSE", 
+                    #          HTML("<span style = \"color:red;font-weight:bold\">GEO Accession Number </span>"), "")
                 ),
                 div(style = "display:inline-block; width: 30%",
                     actionButton("submitButton", "Submit")

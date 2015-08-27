@@ -42,6 +42,52 @@ output$platform <- renderUI({
   selectInput('platform', 'Platform', Platforms(), multiple = F, selectize = FALSE)        
 })
 
+#output$GSE <- renderUI({
+#  selectizeInput('GSE', label = 'Accession Number', 
+#                 choice = c("",series.gse), 
+#                 multiple = F, selected = NULL           
+#                 )        
+#})
+
+###############################################################
+# drop down options are in form of GSE number - description
+# when a selection is made only the GSE number (label)
+# is stored in the textbox. However, only the
+# GSE number (label) can be searched.
+# Ideally, we want to search both the number and description
+# but only display the number when selected
+# 'value' is what gets returned to server (GSE number)
+###############################################################
+updateSelectizeInput(session, inputId='GSE', label = "Accession Number", server = TRUE,
+    choices =  data.frame(label = c(series.gse), value = c(series.gse), name = series.name),
+    selected = NULL,
+    options = list(
+      #create = TRUE, persist = FALSE,
+      render = I(
+      "{
+          option: function(item, escape) {
+      return '<div> <strong>' + item.label + '</strong> - ' +
+      escape(item.name) + '</div>';
+      }
+      }"
+    ))
+)
+
+##########################################
+# Only include GSE number               ##
+##########################################
+#observe({
+#  cat("change input$GSE...\n")
+#  GSE = input$GSE
+#  if (!is.null(GSE)) {
+#    cat("GSE = ", GSE, "\n")
+#    GSE = strsplit(GSE, "-")[[1]][1]
+#    choices = c(series)
+#    updateSelectizeInput(session, "GSE", label = "Accession", choices = choices,
+#                         selected = GSE, options = list(create = TRUE), server = FALSE)
+#  }
+#})
+
 
 
 ################################################
@@ -103,7 +149,7 @@ displayDataTable <-reactive({
   DT::renderDataTable({ datatable(editClinicalTable(), rownames = TRUE,
                                                       extensions = 'ColReorder',
                                                       options = list(dom = 'Rlfrtip', #ajax = list(url = action1), 
-                                                                    scrollX = "auto",
+                                                                    #scrollX = "auto",
                                                                      scrollY = "400px",
                                                                      paging = F, 
                                                                      searchHighlight = TRUE,

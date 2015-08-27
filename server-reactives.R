@@ -1,3 +1,4 @@
+load("series/series.RData")
 #############################################################################
 ## Reactives
 #############################################################################
@@ -50,11 +51,13 @@ observe({
 ### dataInput: the GEO object ######
 ####################################
 dataInput <- reactive({
+  input$submitButton
   # Runs the intial input once the button is pressed from within the 
   # reactive statement
+
+  if (is.null(isolate(input$GSE))) return(NULL)
   if (TRACE) cat("In dataInput reactive...\n")  
-  input$submitButton
-  GSE = isolate(gsub(" ", "", input$GSE))   # remove white space
+  GSE = isolate(gsub(" ", "", (input$GSE)))   # remove white space
   if (GSE=="") return(NULL)
   closeAlert(session, "GSE-alert")
   closeAlert(session, "GPL-alert")
