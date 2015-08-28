@@ -2,6 +2,9 @@
 # display functions for conditional panels              ##
 ##########################################################
 
+load("series/series.RData")
+load("platforms/platforms.RData")
+
 # when platform info is availabe the other drop-down boxes are shown in the sidebar panel
 displayPlatform <-function() {
   if (is.null(Platforms())) return(FALSE)
@@ -9,7 +12,6 @@ displayPlatform <-function() {
 }
 output$displayPlatform <- renderText(displayPlatform())
 outputOptions(output, 'displayPlatform', suspendWhenHidden=FALSE)
-
 
 output$selectGenes <- renderUI({
   selectInput("selectGenes", label = "Select Gene",
@@ -38,13 +40,58 @@ output$PlatformLinks <-renderUI( {
   HTML(PlatformLinks())
 })
 
-output$platform <- renderUI({
-  selectInput('platform', 'Platform', Platforms(), multiple = F, selectize = FALSE)        
+observe ({
+  ## only show plaforms for selected series ##
+  pl = Platforms()
+  cat("upate for pl = ", pl, "\n")
+  selected = NULL
+  
+  if (!is.null(pl)) {
+    cat("updating pl...\n")
+    keep = platforms.accession %in% pl
+    pl.accession = platforms.accession[keep]
+    pl.description = platforms.description[keep]
+    if (length(pl.accession) == 1) {
+      selected = NULL #pl.accession
+    }
+  } else {
+    pl.accession = platforms.accession
+    pl.description = platforms.description
+  }
+  
+updateSelectizeInput(session, inputId='platform', server = TRUE,
+                     
+#output$platform <- renderUI({  
+#  selectInput('platform', 'Platform', Platforms(), multiple = F, selectize = FALSE)        
+               choices = data.frame(label = pl.accession, value = pl.accession, name = pl.description),
+               selected = selected,
+               options = list(
+                 #create = TRUE, persist = FALSE,
+                 render = I(
+                   "{
+                      option: function(item, escape) {
+                          return '<div> <strong>' + item.label + '</strong> - ' +
+                          escape(item.name) + '</div>';
+                      }
+                    }"
+                 ))
+               )
+#}
+
+
+if (!is.null(pl)) {
+createAlert(session, "alert", alertId = "GPL-alert", title = "Attention Needed", style = "success",
+            content = "Please select a platform to continue", append = TRUE) 
+}
+
 })
+
+
+
 
 #output$GSE <- renderUI({
 #  selectizeInput('GSE', label = 'Accession Number', 
-#                 choice = c("",series.gse), 
+#                 choice = c("",series.accession), 
 #                 multiple = F, selected = NULL           
 #                 )        
 #})
@@ -59,8 +106,7 @@ output$platform <- renderUI({
 # 'value' is what gets returned to server (GSE number)
 ###############################################################
 updateSelectizeInput(session, inputId='GSE', label = "Accession Number", server = TRUE,
-    choices =  data.frame(label = c(series.gse), value = c(series.gse), name = series.name),
-    selected = NULL,
+    choices =  data.frame(label = series.accession, value = series.accession, name = series.description),
     options = list(
       #create = TRUE, persist = FALSE,
       render = I(

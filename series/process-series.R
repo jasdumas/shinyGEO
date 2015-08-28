@@ -13,11 +13,11 @@ for (f in files) {
 
 g = grep("Expression profiling by array", series$Series.Type)
 series = series[g,]
-series.gse = as.character(series$Accession)
-series.name = as.character(series$Title)
+series.accession = as.character(series$Accession)
+series.description = as.character(series$Title)
 
-o = order(series.gse)
-series.gse = series.gse[o]
-series.name = series.name[o]
-save(series.gse, series.name, file = "series.RData")
+o = order(series.accession)
+series.accession = series.accession[o]
+series.description = series.description[o]
+save(series.accession, series.description, file = "series.RData")
 

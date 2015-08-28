@@ -34,14 +34,19 @@ shinyServer(function(input, output, session){
       if (input$selectProbes == "") {
         cat("\n\n=====NO GENE=====\n\n")
         output$selectGroupsMessage <-renderUI({HTML("<h3>Please Select a Gene and Probe to Analyze</h3>")})
+        createAlert(session, "alert", alertId = "Gene-alert", title = "Attention Needed", style = "success",
+                    content = "Please select a gene and probe to continue", append = TRUE) 
         PLOT = FALSE
       }    
-      else if (length(input$Group1Values) == 0) {
-          output$selectGroupsMessage <-renderUI({
-            HTML("<h3>Please Choose The Groups to Compare</h3>")}
+      else {
+        closeAlert(session, "Gene-alert")
+          if (length(input$Group1Values) == 0) {
+            output$selectGroupsMessage <-renderUI({
+              HTML("<h3>Please Choose The Groups to Compare</h3>")}
             )
-          PLOT = FALSE
-      } 
+            PLOT = FALSE
+          }
+      }
       
       if (!PLOT) {
               output$plot <-renderPlot({NULL})

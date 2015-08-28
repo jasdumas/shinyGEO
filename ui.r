@@ -47,12 +47,18 @@ source("html.R")
                 #conditionalPanel(condition = "input.GSE == 'HEY'",
                 #                textOutput("displayPlatform")
                 # ), 
-                div(style = "display:inline-block; width: 30%",
-                    uiOutput('platform', style = "display:inline-block; width:50%"),
+                div(style = "display:inline-block; width: 20%",
+                    #uiOutput('platform', style = "display:inline-block; width:50%"),
+                    selectizeInput('platform', label = NULL, choices = NULL, 
+                                   options = list(placeholder = "Please select a platform",
+                                                  maxOptions = 10)
+                    )
+                ),
+                div(style = "display:inline-block; width: 15%",
                     actionButton("PlatformInfoButton", "Platform Information") 
                 ),
                 
-                shinyBS::bsModal("PlatformLinks", "Available Platforms (More Information", "PlatformInfoButton", size = "small",
+                shinyBS::bsModal("PlatformLinks", HTML("Available Platforms<br>(More Information)"), "PlatformInfoButton", size = "small",
                                  uiOutput("PlatformLinks")
                 ),
                 
