@@ -32,8 +32,13 @@ source("html.R")
                 ),
               
                 div(style = "display:inline-block; width: 30%",
-                    textInput("GSE", 
-                              HTML("<span style = \"color:red;font-weight:bold\">GEO Accession Number </span>"), "")
+#                    uiOutput("GSE")
+                    selectizeInput('GSE', label = NULL, choices = NULL, 
+                                   options = list(placeholder = "Please enter a GSE accession number",
+                                                  maxOptions = 1000)
+                                   )                    
+                    #textInput("GSE", 
+                    #          HTML("<span style = \"color:red;font-weight:bold\">GEO Accession Number </span>"), "")
                 ),
                 div(style = "display:inline-block; width: 30%",
                     actionButton("submitButton", "Submit")
@@ -42,8 +47,19 @@ source("html.R")
                 #conditionalPanel(condition = "input.GSE == 'HEY'",
                 #                textOutput("displayPlatform")
                 # ), 
-                div(style = "display:inline-block; width: 30%",
-                    uiOutput('platform')  
+                div(style = "display:inline-block; width: 20%",
+                    #uiOutput('platform', style = "display:inline-block; width:50%"),
+                    selectizeInput('platform', label = NULL, choices = NULL, 
+                                   options = list(placeholder = "Please select a platform",
+                                                  maxOptions = 10)
+                    )
+                ),
+                div(style = "display:inline-block; width: 15%",
+                    actionButton("PlatformInfoButton", "Platform Information") 
+                ),
+                
+                shinyBS::bsModal("PlatformLinks", HTML("Available Platforms<br>(More Information)"), "PlatformInfoButton", size = "small",
+                                 uiOutput("PlatformLinks")
                 ),
                 
                 uiOutput("test"),

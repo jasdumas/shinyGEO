@@ -2,6 +2,9 @@
 # display functions for conditional panels              ##
 ##########################################################
 
+load("series/series.RData")
+load("platforms/platforms.RData")
+
 # when platform info is availabe the other drop-down boxes are shown in the sidebar panel
 displayPlatform <-function() {
   if (is.null(Platforms())) return(FALSE)
@@ -9,7 +12,6 @@ displayPlatform <-function() {
 }
 output$displayPlatform <- renderText(displayPlatform())
 outputOptions(output, 'displayPlatform', suspendWhenHidden=FALSE)
-
 
 output$selectGenes <- renderUI({
   selectInput("selectGenes", label = "Select Gene",
@@ -23,9 +25,115 @@ output$selectProbes <- renderUI({
               selected = "")
 })
 
-output$platform <- renderUI({
-  selectInput('platform', 'Platform', Platforms(), multiple = F, selectize = FALSE)        
+PlatformLinks <- reactive({
+  pl = Platforms()
+  if (is.null(pl)) return(NULL)
+  pl = paste0("<a target = \"_blank\" href = \"http://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=", 
+         pl, "\">", pl, "</a>")
+  pl = paste0("<p>",pl, "</p>")
+  pl = paste0(pl, collapse = "")
+  beg ="<p>Click on the links below for more information about the availalbe platforms:</p>"
+  paste0(beg, pl)
 })
+
+output$PlatformLinks <-renderUI( {
+  HTML(PlatformLinks())
+})
+
+observe ({
+  ## only show plaforms for selected series ##
+  pl = Platforms()
+  cat("upate for pl = ", pl, "\n")
+  selected = NULL
+  
+  if (!is.null(pl)) {
+    cat("updating pl...\n")
+    keep = platforms.accession %in% pl
+    pl.accession = platforms.accession[keep]
+    pl.description = platforms.description[keep]
+    if (length(pl.accession) == 1) {
+      selected = NULL #pl.accession
+    }
+  } else {
+    pl.accession = platforms.accession
+    pl.description = platforms.description
+  }
+  
+updateSelectizeInput(session, inputId='platform', server = TRUE,
+                     
+#output$platform <- renderUI({  
+#  selectInput('platform', 'Platform', Platforms(), multiple = F, selectize = FALSE)        
+               choices = data.frame(label = pl.accession, value = pl.accession, name = pl.description),
+               selected = selected,
+               options = list(
+                 #create = TRUE, persist = FALSE,
+                 render = I(
+                   "{
+                      option: function(item, escape) {
+                          return '<div> <strong>' + item.label + '</strong> - ' +
+                          escape(item.name) + '</div>';
+                      }
+                    }"
+                 ))
+               )
+#}
+
+
+if (!is.null(pl)) {
+createAlert(session, "alert", alertId = "GPL-alert", title = "Attention Needed", style = "success",
+            content = "Please select a platform to continue", append = TRUE) 
+}
+
+})
+
+
+
+
+#output$GSE <- renderUI({
+#  selectizeInput('GSE', label = 'Accession Number', 
+#                 choice = c("",series.accession), 
+#                 multiple = F, selected = NULL           
+#                 )        
+#})
+
+###############################################################
+# drop down options are in form of GSE number - description
+# when a selection is made only the GSE number (label)
+# is stored in the textbox. However, only the
+# GSE number (label) can be searched.
+# Ideally, we want to search both the number and description
+# but only display the number when selected
+# 'value' is what gets returned to server (GSE number)
+###############################################################
+updateSelectizeInput(session, inputId='GSE', label = "Accession Number", server = TRUE,
+    choices =  data.frame(label = series.accession, value = series.accession, name = series.description),
+    options = list(
+      #create = TRUE, persist = FALSE,
+      render = I(
+      "{
+          option: function(item, escape) {
+      return '<div> <strong>' + item.label + '</strong> - ' +
+      escape(item.name) + '</div>';
+      }
+      }"
+    ))
+)
+
+##########################################
+# Only include GSE number               ##
+##########################################
+#observe({
+#  cat("change input$GSE...\n")
+#  GSE = input$GSE
+#  if (!is.null(GSE)) {
+#    cat("GSE = ", GSE, "\n")
+#    GSE = strsplit(GSE, "-")[[1]][1]
+#    choices = c(series)
+#    updateSelectizeInput(session, "GSE", label = "Accession", choices = choices,
+#                         selected = GSE, options = list(create = TRUE), server = FALSE)
+#  }
+#})
+
 
 
 ################################################
@@ -87,7 +195,7 @@ displayDataTable <-reactive({
   DT::renderDataTable({ datatable(editClinicalTable(), rownames = TRUE,
                                                       extensions = 'ColReorder',
                                                       options = list(dom = 'Rlfrtip', #ajax = list(url = action1), 
-                                                                    scrollX = "auto",
+                                                                    #scrollX = "auto",
                                                                      scrollY = "400px",
                                                                      paging = F, 
                                                                      searchHighlight = TRUE,

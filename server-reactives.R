@@ -6,7 +6,6 @@
 # Edit table reactiveValues()
 ###################################################
 values.edit <- reactiveValues(table = NULL, platformGeneColumn = NULL, original = NULL)
-
 reproducible <-reactiveValues(code = NULL, report = NULL)
 
 ### functions to append/aggregate a new line to the aceEditor
@@ -43,18 +42,22 @@ observeEvent(reproducible$report, {
 })
 
 observe({
-  cat("selected tab = ", input$tabs, "\n")
+  cat("selected tab = ", input$tabs, "\n")  
 })
+
+
 
 ####################################
 ### dataInput: the GEO object ######
 ####################################
 dataInput <- reactive({
+  input$submitButton
   # Runs the intial input once the button is pressed from within the 
   # reactive statement
+
+  if (is.null(isolate(input$GSE))) return(NULL)
   if (TRACE) cat("In dataInput reactive...\n")  
-  input$submitButton
-  GSE = isolate(gsub(" ", "", input$GSE))   # remove white space
+  GSE = isolate(gsub(" ", "", (input$GSE)))   # remove white space
   if (GSE=="") return(NULL)
   closeAlert(session, "GSE-alert")
   closeAlert(session, "GPL-alert")
@@ -74,9 +77,7 @@ Platforms <- reactive({
   if (is.null(dataInput())) {
     return(NULL)
   }
-  closeAlert(session, "GSE-alert")
-  createAlert(session, "alert", alertId = "GPL-alert", title = "Current Status", style = "info",
-              content = "Downloading platform (GPL) data from GEO", append = TRUE) 
+  closeAlert(session, "GSE-alert")  
   as.character(sapply(dataInput(), annotation))    
 })
 
@@ -88,7 +89,8 @@ platformIndex <- reactive({
   if (is.null(dataInput()) | length(input$platform) ==0) {
     return(NULL)
   }
-  if (length(dataInput())==1) return (1)
+#  if (length(dataInput())==1) return (1)
+  cat("matching platform = ", input$platform, "\n")
   m = match(input$platform, as.character(sapply(dataInput(), annotation)))    
   if (is.na(m)) return(NULL)
   return(m)
@@ -104,6 +106,15 @@ platInfo <- reactive({
   code = paste0("data.platform = getGEO(\"", Platforms()[platformIndex()],  "\")
 ")
   add.line(code)
+  closeAlert(session, "GPL-alert")
+  createAlert(session, "alert", alertId = "GPL-alert", title = "Current Status", style = "info",
+              content = "Downloading platform (GPL) data from GEO", append = TRUE) 
+  
+  a = isolate(Platforms())
+  b = isolate(platformIndex())
+  cat("Platforms() = ", a, "\n")
+  cat("platformIndex = ", b, "\n")
+  cat("downloading platform now...\n")
   
   t = Table(getGEO(Platforms()[platformIndex()]))
   
@@ -156,7 +167,7 @@ geneNames <- reactive ({
 ########################################
 ### selected Gene index
 ########################################  
-selectGene <- reactive ({
+selectedGene <- reactive ({
   if (TRACE) cat("In selectGene reactive...\n")
   gene.column = values.edit$platformGeneColumn
   if (is.null(input$selectGenes) | is.null(gene.column)) return (NULL)
@@ -176,8 +187,8 @@ selectGene <- reactive ({
 probeNames <- reactive({
   if (TRACE) cat("In probeNames reactive...\n")
   if (is.null(dataInput())) return(NULL)
-  else if (is.null(selectGene())) return(NULL)
-  return (as.character(platInfo()[selectGene(),match("ID",colnames(platInfo()))]))
+  else if (is.null(selectedGene())) return(NULL)
+  return (as.character(platInfo()[selectedGene(),match("ID",colnames(platInfo()))]))
 })
 
 #######################################################
