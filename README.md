@@ -21,7 +21,7 @@ The Gene Expression Omnibus Analysis with Shiny (Project Name: GEO-AWS) is a web
 _Feel free to check out my project [wiki](https://github.com/jasdumas/GEO-AWS/wiki)_
 
 ## Contribute
-This project is in beta/demonstration only mode and is scheduled to be launched in early Fall 2105. A considerable amount of the features are functional but if you discover a bug or non-working application features with certain data sets, please feel free to submit an [issue](https://github.com/jasdumas/GEO-AWS/issues) or contact the pacakge maintainer.
+This project is in beta/demonstration only mode and is scheduled to be launched in early Fall 2015. A considerable amount of the features are functional but if you discover a bug or non-working application features with certain data sets, please feel free to submit an [issue](https://github.com/jasdumas/GEO-AWS/issues) or contact the pacakge maintainer.
 
 ## Contact
 Jasmine Dumas [@jasdumas](https://twitter.com/jasdumas)
