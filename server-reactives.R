@@ -63,7 +63,7 @@ dataInput <- reactive({
   closeAlert(session, "GPL-alert")
   cat("creating alert...\n")
    createAlert(session, "alert", alertId = "GSE-alert", title = "Current Status", style = "info",
-              content = "Downloading Series (GSE) data from GEO", append = TRUE) 
+              content = "Downloading Series (GSE) data from GEO", append = TRUE, dismiss = FALSE) 
   code = paste0("data.series = getGEO(GEO = \"", GSE, "\", AnnotGPL = FALSE, getGPL = FALSE)")
   add.line(code)
   getGEO(GEO = isolate(GSE), AnnotGPL=FALSE, getGPL = FALSE)  
@@ -108,7 +108,7 @@ platInfo <- reactive({
   add.line(code)
   closeAlert(session, "GPL-alert")
   createAlert(session, "alert", alertId = "GPL-alert", title = "Current Status", style = "info",
-              content = "Downloading platform (GPL) data from GEO", append = TRUE) 
+              content = "Downloading platform (GPL) data from GEO", append = TRUE, dismiss = FALSE) 
   
   a = isolate(Platforms())
   b = isolate(platformIndex())
@@ -150,7 +150,8 @@ geneNames <- reactive ({
     w = which(m)
     if (length(w) == 0) {
       createAlert(session, "alert", alertId = "geneSymbolAlert", title = "Could not find gene symbol", style = "danger",
-                  content = "A gene symbol for this platform could not be found. Please select another platform or analyze another dataset.", append = FALSE)
+                  content = "A gene symbol for this platform could not be found. Please select another platform or analyze another dataset.", 
+                  append = FALSE, dismiss = FALSE)
       values.edit$platformGeneColumn = NULL
       return(NULL)
     }
