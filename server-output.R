@@ -335,6 +335,7 @@ output$selectedCols <- DT::renderDataTable({
 # Knitr Report
 ###################
 output$knitDoc <- renderUI({
+  input$exprAdd
   input$DEadd
   input$Survadd
   return(isolate(HTML(knit2html(text = input$rmd, fragment.only = TRUE, quiet = TRUE))))
@@ -344,7 +345,7 @@ output$knitDoc <- renderUI({
 ### Download knitr report ###
 output$downloadData <- downloadHandler(
   filename = function() { 
-    paste(date(), '.pdf', sep='') 
+    paste("report.Rmd") 
   },
   
   content = function(file) {
