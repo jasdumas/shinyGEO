@@ -26,4 +26,7 @@ This project is in beta/demonstration only mode and is scheduled to be launched 
 ## Contact
 Jasmine Dumas [@jasdumas](https://twitter.com/jasdumas)
 
+## Status
+[![Build Status](https://travis-ci.org/jasdumas/GEO-AWS.svg)](https://travis-ci.org/jasdumas/GEO-AWS)
+
 
