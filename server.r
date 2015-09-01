@@ -35,7 +35,8 @@ shinyServer(function(input, output, session){
         cat("\n\n=====NO GENE=====\n\n")
         output$selectGroupsMessage <-renderUI({HTML("<h3>Please Select a Gene and Probe to Analyze</h3>")})
         createAlert(session, "alert", alertId = "Gene-alert", title = "Attention Needed", style = "success",
-                    content = "Please select a gene and probe to continue", append = TRUE) 
+                    content = "Please select a gene and probe to continue", append = TRUE,
+                    dismiss = FALSE) 
         PLOT = FALSE
       }    
       else {

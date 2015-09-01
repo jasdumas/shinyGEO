@@ -135,12 +135,10 @@ source("html.R")
                                   uiOutput("selectedGroups", container = div, style = "display:inline-block; width: 75%"),
                                   
                                   bsCollapse(id = "DiffExpDataTable",
-                                             bsCollapsePanel("View clinical data table",
+                                             bsCollapsePanel("View clinical data table (click on a column to select)",
                                                              DT::dataTableOutput("clinicalDataForDiffExp")
                                              )
                                   ),
-                                  
-                                  
                                   
                                   actionButton("formatDEButton", "Format Graph"),
                                   actionButton("DEadd", "Append to Report"),
