@@ -3,7 +3,7 @@ Title: Gene Expression Omnibus Analysis with Shiny
 Version: 1.0
 Authors@R: c(
     person("Jasmine", "Dumas", email = "jasmine.dumas@gmail.com", role = c("aut", "cre")),
-    person("Garrett", "Dancik", email = "dancikg@easternct.edu", role = c("aut", "cre")), 
+    person("Garrett", "Dancik", email = "dancikg@easternct.edu", role = "aut"), 
     person("Ken-Heng Henry", "Liao", role = "ctb"), 
     person("Branden", "Spratt", role = "ctb"), 
     person("Greg", "Harper", role = "ctb"))
