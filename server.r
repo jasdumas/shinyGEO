@@ -86,7 +86,10 @@ shinyServer(function(input, output, session){
       output$SurvMessage <-renderText({""})
       output$kmSurvival <- renderPlot({
 
-      return(plot.shiny.km(time = as.double(parse.modal()[,1]), death = as.integer(parse.modal()[,2]), x = x()))
+      return(plot.shiny.km(time = as.double(parse.modal()[,1]), 
+                           death = as.integer(parse.modal()[,2]), 
+                           x = x(), 
+                           col = colorsDE3()))
  
       })
     }

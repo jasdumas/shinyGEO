@@ -167,9 +167,11 @@ source("html.R")
                                   ),
                                   
                                   
-                                  
                                   tags$div(HTML("<hr style = \"background-color: red; height:4px\">")), 
                                   uiOutput("SurvMessage"),
+                                  actionButton("formatDEButton2", "Format Graph"), # add on
+                                  formatBSModal("Format2", "Format", "formatDEButton2", applyID = "applyFormatDE", size = "large",
+                                                htmlOutput("formatDE2")),
                                   actionButton("Survadd", "Append to Report"),
                                   shinyBS::bsModal("parseModal", "Selected Survival Analysis Parameters", "parseButton", size = "large",
                                                            fluidRow(
