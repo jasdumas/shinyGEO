@@ -5,7 +5,7 @@
 ###################################################
 # Edit table reactiveValues()
 ###################################################
-values.edit <- reactiveValues(table = NULL, platformGeneColumn = NULL, original = NULL)
+values.edit <- reactiveValues(table = NULL, platformGeneColumn = NULL, original = NULL, log2 = FALSE)
 reproducible <-reactiveValues(code = NULL, report = NULL)
 
 ### functions to append/aggregate a new line to the aceEditor
@@ -54,7 +54,7 @@ dataInput <- reactive({
   input$submitButton
   # Runs the intial input once the button is pressed from within the 
   # reactive statement
-
+  
   if (is.null(isolate(input$GSE))) return(NULL)
   if (TRACE) cat("In dataInput reactive...\n")  
   GSE = isolate(gsub(" ", "", (input$GSE)))   # remove white space
@@ -433,10 +433,16 @@ profiles <- reactive({
     (qx[2] > 0 && qx[2] < 1 && qx[4] > 1 && qx[4] < 2)
   if (LogC & input$radio == 1) { 
     ex[which(ex <= 0)] <- NaN
-  return (ex <- log2(ex)) }    
+    values.edit$log2 = TRUE
+  return (ex <- log2(ex)) 
+  }    
   
-  if (input$radio == 2) return (ex <- log2(exprInput()))   # forced Yes
-  else return (ex <- exprInput())  # No
+  if (input$radio == 2) {
+    values.edit$log2 = TRUE
+    return (ex <- log2(exprInput()))   # forced Yes
+  }
+  values.edit$log2 = FALSE
+  return (ex <- exprInput())  # No
 
   
 })
@@ -618,8 +624,52 @@ print(r)
 ##################################
 ## Diff. Expression Append to report 
 #################################
+
+quote.it <-function(x) paste0("\"", x, "\"")
+
 observeEvent(input$DEadd, {
   if (TRACE) cat("In report append DE...\n")
+
+  cat("outputting test script...\n")
+  
+  #GSE = "GSE13"
+  #GPL = "GPL75"
+  #LOG = TRUE
+  #PROBE = "aa000380_s_at"
+  #DE.column = "source_name_ch1"
+  #DE.groups = c("Immature B cells", "Mature B cells")
+  
+  script.GSE = paste0("GSE = ",quote.it(input$GSE), "\n")
+  script.GPL =   paste0("GPL = ", quote.it(isolate(Platforms()[platformIndex()])), "\n")
+  script.probe = paste0("PROBE = ", quote.it(input$selectProbes), "\n")
+  script.log2 = paste0("LOG2 = ", values.edit$log2, "\n")
+  script.DE.column = paste0("DE.column = ", quote.it(input$selectedColumn), "\n")
+  
+  grps = paste0(sapply(input$Group1Values, quote.it), collapse = ",")
+  grps = paste0("c(", grps, ")")  
+  script.DE.groups = paste0("DE.groups = ", grps)
+    
+  print(script.GSE)
+  print(script.GPL)
+  print(script.probe)
+  print(script.log2)
+  print(script.DE.column)
+  print(script.DE.groups)
+  
+  test.file = paste0("test/", input$GSE, "_test.R")
+  
+  cmd = paste0("echo '", script.GSE, script.GPL, script.probe, script.log2, 
+               script.DE.column, script.DE.groups, "' > ", test.file)
+  
+  #cmd = "echo 'hello, how are you\n' > tmp.R"
+  system(cmd)
+  cmd = paste0("cat GEO-script-template.R >> ", test.file)
+  system(cmd) 
+
+  cat("\n==========RUNNING TEST ON", test.file, "========\n")
+  rmarkdown::render(test.file)
+
+  
   s2function <- paste0("#### Differential Expression Plot",
                        
 "
