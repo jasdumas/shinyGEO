@@ -1,19 +1,33 @@
-Package: GEO-AWS
+Package: shinyGEO
 Title: Gene Expression Omnibus Analysis with Shiny
-Version: 1.0
+Version: 0.0.0.9000
 Authors@R: c(
     person("Jasmine", "Dumas", email = "jasmine.dumas@gmail.com", role = c("aut", "cre")),
     person("Garrett", "Dancik", email = "dancikg@easternct.edu", role = "aut"), 
     person("Ken-Heng Henry", "Liao", role = "ctb"), 
     person("Branden", "Spratt", role = "ctb"), 
     person("Greg", "Harper", role = "ctb"))
-Description: A web application to download microarray gene expression data
-    sets and perform formatting of clinical data, differential expression 
-    analysis & survival analysis across genes and probes and phenotype groups. 
-    A report can also be generated without shiny code for complete 
-    reporducibility at the console.
+Description: A web application to download, parse, transform, model, 
+    and visualize microarray gene expression data sets. shinyGEO 
+    can perform differential expression analysis & survival analysis
+    across genes, probes and phenotype groups. A report with code
+    and can also be generated for complete reporducibility at the console.
 Depends: R (>= 3.2.0)
-BugReports: https://github.com/jasdumas/GEO-AWS/issues
+BugReports: https://github.com/jasdumas/shinyGEO/issues
+URL: https://github.com/jasdumas/shinyGEO
 Imports:
+    shiny, 
+    GEOquery, 
+    Biobase, 
+    reshape2,
+    survival, 
+    affy, 
+    limma, 
+    shinyBS, 
+    GGally, 
+    ggplot2, 
+    shinyAce, 
+    knitr, 
+    rstudio/DT, 
 Suggests:
 License: MIT + file LICENSE
