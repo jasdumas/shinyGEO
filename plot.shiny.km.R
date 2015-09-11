@@ -59,16 +59,11 @@ plot.shiny.km <- function(time, death, x, title = "", legend.loc = "bottomleft",
     return(data.frame(hr = hr, p.km = p.km))
   }
   
-  ## plot graph ### ggplot2/GGally form
-  km.group1 = survfit(Surv(time, death) ~ x)
-  km.group = ggsurv(km.group1) #+            #, surv.col = col) + # col = colorsDE3() the default is 'gg.def'
-             #labs(title = title(title)) # trying to move the main title up
-             
-    
-  if (is.null(col)) col = 1:n
-  plot(km.group, col = col, lty = 1:n, ...)
-  legend(legend.loc, legend = levels(x), col = col, lty = 1:n)
   
+  if (is.null(col)) col = 1 # gives defaults colors if user has not changed them (black now)
+    
+  plot(km.group, ...)
+   
   if (!is.null(title)) {
     hr.str = "" 
     p.str = paste("P = ", round(p.km,4), sep = "")
@@ -77,7 +72,13 @@ plot.shiny.km <- function(time, death, x, title = "", legend.loc = "bottomleft",
     }
     if (title!="") title = paste(title, "\n", sep = "")
     title = paste(title, hr.str, p.str)
-    title(title)
+  #  title(title)
   }
 }
+
+## plot graph ggplot2/GGally format
+km.group1 = survfit(Surv(time, death) ~ x)
+km.group = ggsurv(km.group1, 
+                  main = title, xlab = "Time", ylabel = "Survival",
+                  surv.col = col, cens.col = "black")     
 
