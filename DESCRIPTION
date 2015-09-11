@@ -28,6 +28,6 @@ Imports:
     ggplot2, 
     shinyAce, 
     knitr, 
-    rstudio/DT, 
+    DT, 
 Suggests:
 License: MIT + file LICENSE
