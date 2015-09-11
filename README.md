@@ -23,11 +23,11 @@ shinyGEO (Project Name: GEO-AWS / Gene Expression Omnibus Analysis with Shiny) i
 
 8. `library(devtools)`
 
-`devtools::install_github("jasdumas/shinyGEO")`
+  `devtools::install_github("jasdumas/shinyGEO")`
 
-`library(shinyGEO)`
+  `library(shinyGEO)`
 
-`runGitHub("shinyGEO", "jasdumas")`
+  `runGitHub("shinyGEO", "jasdumas")`
 
 ## Find out more
 _Feel free to check out my project [wiki](https://github.com/jasdumas/GEO-AWS/wiki)_
