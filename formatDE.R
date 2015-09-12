@@ -106,13 +106,16 @@ observeEvent(input$applyFormatDE, {
 # Survival 
 #############
 
-formatTableDE2 <-reactive({  
-  if (length(input$survTimeUI) == 0 & length(input$survOutcomeUI) == 0) {return(NULL)} # the length is always 2 (Time & Outcome)
-  df = c(input$survTimeU, input$survOutcomeUI)
+formatTableDE2 <-reactive({
+  time.surv = as.double(parse.modal()[,1])
+  event.surv = as.integer(parse.modal()[,2])
+  
+  if (length(time.surv) == 0 & length(event.surv) == 0) {return(NULL)} # the length is always 2 (Time & Outcome)
+  df = c("High Expression", "Low Expression")
   aa.color = NULL
   aa.label = NULL
   
-  for (i in 1:2) {
+  for (i in 1:length(df)) {
     
     col = current.color(i)
     s=selectizeInput(paste0("colorDE",i), "",choices = colors(), width = '150px', selected = col) 
@@ -135,10 +138,10 @@ formatTableDE2 <-reactive({
   aa.color = gsub("<label[ -=A-Za-z0-9\"]*></label>", "", aa.color)
   
   
-  df = cbind(df, aa.label, aa.color)
+  df = cbind(df, aa.color)
   df_rows <- apply(df, 1, row_html) 
   
-  header = c("Group", "Label", "Color")
+  header = c("Expression Level", "Color")
   header = row_html(header, TRUE)
   
   df_rows = c(header, df_rows)
@@ -159,7 +162,7 @@ labelsDE3 <-reactive({reactiveFormat3$labels})
 
 ## get current colors ##
 colorsDE3 <-reactive({
-  names = paste0("colorDE", 1:length(isolate(c(input$survTimeU, input$survOutcomeUI))))
+  names = paste0("colorDE", 1:length(isolate(c("High Expression", "Low Expression"))))
   #  cat("names = ", names, "\n")
   vals = NULL
   for (n in names) {
@@ -171,7 +174,7 @@ colorsDE3 <-reactive({
 })
 
 labelsDE3 <-reactive({
-  names = paste0("labelDE", 1:length(isolate(c(input$survTimeU, input$survOutcomeUI))))
+  names = paste0("labelDE", 1:length(isolate(c("High Expression", "Low Expression"))))
   #cat("names = ", names, "\n")
   vals = NULL
   for (n in names) {
@@ -188,7 +191,7 @@ observeEvent(input$parseEnter, { # trigger is the submit button on the edit bsmo
   # default colors are returned
   #reactiveColors$DE = colorsDE2()  
   reactiveFormat3$colorsDE3 = current.color(1:2)
-  reactiveFormat3$labels = c(input$survTimeU, input$survOutcomeUI)
+  reactiveFormat3$labels = c("High Expression", "Low Expression")
 })
 
 observeEvent(input$applyFormatDE2, { # trigger on bsmodal opening button

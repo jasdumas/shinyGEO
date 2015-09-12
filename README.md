@@ -17,7 +17,7 @@ shinyGEO (Project Name: GEO-AWS / Gene Expression Omnibus Analysis with Shiny) i
 5. This project depends on some development versions of pacakge(s): 
 `devtools::install_github('rstudio/DT')`
 
-6. In the console `library(shiny)` then `runApp("GEO-AWS")`
+6. In the console `library(shiny)` then `runApp("shinyGEO")`
 
 7. Feel free to test out the tool functionality by entering the GEO Accession number: [GSE19915](http://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE19915) which includes survival characterstics to generate Kaplan-Meier curves under the Analyses tab menu.
 

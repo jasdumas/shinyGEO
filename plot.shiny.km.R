@@ -13,7 +13,8 @@
 # Note: function requires survival library
 ###################################################################################
 
-plot.shiny.km <- function(time, death, x, title = "", legend.loc = "bottomleft", 
+plot.shiny.km <- function(time, death, x, title = "", 
+                          #legend.loc = "bottomleft", 
                           no.plot = FALSE, 
                           subset = rep(TRUE, length(time)), 
                           col = NULL,  ...) {
@@ -59,11 +60,17 @@ plot.shiny.km <- function(time, death, x, title = "", legend.loc = "bottomleft",
     return(data.frame(hr = hr, p.km = p.km))
   }
   
+  ## plot graph ### ggplot2/GGally form
+  km.group1 = survfit(Surv(time, death) ~ x)
+  km.group = ggsurv(km.group1, 
+                    main = title, xlab = "Time", ylab = "Survival",
+                    surv.col = col, cens.col = "black") 
   
-  if (is.null(col)) col = 1 # gives defaults colors if user has not changed them (black now)
-    
+  
+  if (is.null(col)) col = col
   plot(km.group, ...)
-   
+  #legend(legend.loc, legend = levels(x), col = col, lty = 1:n)
+  
   if (!is.null(title)) {
     hr.str = "" 
     p.str = paste("P = ", round(p.km,4), sep = "")
@@ -72,13 +79,6 @@ plot.shiny.km <- function(time, death, x, title = "", legend.loc = "bottomleft",
     }
     if (title!="") title = paste(title, "\n", sep = "")
     title = paste(title, hr.str, p.str)
-  #  title(title)
+    title(title)
   }
 }
-
-## plot graph ggplot2/GGally format
-km.group1 = survfit(Surv(time, death) ~ x)
-km.group = ggsurv(km.group1, 
-                  main = title, xlab = "Time", ylabel = "Survival",
-                  surv.col = col, cens.col = "black")     
-
