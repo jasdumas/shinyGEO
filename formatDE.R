@@ -1,5 +1,5 @@
 current.color <-function(i) {
-  i = (i-1)%%length(palette())+1
+  i = (i-1)%%length(palette(c("red", "blue")))+1
   palette()[i]
 }
 
@@ -156,12 +156,12 @@ formatTableDE2 <-reactive({
 
 
 ### store current colors and labels
-reactiveFormat3 = reactiveValues(colorsDE = NULL, labels = NULL)
+reactiveFormat3 = reactiveValues(colorsDE3 = NULL, labels = NULL)
 colorsDE3 <-reactive({reactiveFormat3$colorsDE3})
 labelsDE3 <-reactive({reactiveFormat3$labels})
 
 ## get current colors ##
-colorsDE3 <-reactive({
+colorsDE4 <-reactive({
   names = paste0("colorDE", 1:length(isolate(c("High Expression", "Low Expression"))))
   #  cat("names = ", names, "\n")
   vals = NULL
@@ -185,7 +185,7 @@ labelsDE3 <-reactive({
 })
 
 
-observeEvent(input$parseEnter, { # trigger is the submit button on the edit bsmodal for the time/outcome
+observeEvent(input$submitButton, { # trigger is the GSE submit button so the graph appears initially
   # Note: The statement below does not work because colorsDE2() searches colors
   # before the selectInput boxes are created. Therefore, the
   # default colors are returned
@@ -194,8 +194,8 @@ observeEvent(input$parseEnter, { # trigger is the submit button on the edit bsmo
   reactiveFormat3$labels = c("High Expression", "Low Expression")
 })
 
-observeEvent(input$applyFormatDE2, { # trigger on bsmodal opening button
-  reactiveFormat3$colorsDE3 = colorsDE3()
+observeEvent(input$applyFormatDE2, { # trigger on Save Changes button within bsModal
+  reactiveFormat3$colorsDE3 = colorsDE4()
   reactiveFormat3$labels = labelsDE3()
 })
 

@@ -170,7 +170,7 @@ source("html.R")
                                   tags$div(HTML("<hr style = \"background-color: red; height:4px\">")), 
                                   uiOutput("SurvMessage"),
                                   actionButton("formatDEButton2", "Format Graph"), # add on
-                                  formatBSModal("Format2", "Format", "formatDEButton2", applyID = "applyFormatDE2", size = "small",
+                                  formatBSModal("Format2", "Format", "formatDEButton2", applyID = "applyFormatDE2", size = "large",
                                                 htmlOutput("formatDE2")),
                                   actionButton("Survadd", "Append to Report"),
                                   shinyBS::bsModal("parseModal", "Selected Survival Analysis Parameters", "parseButton", size = "large",
@@ -178,7 +178,7 @@ source("html.R")
                                                              column(4, textInput("survfind", label = "Find", value = "")),
                                                              column(4, textInput("survreplace", label = "Replace", value = "")),
                                                              column(4, actionButton("parseEnter", label = "Submit"), 
-                                                                    actionButton("undo", label="Revert Changes")) # not valid as a revert yet
+                                                                     actionButton("undo", label="Revert Changes")) # not valid as a revert yet
                                                            ),
                                                            DT::dataTableOutput("selectedCols")
                                                            #print("in parseModal window...")
