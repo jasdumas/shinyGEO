@@ -1,5 +1,12 @@
 current.color <-function(i) {
-  i = (i-1)%%length(palette(c("red", "blue")))+1
+  i = (i-1)%%length(palette("default"))+1
+  palette()[i]
+}
+
+# keeps the km default colors separate from the DE plot
+current.color.km <-function(i) {
+  new.palette = palette(c("red", "blue"))
+  i = (i-1)%%length(new.palette)+1
   palette()[i]
 }
 
@@ -117,7 +124,7 @@ formatTableDE2 <-reactive({
   
   for (i in 1:length(df)) {
     
-    col = current.color(i)
+    col = current.color.km(i)
     s=selectizeInput(paste0("colorDE",i), "",choices = colors(), width = '150px', selected = col) 
     s[[2]]$class = ""  # remove class
     s[[3]][[1]] = NULL # remove label
@@ -190,7 +197,7 @@ observeEvent(input$submitButton, { # trigger is the GSE submit button so the gra
   # before the selectInput boxes are created. Therefore, the
   # default colors are returned
   #reactiveColors$DE = colorsDE2()  
-  reactiveFormat3$colorsDE3 = current.color(1:2)
+  reactiveFormat3$colorsDE3 = current.color.km(1:2)
   reactiveFormat3$labels = c("High Expression", "Low Expression")
 })
 

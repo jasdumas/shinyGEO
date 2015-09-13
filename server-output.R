@@ -275,8 +275,13 @@ output$exProfiles <- renderPlot({
   par(mar=c(2+round(max(nchar(sampleNames(dataInput())))/2),4,2,1))
   title <- paste(isolate(input$GSE), '/', isolate(input$platform), title.detail, sep ='') # need 
   
-  x1 = melt(x)
-  #View(x1)  # to get aes(); X2 column header for GSMXXX values
+  library(tidyr)
+  #x1 = gather(data = x, na.rm =TRUE)
+  x1 = melt(x, na.rm = TRUE, 
+            variable.name = "Var2", 
+            value.name = "value")
+  View(head(x))
+  View(head(x1))  # to get aes(); X2 column header for GSMXXX values
   new <- ggplot(x1, aes(as.factor(Var2), value)) + geom_boxplot(outlier.colour = "green")
   r = (new + labs(title = title, y = y.label, x = "")+ theme(axis.text.x = element_text(angle = 90, hjust = 1))) 
   print(r)
@@ -339,29 +344,33 @@ output$knitDoc <- renderUI({
   input$DEadd
   input$Survadd
   return(isolate(HTML(knit2html(text = input$rmd, fragment.only = TRUE, quiet = TRUE))))
-  #isolate(HTML(knit2html(text = input$rmd, fragment.only = TRUE, quiet = TRUE))) # trial without return 
-})  
+  })  
    
 ### Download knitr report ###
 output$downloadData <- downloadHandler(
-  filename = function() { 
-    paste("report.Rmd") 
-  },
+  #filename = function() { 
+  #  paste("report.Rmd") 
+  #},
   
+  filename = 'report.pdf',
   content = function(file) {
-    src <- normalizePath('report.Rmd')
+    #src <- normalizePath('report.Rmd')
     
     # temporarily switch to the temp dir, in case you do not have write
     # permission to the current working directory
-    owd <- setwd(tempdir())
-    on.exit(setwd(owd))
-    file.copy(src, 'report.Rmd')
+    #owd <- setwd(tempdir())
+    #on.exit(setwd(owd))
+    #file.copy(src, 'report.Rmd')
   
     library(rmarkdown)
     
-    out <- render('report.Rmd')
+    #out <- render('report.Rmd')
+    out = knit2pdf('report.Rmd', clean = TRUE)
     file.rename(out, file)
   
-  }
+  }, 
+  contentType = "text/pdf"
+  #library(tools)
+  #tools::texi2dvi(filename)
 )
 

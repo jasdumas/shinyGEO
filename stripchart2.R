@@ -45,7 +45,7 @@ stripchart2 <- function(x,y, group.names = NULL, jitter = 0.3, line.off = 0.3,
   
   #jd
   m = melt(s, na.rm=TRUE)
-  #View(m)
+  View(m)
   stripchart3 <- ggplot(m, aes(x = as.factor(L1), y = value, color=L1)) 
   return(stripchart3 + 
            labs(title = main, y = "log2 expression", x="") +
