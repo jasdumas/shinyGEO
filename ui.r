@@ -1,11 +1,14 @@
 library(shinyAce)
 library(RCurl)
 library(shinyBS)
+library(rmarkdown)
+library(shinythemes)
 
 source("html.R")
 
 #shinyUI(fluidPage(title = "GEO-AWS",
- shinyUI(bootstrapPage(    
+ shinyUI(bootstrapPage(
+   theme = shinytheme("cerulean"),    
 
   tags$style(type="text/css", "body {padding: 70px;}"),
      
