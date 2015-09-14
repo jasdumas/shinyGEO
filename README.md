@@ -28,6 +28,8 @@ shinyGEO (Project Name: GEO-AWS / Gene Expression Omnibus Analysis with Shiny) i
   `library(shinyGEO)`
 
   `runGitHub("shinyGEO", "jasdumas")`
+  
+9. runUrl('https://github.com/jasdumas/shinyGEO/archive/master.zip')
 
 ## Find out more
 _Feel free to check out my project [wiki](https://github.com/jasdumas/GEO-AWS/wiki)_
