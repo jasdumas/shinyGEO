@@ -21,7 +21,7 @@ source("html.R")
    ############################################################
    # Navigation Bar
    ############################################################
-   navbarPage("GEO-AWS", id = "tabs", inverse = TRUE, position = "fixed-top",
+   navbarPage("shinyGEO", id = "tabs", inverse = TRUE, position = "fixed-top",
               collapsible = TRUE,
               header = list(
                 ############################################################
@@ -217,7 +217,7 @@ source("html.R")
                                   
                                   fluidRow( 
                                     column(7, 
-                                           HTML("<span style = \"color: blue; font-size: 22px\"> GEO-AWS Report </span>"),
+                                           HTML("<span style = \"color: blue; font-size: 22px\"> shinyGEO Report </span>"),
                                            htmlOutput("knitDoc") #,
                                     ),
                                     column(5, HTML("<span style = \"color: blue; font-size: 22px\"> Ace Editor </span>"),
@@ -245,14 +245,14 @@ source("html.R")
                         tags$li("Select Characteristic Column that contains info on 'Outcome' at Event"),
                         tags$li("Format 'Time' and 'Outcome' Columns"), 
                         tags$li("View Survival Analysis Kaplan-Meier Plot"), 
-                        tags$li("Append Desired Plots to the Reporducible Report")
+                        tags$li("Append Desired Plots to the Reproducible Report")
                       ),
                     
                        hr(),  
                        
                        h3("Authors"),
                        HTML("<span style = \"font-weight: bold\"> Jasmine Dumas </span>"),
-                       HTML("is a MSc. Graduate Student in the Predictive Analytics program at DePaul University (Chicago, IL).
+                       HTML("is a MSc. Graduate Student in the Predictive Analytics program at DePaul University (Chicago, IL, Online).
                             Jasmine has a BSE in Biomedical Engineering from the University of Hartford
                             and a Professional Certificate in Medical Product Develpment from UCI Extension."), 
                        a("Github Profile", href ="https://github.com/jasdumas"), HTML("<span class= \"label label-primary\">Package Maintainer</span>"),
