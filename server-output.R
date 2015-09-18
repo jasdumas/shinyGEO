@@ -275,16 +275,22 @@ output$exProfiles <- renderPlot({
   par(mar=c(2+round(max(nchar(sampleNames(dataInput())))/2),4,2,1))
   title <- paste(isolate(input$GSE), '/', isolate(input$platform), title.detail, sep ='') # need 
   
-  library(tidyr)
+  #library(tidyr) # possible move from reshape2 to tidyr
   #x1 = gather(data = x, na.rm =TRUE)
-  x1 = melt(x, na.rm = TRUE, 
-            variable.name = "Var2", 
+  fixed.df <- as.data.frame(x=x, stringsAsFactors = FALSE)
+  
+  x1 <- reshape2::melt(fixed.df, na.rm = TRUE, 
+            variable.name = "variable", 
             value.name = "value")
   View(head(x))
   View(head(x1))  # to get aes(); X2 column header for GSMXXX values
-  new <- ggplot(x1, aes(as.factor(Var2), value)) + geom_boxplot(outlier.colour = "green")
-  r = (new + labs(title = title, y = y.label, x = "")+ theme(axis.text.x = element_text(angle = 90, hjust = 1))) 
-  print(r)
+  
+  exp.prof.plot <- ggplot(x1, aes(variable, value)) + 
+                geom_boxplot(outlier.colour = "green") +
+                labs(title = title, y = y.label, x = "") + 
+                theme(axis.text.x = element_text(angle = 90, hjust = 1))
+  
+  print(exp.prof.plot)
   
   closeAlert(session, "Expression-alert")
   
