@@ -4,7 +4,7 @@ library(DT)  ## tested on development version 0.1.32
 library(shiny)
 library(GEOquery)
 library(Biobase)
-library(reshape2)
+library(reshape2) ## needs to be loaded before GGally
 library(survival)
 library(affy)
 library(limma)
@@ -13,6 +13,8 @@ library(GGally)
 library(ggplot2)
 library(shinyAce)
 library(knitr)
+library(rmarkdown)
+library(RCurl)
 
 source("stripchart2.R")
 source("plot.shiny.km.R")

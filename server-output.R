@@ -346,31 +346,35 @@ output$knitDoc <- renderUI({
   return(isolate(HTML(knit2html(text = input$rmd, fragment.only = TRUE, quiet = TRUE))))
   })  
    
+# a reactive to supply the content function with the text from the aceEditor
+knit.report <- reactive({
+  knit(text = input$rmd, quiet = TRUE)
+})
 ### Download knitr report ###
 output$downloadData <- downloadHandler(
-  #filename = function() { 
-  #  paste("report.Rmd") 
-  #},
+  filename = function() { 
+    paste("report", "html", sep=".") 
+  },
   
-  filename = 'report.pdf',
   content = function(file) {
-    #src <- normalizePath('report.Rmd')
+    #input$knitDoc ## trial to connect knitr with download button
+    
+    src <- normalizePath('report.Rmd')
     
     # temporarily switch to the temp dir, in case you do not have write
     # permission to the current working directory
-    #owd <- setwd(tempdir())
-    #on.exit(setwd(owd))
-    #file.copy(src, 'report.Rmd')
+    owd <- setwd(tempdir())
+    on.exit(setwd(owd))
+    file.copy(src, 'report.Rmd')
   
     library(rmarkdown)
+    #out <- render('report.Rmd', output_format = html_document())
+    #a <- knit(input$rmd)
+    out <- render(knit.report(), output_format = html_document())
     
-    #out <- render('report.Rmd')
-    out = knit2pdf('report.Rmd', clean = TRUE)
     file.rename(out, file)
   
-  }, 
-  contentType = "text/pdf"
-  #library(tools)
-  #tools::texi2dvi(filename)
+  }
+ 
 )
 

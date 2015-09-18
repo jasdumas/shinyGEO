@@ -775,7 +775,7 @@ observeEvent(input$Survadd, {
   survfunction <- paste0("
                          
 ```{r}
-plot.shiny.km <- function(time, death, x, title = '', legend.loc = 'bottomleft', 
+plot.shiny.km <- function(time, death, x, title = '',  
 no.plot = FALSE, 
 subset = rep(TRUE, length(time)), 
 col = NULL,  ...) {
@@ -813,12 +813,17 @@ n = km.group$n
 if(no.plot) {
 return(data.frame(hr = hr, p.km = p.km))
 }
+
 ## plot graph ##
 km.group1 = survfit(Surv(time, death) ~ x)
-km.group = ggsurv(km.group1) # ggplot2
-if (is.null(col)) col = 1:n
-plot(km.group, col = col, lty = 1:n, ...)
-legend(legend.loc, legend = levels(x), col = col, lty = 1:n)
+
+km.group = ggsurv(km.group1, 
+                    main = title, xlab = 'Time', ylab = 'Survival',
+                    surv.col = col, cens.col = 'black') 
+
+if (is.null(col)) col = col
+plot(km.group, ...)
+
 if (!is.null(title)) {
 hr.str = '' 
 p.str = paste('P = ', round(p.km,4), sep = '')
@@ -840,7 +845,12 @@ survComment <- paste0("
 ```{r, surv.png}
 hi = match(as.character(\"",input$selectProbes, "\"),rownames(data.expr))
 x = data.expr[hi,]
-print(plot.shiny.km(time = as.double( \"", parse.modal(),"\" [,1]), death = as.integer(\"", parse.modal(), "\" [,2]), x = x)
+#print(plot.shiny.km(time = as.double( \"", parse.modal(),"\" [,1]), death = as.integer(\"", parse.modal(), "\" [,2]), x = x)
+
+print(plot.shiny.km(time = as.double(\"",parse.modal(), "\" [,1]), 
+              death = as.integer(\"",parse.modal(), "\" [,2]), 
+              x = x(), 
+              col = as.character(\"", colorsDE3(), "\") ))
  
 ```
 ")
