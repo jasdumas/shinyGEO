@@ -21,7 +21,8 @@ source("html.R")
    ############################################################
    # Navigation Bar
    ############################################################
-   navbarPage("shinyGEO", id = "tabs", inverse = TRUE, position = "fixed-top",
+   navbarPage(title = a(href="https://github.com/jasdumas/shinyGEO/", "shinyGEO"), id = "tabs", inverse = TRUE, position = "fixed-top",
+              windowTitle = "shinyGEO", 
               collapsible = TRUE,
               header = list(
                 ############################################################
@@ -121,7 +122,7 @@ source("html.R")
                                           )
                             )
                          ),
-                         tabPanel("Differential Expression Analysis",  
+                         tabPanel("Differential Expression Analysis", icon = icon("flask"), 
                                                                    
                                   #div(style = "display:inline-block; width:10%",
                                   #    uiOutput('selectedColumn', inline = TRUE)
@@ -152,7 +153,7 @@ source("html.R")
                                   
                          ),
                          
-                         tabPanel("Survival Analysis",
+                         tabPanel("Survival Analysis", icon = icon("life-ring"), 
                                   bsCollapse(id = "SurvDataTable", open = "SurvDataTable",
                                       bsCollapsePanel("Select Time and Outcome From Clinical Data",
                                           div(style = "display:inline-block; width:30%",
@@ -194,8 +195,8 @@ source("html.R")
              # Clinical Data
              ############################################################
              navbarMenu("Clinical Data", icon = icon("table"), 
-                        tabPanel("Clinical Data Summary", DT::dataTableOutput("clinicalDataSummary")),
-                        tabPanel("Full Data Table",  
+                        tabPanel("Clinical Data Summary", DT::dataTableOutput("clinicalDataSummary"), icon = icon("plus-square-o")),
+                        tabPanel("Full Data Table",  icon = icon("plus-square"),
                                  actionButton("tabBut", "Edit Data Table"),
                                  DT::dataTableOutput("clinicalData"), 
                                  shinyBS::bsModal("modalExample", "Edit Data Table", "tabBut", size = "small",
