@@ -80,9 +80,9 @@ source("html.R")
               # Expression Profiles
               ############################################################
               ### add a contiional panel that only show this once loaded
-              tabPanel("Expression Profiles", icon =icon("bars"),
+              tabPanel("Expression Profiles", icon =icon("area-chart"),
                        conditionalPanel(condition = "!input.platform == ''",
-                       helpText("Determine if these samples are fair to compare by observing the graphical appearance of the stripchart and the boxplot values."), 
+                       h4("Determine if these samples are fair to compare by observing the graphical appearance & profiles values."), 
                        radioButtons("radio", label = "Select a method of log transformation to apply to the data", 
                                     choices = list("Auto-Detect" = 1, "Yes" = 2, "No" = 3), 
                                     selected = 1, inline = TRUE), actionButton("exprAdd", "Append to Report"),
@@ -211,9 +211,9 @@ source("html.R")
              # Reproducible Research
              ############################################################
               navbarMenu("Reproducible Research", icon = icon("book"),
-                         tabPanel("Code", 
+                         tabPanel("Code", icon = icon("code"),
                                   aceEditor("myEditor", value = "", mode="r", theme="chrome",readOnly=T, height ="500px" )), 
-                         tabPanel("Report",
+                         tabPanel("Report",  icon = icon("file-text"),
                                   
                                   fluidRow( 
                                     column(7, 

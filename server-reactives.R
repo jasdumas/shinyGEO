@@ -534,7 +534,7 @@ observeEvent(profiles(),  {
   initialCode <- paste0(
      
     "
-```{r}
+```{r, eval = FALSE}
 library(DT)  ## tested on development version 0.1.32
 library(shiny)
 library(GEOquery)
@@ -606,12 +606,20 @@ y.label = 'Expression'
 }
 #par(mar=c(2+round(max(nchar(sampleNames(\"",input$GSE, "\")))/2),4,2,1))
 title <- paste(isolate(\"", input$GSE, "\"), '/', isolate(\"",input$platform, "\") , title.detail, sep ='') 
-x1 = melt(x)
-r <- ggplot(x1, aes(as.factor(Var2), value)) + 
-geom_boxplot(outlier.colour = 'green') +
-labs(title = title, y = y.label, x = '') + 
-theme(axis.text.x = element_text(angle = 90, hjust = 1)) 
-print(r)
+
+
+fixed.df <- as.data.frame(x=x, stringsAsFactors = FALSE)
+  
+  x1 <- reshape2::melt(fixed.df, na.rm = TRUE, 
+            variable.name = 'variable', 
+            value.name = 'value')
+  
+  exp.prof.plot <- ggplot(x1, aes(variable, value)) + 
+                geom_boxplot(outlier.colour = 'green') +
+                labs(title = title, y = y.label, x = '') + 
+                theme(axis.text.x = element_text(angle = 90, hjust = 1))
+  
+  print(exp.prof.plot)
 ```
 ") # end of paste
   add.graph(exp)

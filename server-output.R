@@ -354,7 +354,7 @@ output$knitDoc <- renderUI({
    
 # a reactive to supply the content function with the text from the aceEditor
 knit.report <- reactive({
-  knit(text = input$rmd, quiet = TRUE)
+  knit2html(text = input$rmd, quiet = TRUE)
 })
 ### Download knitr report ###
 output$downloadData <- downloadHandler(
