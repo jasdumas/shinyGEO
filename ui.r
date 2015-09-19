@@ -6,7 +6,7 @@ source("html.R")
 
 #shinyUI(fluidPage(title = "GEO-AWS",
  shinyUI(bootstrapPage(    
-
+ theme = "ecsu.css", 
   tags$style(type="text/css", "body {padding: 70px;}"),
      
    #######################################################################
@@ -21,7 +21,8 @@ source("html.R")
    ############################################################
    # Navigation Bar
    ############################################################
-   navbarPage(title = a(href="https://github.com/jasdumas/shinyGEO/", "shinyGEO"), id = "tabs", inverse = TRUE, position = "fixed-top",
+   navbarPage(title = a(href="https://github.com/jasdumas/shinyGEO/", "shinyGEO"), 
+              id = "tabs", inverse = TRUE, position = "fixed-top",
               windowTitle = "shinyGEO", 
               collapsible = TRUE,
               header = list(
@@ -65,8 +66,8 @@ source("html.R")
                 
                 uiOutput("test"),
                 uiOutput("test2"),
-                
-                div(style = "position: relative; top: -20px", HTML("<hr style = \"background-color: black; height:3px;\">")),
+                hr(), # new ecsu.css file with defaults
+                #div(style = "position: relative; top: -20px", HTML("<hr style = \"background-color: black; height:3px;\">")),
                 
                 bsAlert("alert"),
                 conditionalPanel(condition="$('html').hasClass('shiny-busy')",  
@@ -167,8 +168,8 @@ source("html.R")
                                              )
                                   ),
                                   
-                                  
-                                  tags$div(HTML("<hr style = \"background-color: red; height:4px\">")), 
+                                  hr(),
+                                  #tags$div(HTML("<hr style = \"background-color: red; height:4px\">")), 
                                   uiOutput("SurvMessage"),
                                   actionButton("formatDEButton2", "Format Graph"), # add on
                                   formatBSModal("Format2", "Format", "formatDEButton2", applyID = "applyFormatDE2", size = "large",
