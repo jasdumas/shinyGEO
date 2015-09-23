@@ -6,7 +6,7 @@ source("html.R")
 
 #shinyUI(fluidPage(title = "GEO-AWS",
  shinyUI(bootstrapPage(    
- theme = "ecsu.css", 
+ #theme = "ecsu.css", 
   tags$style(type="text/css", "body {padding: 70px;}"),
      
    #######################################################################
@@ -21,7 +21,7 @@ source("html.R")
    ############################################################
    # Navigation Bar
    ############################################################
-   navbarPage(title = a(href="https://github.com/jasdumas/shinyGEO/", "shinyGEO"), 
+   navbarPage(title = "shinyGEO", 
               id = "tabs", inverse = TRUE, position = "fixed-top",
               windowTitle = "shinyGEO", 
               collapsible = TRUE,
@@ -60,7 +60,8 @@ source("html.R")
                     actionButton("PlatformInfoButton", "Platform Information") 
                 ),
                 
-                shinyBS::bsModal("PlatformLinks", HTML("Available Platforms<br>(More Information)"), "PlatformInfoButton", size = "small",
+                shinyBS::bsModal("PlatformLinks", HTML("Available Platforms<br>(More Information)"), 
+                                 "PlatformInfoButton", size = "small", 
                                  uiOutput("PlatformLinks")
                 ),
                 
@@ -196,8 +197,9 @@ source("html.R")
              # Clinical Data
              ############################################################
              navbarMenu("Clinical Data", icon = icon("table"), 
-                        tabPanel("Clinical Data Summary", DT::dataTableOutput("clinicalDataSummary"), icon = icon("plus-square-o")),
+                        tabPanel("Clinical Data Summary", h3("Clinical Data Summary"), DT::dataTableOutput("clinicalDataSummary"), icon = icon("plus-square-o")),
                         tabPanel("Full Data Table",  icon = icon("plus-square"),
+                                 h3("Clinical Data"),
                                  actionButton("tabBut", "Edit Data Table"),
                                  DT::dataTableOutput("clinicalData"), 
                                  shinyBS::bsModal("modalExample", "Edit Data Table", "tabBut", size = "small",
@@ -214,19 +216,25 @@ source("html.R")
              ############################################################
               navbarMenu("Reproducible Research", icon = icon("book"),
                          tabPanel("Code", icon = icon("code"),
-                                  aceEditor("myEditor", value = "", mode="r", theme="chrome",readOnly=T, height ="500px" )), 
+                                  #aceEditor("myEditor", value = "", mode="r", theme="chrome",readOnly=T, height ="500px" )
+                                  h3("Editor"),
+                                  aceEditor("rmd", mode="markdown", value='',readOnly=T, height="300px")), 
+                         
                          tabPanel("Report",  icon = icon("file-text"),
                                   
-                                  fluidRow( 
-                                    column(7, 
-                                           HTML("<span style = \"color: blue; font-size: 22px\"> shinyGEO Report </span>"),
-                                           htmlOutput("knitDoc") #,
-                                    ),
-                                    column(5, HTML("<span style = \"color: blue; font-size: 22px\"> Ace Editor </span>"),
-                                           aceEditor("rmd", mode="markdown", value='',readOnly=T, height="500px")
-                                    ) 
+                                  h3("Report"),
+                                  htmlOutput("knitDoc")
+                                  
+                                  #fluidRow( 
+                                   # column(7, 
+                                   #        h3("Report"),
+                                   #        htmlOutput("knitDoc") #,
+                                   # ),
+                                   # column(5, h3("Editor") #,
+                                           #aceEditor("rmd", mode="markdown", value='',readOnly=T, height="500px")
+                                   # ) 
                                     
-                                  ) # fluid row
+                                  #) # fluid row
                          )), # end of tab report panel
               
               tabPanel("About", icon = icon("info-circle"),
