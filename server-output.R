@@ -80,8 +80,8 @@ updateSelectizeInput(session, inputId='platform', server = TRUE,
 
 
 if (!is.null(pl)) {
-createAlert(session, "alert", alertId = "GPL-alert", title = "Attention Needed", style = "success",
-            content = "Please select a platform to continue", append = TRUE, dismiss = FALSE) 
+createAlert(session, "alert1", alertId = "GPL-alert", title = "Please select a platform to continue", style = "danger",
+            content = NULL, append = TRUE, dismiss = FALSE) 
 }
 
 })
@@ -269,7 +269,7 @@ output$exProfiles <- renderPlot({
   closeAlert(session, "GPL-alert")
 
   cat("create expression alert\n")
-  createAlert(session, "alert", alertId = "Expression-alert", title = "Current Status", style = "info",
+  createAlert(session, "alert1", alertId = "Expression-alert", title = "Current Status", style = "info",
                content = "Generating boxplot of expression data", append = TRUE, dismiss = FALSE) 
   
   par(mar=c(2+round(max(nchar(sampleNames(dataInput())))/2),4,2,1))
@@ -282,8 +282,8 @@ output$exProfiles <- renderPlot({
   x1 <- reshape2::melt(fixed.df, na.rm = TRUE, 
             variable.name = "variable", 
             value.name = "value")
-  View(head(x))
-  View(head(x1))  # to get aes(); X2 column header for GSMXXX values
+#  View(head(x))
+#  View(head(x1))  # to get aes(); X2 column header for GSMXXX values
   
   exp.prof.plot <- ggplot(x1, aes(variable, value)) + 
                 geom_boxplot(outlier.colour = "green") +

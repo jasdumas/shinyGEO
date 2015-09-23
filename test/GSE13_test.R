@@ -1,9 +1,9 @@
 GSE = "GSE13"
 GPL = "GPL75"
-PROBE = "aa253688_s_at"
+PROBE = "aa216813_s_at"
 LOG2 = TRUE
-DE.column = "geo_accession"
-DE.groups = c("GSM610")
+DE.column = "source_name_ch1"
+DE.groups = c("Large Pre-BII cells","Pre BI cells","Pre-BI cells","Small Pre-BII cells")
 
 ##################################################################
 # Analysis settings
