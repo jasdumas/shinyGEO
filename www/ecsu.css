@@ -5915,9 +5915,11 @@ button.close {
   border: 0;
   -webkit-appearance: none;
 }
+/*
 .modal-open {
   overflow: hidden;
 }
+
 .modal {
   display: none;
   overflow: hidden;
@@ -5930,6 +5932,7 @@ button.close {
   -webkit-overflow-scrolling: touch;
   outline: 0;
 }
+
 .modal.fade .modal-dialog {
   -webkit-transform: translate(0, -25%);
   -ms-transform: translate(0, -25%);
@@ -5939,21 +5942,25 @@ button.close {
   -o-transition: -o-transform 0.3s ease-out;
   transition: transform 0.3s ease-out;
 }
+
 .modal.in .modal-dialog {
   -webkit-transform: translate(0, 0);
   -ms-transform: translate(0, 0);
   -o-transform: translate(0, 0);
   transform: translate(0, 0);
 }
+
 .modal-open .modal {
   overflow-x: hidden;
   overflow-y: auto;
 }
+
 .modal-dialog {
   position: relative;
   width: auto;
   margin: 10px;
 }
+
 .modal-content {
   position: relative;
   background-color: #ffffff;
@@ -5966,6 +5973,7 @@ button.close {
           background-clip: padding-box;
   outline: 0;
 }
+
 .modal-backdrop {
   position: fixed;
   top: 0;
@@ -5975,14 +5983,18 @@ button.close {
   z-index: 1040;
   background-color: #000000;
 }
+*/
 .modal-backdrop.fade {
   opacity: 0;
   filter: alpha(opacity=0);
 }
+
 .modal-backdrop.in {
-  opacity: 0.5;
+  opacity: 0;
   filter: alpha(opacity=50);
 }
+
+/*
 .modal-header {
   padding: 15px;
   border-bottom: 1px solid #e5e5e5;
@@ -5991,6 +6003,7 @@ button.close {
 .modal-header .close {
   margin-top: -2px;
 }
+/*
 .modal-title {
   margin: 0;
   line-height: 1.42857143;
@@ -6021,24 +6034,30 @@ button.close {
   height: 50px;
   overflow: scroll;
 }
+
 @media (min-width: 768px) {
   .modal-dialog {
     width: 600px;
     margin: 30px auto;
   }
+
   .modal-content {
     -webkit-box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
   }
+
   .modal-sm {
     width: 300px;
+    position: absolute;
   }
 }
+  /*
 @media (min-width: 992px) {
   .modal-lg {
     width: 900px;
   }
 }
+*/
 .tooltip {
   position: absolute;
   z-index: 1070;
@@ -6535,11 +6554,13 @@ button.close {
 .pager:after,
 .panel-body:before,
 .panel-body:after,
+/*
 .modal-footer:before,
 .modal-footer:after {
   content: " ";
   display: table;
 }
+*/
 .clearfix:after,
 .dl-horizontal dd:after,
 .container:after,
@@ -6554,9 +6575,12 @@ button.close {
 .navbar-collapse:after,
 .pager:after,
 .panel-body:after,
+
+/*
 .modal-footer:after {
   clear: both;
 }
+*/
 .center-block {
   display: block;
   margin-left: auto;

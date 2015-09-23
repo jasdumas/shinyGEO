@@ -19,7 +19,7 @@ tab.about = tabPanel("About", icon = icon("info-circle"),
         tags$li("Append Desired Plots to the Reproducible Report")
     ),
                     
-    hr(),  
+    shiny::hr(),  
                        
     h3("Authors"),
     HTML("<span style = \"font-weight: bold\"> Jasmine Dumas </span>"),

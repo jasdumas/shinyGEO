@@ -90,7 +90,7 @@ tab.survival.analysis = tabPanel("Survival Analysis", icon = icon("life-ring"),
             )
     ),
          
-    hr(),
+    shiny::hr(),
     #tags$div(HTML("<hr style = \"background-color: red; height:4px\">")), 
     uiOutput("SurvMessage"),
     actionButton("formatDEButton2", "Format Graph"), # add on

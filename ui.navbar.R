@@ -47,7 +47,7 @@ navbar.header = list(
     bsAlert("alert2"),
     #uiOutput("test"),
     #uiOutput("test2"),
-    hr(), # new ecsu.css file with defaults
+    shiny::hr(), # new ecsu.css file with defaults
     #div(style = "position: relative; top: -20px", HTML("<hr style = \"background-color: black; height:3px;\">")),
                 
     conditionalPanel(condition="$('html').hasClass('shiny-busy')",  
