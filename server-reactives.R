@@ -2,11 +2,18 @@
 ## Reactives
 #############################################################################
 
+createAlert(session, "alert1", alertId = "GSE-alert", 
+            title = "Enter a GSE accession number and click the Submit button to begin", style = "danger",
+            content = NULL, append = TRUE, dismiss = FALSE) 
+
 ###################################################
 # Edit table reactiveValues()
 ###################################################
 values.edit <- reactiveValues(table = NULL, platformGeneColumn = NULL, original = NULL, log2 = FALSE)
 reproducible <-reactiveValues(code = NULL, report = NULL)
+
+GLOBAL <-reactiveValues(needGSE = TRUE)
+
 
 ### functions to append/aggregate a new line to the aceEditor
 add.line <-function(line) {
@@ -41,8 +48,13 @@ observeEvent(reproducible$report, {
                   mode = "markdown", theme = "chrome")
 })
 
-observe({
+observeEvent(input$tabs,{
   cat("selected tab = ", input$tabs, "\n")  
+  if (is.null(dataInput())) {
+      updateTabsetPanel(session, "tabs", selected = "Expression Profiles")
+      closeAlert(session, "Gene-alert")
+  }
+  
 })
 
 
@@ -62,7 +74,7 @@ dataInput <- reactive({
   closeAlert(session, "GSE-alert")
   closeAlert(session, "GPL-alert")
   cat("creating alert...\n")
-   createAlert(session, "alert", alertId = "GSE-alert", title = "Current Status", style = "info",
+   createAlert(session, "alert1", alertId = "GSE-alert", title = "Current Status", style = "info",
               content = "Downloading Series (GSE) data from GEO", append = TRUE, dismiss = FALSE) 
   code = paste0("data.series = getGEO(GEO = \"", GSE, "\", AnnotGPL = FALSE, getGPL = FALSE)")
   add.line(code)
@@ -107,7 +119,7 @@ platInfo <- reactive({
 ")
   add.line(code)
   closeAlert(session, "GPL-alert")
-  createAlert(session, "alert", alertId = "GPL-alert", title = "Current Status", style = "info",
+  createAlert(session, "alert1", alertId = "GPL-alert", title = "Current Status", style = "info",
               content = "Downloading platform (GPL) data from GEO", append = TRUE, dismiss = FALSE) 
   
   a = isolate(Platforms())
@@ -149,7 +161,7 @@ geneNames <- reactive ({
     m = check.names%in%colnames(platInfo()) 
     w = which(m)
     if (length(w) == 0) {
-      createAlert(session, "alert", alertId = "geneSymbolAlert", title = "Could not find gene symbol", style = "danger",
+      createAlert(session, "alert2", alertId = "geneSymbolAlert", title = "Could not find gene symbol", style = "danger",
                   content = "A gene symbol for this platform could not be found. Please select another platform or analyze another dataset.", 
                   append = FALSE, dismiss = FALSE)
       values.edit$platformGeneColumn = NULL
