@@ -18,7 +18,7 @@ source("html.R")
    ############################################################
    # Navigation Bar
    ############################################################
-   navbarPage(title = a(href="https://github.com/jasdumas/shinyGEO/", "shinyGEO"), 
+   navbarPage(title ="shinyGEO", 
               id = "tabs", inverse = TRUE, position = "fixed-top",
               windowTitle = "shinyGEO", 
               collapsible = TRUE,

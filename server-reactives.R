@@ -546,7 +546,7 @@ observeEvent(profiles(),  {
   initialCode <- paste0(
      
     "
-```{r, eval = FALSE}
+```{r}
 library(DT)  ## tested on development version 0.1.32
 library(shiny)
 library(GEOquery)
@@ -584,7 +584,7 @@ observeEvent(input$exprAdd, {
 
   exp <- paste0( "#### Expression Profiles Plot\n",
     "
-```{r, expr.png}
+```{r}
 
 ex <- data.expr
 if (is.null(ex)) return (NULL)
@@ -693,7 +693,7 @@ observeEvent(input$DEadd, {
   s2function <- paste0("#### Differential Expression Plot",
                        
 "
-```{r, }
+```{r}
 
 stripchart2 <- function(x,y, group.names = NULL, jitter = 0.3, line.off = 0.3, 
 lwd = 5, col = NULL, main = '', mark = 'mean') {
@@ -757,7 +757,7 @@ if (identical(s2function, s2function)) {
   
   s3plot <- paste0(
 "
-```{r, DE.png} 
+```{r} 
 
 yeah = match(as.character(\"",input$selectProbes, "\"),rownames(data.expr))
 x = data.expr[yeah,] 
@@ -862,7 +862,7 @@ add.graph(survfunction)
 
 survComment <- paste0("
                       
-```{r, surv.png}
+```{r}
 hi = match(as.character(\"",input$selectProbes, "\"),rownames(data.expr))
 x = data.expr[hi,]
 #print(plot.shiny.km(time = as.double( \"", parse.modal(),"\" [,1]), death = as.integer(\"", parse.modal(), "\" [,2]), x = x)

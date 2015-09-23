@@ -376,7 +376,7 @@ output$downloadData <- downloadHandler(
     library(rmarkdown)
     #out <- render('report.Rmd', output_format = html_document())
     #a <- knit(input$rmd)
-    out <- render(knit.report(), output_format = html_document())
+    out <- render(input$rmd, output_format = html_document())
     
     file.rename(out, file)
   
