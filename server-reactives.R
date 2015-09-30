@@ -545,8 +545,7 @@ observeEvent(profiles(),  {
   if (TRACE) cat("In Initial...\n")
   initialCode <- paste0(
      
-    "
-```{r}
+"
 library(DT)  ## tested on development version 0.1.32
 library(shiny)
 library(GEOquery)
@@ -565,7 +564,7 @@ data.platform = getGEO(\"", Platforms()[platformIndex()],  "\")
 data.index = match(\"", Platforms()[platformIndex()], "\", sapply(data.series, annotation))
 data.p = pData(data.series[[data.index]])
 data.expr = exprs(data.series[[data.index]])
-```
+
     ") # end of paste of intial code download
   
   add.graph(initialCode)
@@ -582,10 +581,8 @@ data.expr = exprs(data.series[[data.index]])
 observeEvent(input$exprAdd, {
   if (TRACE) cat("In report Append for expression profiles...\n")
 
-  exp <- paste0( "#### Expression Profiles Plot\n",
+  exp <- paste0( "## Expression Profiles Plot\n",
     "
-```{r}
-
 ex <- data.expr
 if (is.null(ex)) return (NULL)
 qx <- as.numeric(quantile(ex, c(0., 0.25, 0.5, 0.75, 0.99, 1.0), na.rm=T))
@@ -619,7 +616,6 @@ y.label = 'Expression'
 #par(mar=c(2+round(max(nchar(sampleNames(\"",input$GSE, "\")))/2),4,2,1))
 title <- paste(isolate(\"", input$GSE, "\"), '/', isolate(\"",input$platform, "\") , title.detail, sep ='') 
 
-
 fixed.df <- as.data.frame(x=x, stringsAsFactors = FALSE)
   
   x1 <- reshape2::melt(fixed.df, na.rm = TRUE, 
@@ -632,7 +628,7 @@ fixed.df <- as.data.frame(x=x, stringsAsFactors = FALSE)
                 theme(axis.text.x = element_text(angle = 90, hjust = 1))
   
   print(exp.prof.plot)
-```
+
 ") # end of paste
   add.graph(exp)
   
@@ -650,6 +646,7 @@ quote.it <-function(x) paste0("\"", x, "\"")
 observeEvent(input$DEadd, {
   if (TRACE) cat("In report append DE...\n")
 
+#########################################################  
   cat("outputting test script...\n")
   
   #GSE = "GSE13"
@@ -689,12 +686,11 @@ observeEvent(input$DEadd, {
   cat("\n==========RUNNING TEST ON", test.file, "========\n")
   rmarkdown::render(test.file)
 
+######################################
   
-  s2function <- paste0("#### Differential Expression Plot",
+  s2function <- paste0("## Differential Expression Plot",
                        
 "
-```{r}
-
 stripchart2 <- function(x,y, group.names = NULL, jitter = 0.3, line.off = 0.3, 
 lwd = 5, col = NULL, main = '', mark = 'mean') {
 
@@ -746,7 +742,6 @@ lines(c(i-line.off, i+line.off), c(mm[[i]], mm[[i]]), lwd = lwd)
   }
 }
 
-```
 ")
 
 add.graph(s2function)
@@ -757,8 +752,6 @@ if (identical(s2function, s2function)) {
   
   s3plot <- paste0(
 "
-```{r} 
-
 yeah = match(as.character(\"",input$selectProbes, "\"),rownames(data.expr))
 x = data.expr[yeah,] 
 iv = as.character(\"", input$selectedColumn, "\")
@@ -772,7 +765,6 @@ y = factor(y, levels = input$Group1Values )
 main = paste(input$GSE, input$selectGenes, input$selectProbes, sep = '\')
 print(stripchart2(x,y, group.names = labelsDE(), main = main, col=colorsDE()))
 
-```
 ")
 add.graph(s3plot)
 
@@ -789,12 +781,11 @@ if (identical(s3plot, s3plot)) {
 observeEvent(input$Survadd, {
   if (TRACE) cat("In report Append Observe for Survival...\n")
   
-  survCode <- paste0("#### Survival Analysis Plot") 
+  survCode <- paste0("## Survival Analysis Plot") 
   add.graph(survCode)
   
   survfunction <- paste0("
-                         
-```{r}
+
 plot.shiny.km <- function(time, death, x, title = '',  
 no.plot = FALSE, 
 subset = rep(TRUE, length(time)), 
@@ -856,13 +847,11 @@ title(title)
 }
 }
 
-```
 ")
 add.graph(survfunction) 
 
 survComment <- paste0("
                       
-```{r}
 hi = match(as.character(\"",input$selectProbes, "\"),rownames(data.expr))
 x = data.expr[hi,]
 #print(plot.shiny.km(time = as.double( \"", parse.modal(),"\" [,1]), death = as.integer(\"", parse.modal(), "\" [,2]), x = x)
@@ -871,8 +860,7 @@ print(plot.shiny.km(time = as.double(\"",parse.modal(), "\" [,1]),
               death = as.integer(\"",parse.modal(), "\" [,2]), 
               x = x(), 
               col = as.character(\"", colorsDE3(), "\") ))
- 
-```
+
 ")
 add.graph(survComment)
 
