@@ -345,12 +345,13 @@ output$selectedCols <- DT::renderDataTable({
 ###################
 # Knitr Report
 ###################
-output$knitDoc <- renderUI({
-  input$exprAdd
-  input$DEadd
-  input$Survadd
-  return(isolate(HTML(knit2html(text = input$rmd, fragment.only = TRUE, quiet = TRUE))))
-  })  
+output$knitDoc <- renderPlot(
+  #input$exprAdd
+  #input$DEadd
+  #input$Survadd
+  #return(isolate(HTML(knit2html(text = input$rmd, fragment.only = TRUE, quiet = TRUE))))
+  print(input$exProfiles)
+  )  
    
 # a reactive to supply the content function with the text from the aceEditor
 knit.report <- reactive({

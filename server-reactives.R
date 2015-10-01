@@ -81,6 +81,15 @@ dataInput <- reactive({
   getGEO(GEO = isolate(GSE), AnnotGPL=FALSE, getGPL = FALSE)  
 })
 
+
+####################################
+### display Gene Series Info  ######
+####################################
+
+output$dataInputPrint <- renderPrint({
+  dataInput()
+})
+
 ################################################################
 ### Platforms: returns the platform only if the GSE # is entered 
 ################################################################  
