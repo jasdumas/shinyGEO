@@ -1,5 +1,5 @@
 tab.about = tabPanel("About", icon = icon("info-circle"),
-    HTML("<div class='panel panel-info'>
+    HTML("<div class='panel panel-default'>
   <div class='panel-heading'>
     <h3 class='panel-title'>Directions on Usage</h3>
   </div>
@@ -23,7 +23,7 @@ tab.about = tabPanel("About", icon = icon("info-circle"),
 </div>"),
                    
     shiny::hr(),  
-    HTML("<div class='panel panel-info'>
+    HTML("<div class='panel panel-default'>
   <div class='panel-heading'>
          <h3 class='panel-title'>Authors & Contributors</h3>
          </div>
