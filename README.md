@@ -1,6 +1,8 @@
 # shinyGEO
 shinyGEO (Project Name: GEO-AWS / Gene Expression Omnibus Analysis with Shiny) is a web application to parse, transform, model, and visualize microarray gene expression data sets from the [Gene Expression Omnibus Repository](http://www.ncbi.nlm.nih.gov/geo/browse/) and performs differential expression and survival analyses. This project is currently in **development** as part of the [2015 Google Summer of Code program](http://www.google-melange.com/gsoc/homepage/google/gsoc2015). The current (post-GSoC version) development version as of 21 August 2015 19:00 UTC to the present can be found [here](https://github.com/jasdumas/GEO-AWS) as per the program code submission guidlines.
 
+## Website
+https://jasminedumas.shinyapps.io/shinyGEO
 
 ## Installation
 1. Fork a copy!
@@ -29,7 +31,7 @@ shinyGEO (Project Name: GEO-AWS / Gene Expression Omnibus Analysis with Shiny) i
 
   `runGitHub("shinyGEO", "jasdumas")`
   
-9. runUrl('https://github.com/jasdumas/shinyGEO/archive/master.zip')
+9. `runUrl('https://github.com/jasdumas/shinyGEO/archive/master.zip')`
 
 ## Find out more
 _Feel free to check out my project [wiki](https://github.com/jasdumas/GEO-AWS/wiki)_
@@ -37,6 +39,8 @@ _Feel free to check out my project [wiki](https://github.com/jasdumas/GEO-AWS/wi
 ## Updates
 * 11 SEPTEMBER 2015: This GitHub Repo and corresponding links have be updated to a 
 new name to conform with CRAN naming conventions and for deployment guidelines
+
+* 2 OCTOBER 2015: The application has been deployed to shinyapps.io cloud service at https://jasminedumas.shinyapps.io/shinyGEO Report bugs, glitches, and general comments as this is the first release designated for testing and configuration. 
 
 ## Contribute
 This project is in beta/demonstration only mode and is scheduled to be launched in early Fall 2015. A considerable amount of the features are functional but if you discover a bug or non-working application features with certain data sets, please feel free to submit an [issue](https://github.com/jasdumas/GEO-AWS/issues) or contact the pacakge maintainer.
