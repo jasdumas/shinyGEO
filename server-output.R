@@ -78,15 +78,20 @@ updateSelectizeInput(session, inputId='platform', server = TRUE,
                )
 #}
 
-
 if (!is.null(pl)) {
+	 d = dataInput()
+	 num.samples = sapply(d, function(x) length(sampleNames(x)))
+        num.features = sapply(d, function(x) length(featureNames(x)))
+        annot = sapply(d, annotation)
+        x = paste("There are <b>", num.samples, "</b>samples and<b>", num.features, "</b>features on platform <b>", annot, "</b>")
+#        x = paste("<br>", p, "</br>", collapse = "")
+
+x = paste(x, collapse = "<br>")
 createAlert(session, "alert1", alertId = "GPL-alert", title = "Please select a platform to continue", style = "danger",
-            content = NULL, append = TRUE, dismiss = FALSE) 
+            content = x, append = TRUE, dismiss = FALSE) 
 }
 
 })
-
-
 
 
 #output$GSE <- renderUI({

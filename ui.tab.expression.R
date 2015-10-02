@@ -8,12 +8,8 @@ tab.expression = tabPanel("Expression Profiles", icon =icon("area-chart"),
                        radioButtons("radio", label = "Select a method of log transformation to apply to the data", 
                                     choices = list("Auto-Detect" = 1, "Yes" = 2, "No" = 3), 
                                     selected = 1, inline = TRUE), actionButton("exprAdd", "Save R Code"),
-                                    actionButton("dataSeries", "Gene Series Information"),
-                       shinyBS::bsModal("dataSeriesDisplay", "Gene Series", "dataSeries", size = "large", 
-                                        verbatimTextOutput("dataInputPrint")),
                        plotOutput("exProfiles") 
                     ) 
              
              )
-
 
