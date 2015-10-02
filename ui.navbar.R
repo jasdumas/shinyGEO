@@ -7,43 +7,54 @@ navbar.header = list(
               
     
     bsAlert("alert1"),
-    div(style = "display:inline-block; width: 30%",
-        # uiOutput("GSE")
-        selectizeInput('GSE', label = NULL, choices = NULL, 
-            options = list(placeholder = "Please enter a GSE accession number",
-                          maxOptions = 1000)
-        )                    
-        # textInput("GSE", 
-        # HTML("<span style = \"color:red;font-weight:bold\">GEO Accession Number </span>"), "")
-    ),
-    
-    div(style = "display:inline-block; width: 30%",
-        actionButton("submitButton", "Submit")
-    ),
-    
+    fluidRow(
+	column(6,
+
+	  div(style = "display:inline-block; width: 55%",
+            selectizeInput('GSE', label = NULL, choices = NULL, 
+              options = list(placeholder = "Please enter a GSE accession number",
+                          maxOptions = 100)
+            )
+	  ),
+	
+                  
+	  div(style = "display:inline-block; width: 20%",
+		actionButton("submitButton", "Submit")
+	  ),
+	  div(style = "display:inline-block; width: 20%; position: relative; left:-40px;",
+     		conditionalPanel(condition = "output.displayPlatform=='TRUE'",      
+     			actionButton("dataSeries", "Gene Series Information"),
+ 			shinyBS::bsModal("dataSeriesDisplay", "Gene Series", "dataSeries", size = "large",
+                                        verbatimTextOutput("dataInputPrint"))
+		)
+	  )
+	),   
+ 
     ## Hidden text box to indicate whether platform has been selected ##
 #    conditionalPanel(condition = "input.GSE == 'GSE13'",
 #                    textOutput("displayPlatform")
 #     ), 
-    
-    div(style = "display:inline-block; width: 30%",
-        conditionalPanel(condition = "output.displayPlatform=='TRUE'",      
-            div(style = "display:inline-block; width: 83%",
-            #uiOutput('platform', style = "display:inline-block; width:50%"),
-            selectizeInput('platform', label = NULL, choices = NULL, 
-              options = list(placeholder = "Please select a platform",
-                  maxOptions = 10)
-            )
-        ),
+
+	column(1), 
+ 
+	column(3, 
+        	conditionalPanel(condition = "output.displayPlatform=='TRUE'",      
+            	#uiOutput('platform', style = "display:inline-block; width:50%"),
+            		selectizeInput('platform', label = NULL, choices = NULL, 
+              			options = list(placeholder = "Please select a platform",
+                  		maxOptions = 10)
+            		)
+		)
+	)
         
-        div(style = "display:inline-block; width: 15%",
-            actionButton("PlatformInfoButton", "Platform Information")
-        ),
-        shinyBS::bsModal("PlatformLinks", HTML("Available Platforms<br>(More Information)"), "PlatformInfoButton", size = "small",
-          uiOutput("PlatformLinks")
-        )
-      )
-    ), 
+   
+       #actionButton("PlatformInfoButton", "Platform Information"),
+
+       # shinyBS::bsModal("PlatformLinks", HTML("Available Platforms<br>(More Information)"), "PlatformInfoButton", size = "small",
+       #   uiOutput("PlatformLinks")
+       # )
+    ),
+ 
     bsAlert("alert2"),
     #uiOutput("test"),
     #uiOutput("test2"),
