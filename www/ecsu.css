@@ -4646,11 +4646,16 @@ fieldset[disabled] .navbar-default .btn-link:focus {
 }
 .navbar-inverse .navbar-brand {
   color: #ffffff;
+  font-family: Futura, 'Trebuchet MS', Arial, sans-serif;
+  font-weight: 100;
+  -webkit-text-stroke-width: 1px;
+  -webkit-text-stroke-color: #fff;
 }
 .navbar-inverse .navbar-brand:hover,
 .navbar-inverse .navbar-brand:focus {
-  color: #ffffff;
+  color: rgb(118, 35, 47);
   background-color: none;
+
 }
 .navbar-inverse .navbar-text {
   color: #ffffff;
