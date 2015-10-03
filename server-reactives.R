@@ -25,6 +25,17 @@ add.graph <-function(line) {  ## add graphic info to ace editor for the report
 }
 
 
+observeEvent(input$DEbutton, {
+	cat("click DE button\n")
+        updateTabsetPanel(session, "tabs", selected = "Differential Expression Analysis")
+})
+
+observeEvent(input$KMbutton, {
+	cat("click KM button\n")
+        updateTabsetPanel(session, "tabs", selected = "Survival Analysis")
+})
+
+
 observeEvent(input$submitButton, { 
   closeAlert(session, "geneSymbolAlert")
   values.edit$table <- NULL  
