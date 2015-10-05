@@ -62,8 +62,8 @@ tab.DE.analysis = tabPanel("Differential Expression Analysis", icon = icon("flas
     ),
                                                     
     actionButton("formatDEButton", "Format Graph"),
-    actionButton("DEadd", "Save R Code"),
-                                                    
+    #actionButton("DEadd", "Save R Code"),
+    HTML("<button id='DEadd' type='button' class='btn btn-info action-button'>Save R Code</button>"),                                                
     uiOutput("selectGroupsMessage"), 
     plotOutput("plot"),
     formatBSModal("Format", "Format", "formatDEButton", applyID = "applyFormatDE", size = "large",
@@ -96,7 +96,8 @@ tab.survival.analysis = tabPanel("Survival Analysis", icon = icon("life-ring"),
     actionButton("formatDEButton2", "Format Graph"), # add on
     formatBSModal("Format2", "Format", "formatDEButton2", applyID = "applyFormatDE2", size = "large",
     htmlOutput("formatDE2")),
-        actionButton("Survadd", "Save R Code"),
+        #actionButton("Survadd", "Save R Code"),
+        HTML("<button id='Survadd' type='button' class='btn btn-info action-button'>Save R Code</button>"),
         shinyBS::bsModal("parseModal", "Selected Survival Analysis Parameters", "parseButton", size = "large",
             fluidRow(
                 column(4, textInput("survfind", label = "Find", value = "")),

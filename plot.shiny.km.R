@@ -60,25 +60,32 @@ plot.shiny.km <- function(time, death, x, title = "",
     return(data.frame(hr = hr, p.km = p.km))
   }
   
+  hr.str = paste("HR = ", round(hr,2), ", ")
+  p.str = paste("P = ", round(p.km,4), sep = "")
+  
+  title = paste(hr.str, p.str, sep = "")
+  
   ## plot graph ### ggplot2/GGally form
   km.group1 = survfit(Surv(time, death) ~ x)
   km.group = ggsurv(km.group1, 
                     main = title, xlab = "Time", ylab = "Survival",
-                    surv.col = col, cens.col = "black") 
+                    surv.col = col, cens.col = "black") +
+    theme(plot.title = element_text(vjust = 0.5, colour = "black"))
   
   
   if (is.null(col)) col = col
   plot(km.group, ...)
   #legend(legend.loc, legend = levels(x), col = col, lty = 1:n)
   
-  if (!is.null(title)) {
-    hr.str = "" 
-    p.str = paste("P = ", round(p.km,4), sep = "")
-    if (length(hr) == 1) {
-      hr.str = paste("HR = ", round(hr,2), ", ")
-    }
-    if (title!="") title = paste(title, "\n", sep = "")
-    title = paste(title, hr.str, p.str)
-    title(title)
-  }
-}
+## This created an offset apperance of the title when combining the base with ggsurv  
+#   if (!is.null(title)) {
+#     hr.str = "" 
+#     p.str = paste("P = ", round(p.km,4), sep = "")
+#     if (length(hr) == 1) {
+#       hr.str = paste("HR = ", round(hr,2), ", ")
+#     }
+#     if (title!="") title = paste(title, "\n", sep ="")
+#     title = paste(title, hr.str, p.str)
+#     title(title)
+#   }
+} # end of function
