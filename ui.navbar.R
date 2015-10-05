@@ -55,6 +55,17 @@ navbar.header = list(
        # )
     ),
  
+   bsModal("welcomeModal", NULL, "no_trigger",
+	h4("Overview", style = "color: darkred"), 
+	h5("shinyGEO is a tool for downloading and analyzing gene expression data from the 
+		Gene Expression Omnibus (GEO)"),
+	h5("shinyGEO allows you to evaluate whether or not a gene of interest is (1) associated with survival in datasets with this information and (2) differentially expressed across two or more groups."),
+	h4("Getting Started", style = "color: darkred;"), 
+	h5("Please select a GSE accession number from the box on the left to get started, and follow the onscreen 
+	prompts to carry out an anaylsis."),
+	h5("To find an accession number of interest, search the ", a("Gene Expression Omnibus", 
+		href = "http://www.ncbi.nlm.nih.gov/geo/"), "and filter by 'Expression profiling by array'.")
+   ),
     bsAlert("alert2"),
     #uiOutput("test"),
     #uiOutput("test2"),
