@@ -23,6 +23,7 @@ source("plot.shiny.km.R")
 
 shinyServer(function(input, output, session){
   
+  toggleModal(session, "welcomeModal", toggle = "open")
   source("server-reactives.R", local = TRUE)
   source("server-output.R", local = TRUE)
   source("formatDE.R", local = TRUE)
