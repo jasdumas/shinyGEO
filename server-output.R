@@ -2,8 +2,37 @@
 # display functions for conditional panels              ##
 ##########################################################
 
+
+
 load("series/series.RData")
 load("platforms/platforms.RData")
+
+m = matrix(rnorm(1000), ncol=20)
+rownames(m) = paste0("row", 1:nrow(m))
+
+opp = list(dom = 'Rlfrtip', #ajax = list(url = action1), 
+                       #scrollX = "auto",
+                       #scrollY = "400px",
+                       paging = T, 
+                       searchHighlight = TRUE,
+                       columnDefs = list(list(
+                         targets = 1: ncol(m), # applies to the entire table
+                         render = JS(
+                           "function(data, type, row, meta) {",
+                           "return type == 'display' && data.length > 20 ?",
+                           "'<span title=\"' + data + '\">' + data.substr(0, 20) + '...</span>' : data;",
+                           "}")
+                       ))
+) 
+#opp = list(searchHighlight = TRUE, paging = TRUE, scrollY = "400")
+
+#output$irisData = DT::renderDataTable({ datatable(m, rownames = TRUE,
+#  extensions = 'ColReorder',
+#  options = opp,
+#                  select = list(target = "column"),
+#                  filter = 'none')
+#  })
+
 
 # when platform info is availabe the other drop-down boxes are shown in the sidebar panel
 displayPlatform <-function() {
@@ -11,7 +40,12 @@ displayPlatform <-function() {
   return(TRUE)
 }
 output$displayPlatform <- renderText(displayPlatform())
+
+#output$processing <-renderText(GLOBAL$processing)
+
+
 outputOptions(output, 'displayPlatform', suspendWhenHidden=FALSE)
+#outputOptions(output, 'processing', suspendWhenHidden=FALSE)
 
 output$selectGenes <- renderUI({
   selectInput("selectGenes", label = "Select Gene",
@@ -180,7 +214,8 @@ observe({  # observe needed since data object is a reactive function
   
   output$clinicalDataSummary <- DT::renderDataTable({ datatable(as.data.frame(clinicalDataSummary()), rownames = TRUE,  
                                                                  extensions = 'ColReorder',
-                                                                 options = list(dom = 'Rlrtip', ajax = list(url = action), paging = F),
+                                                                 options = list(dom = 'Rlfrtip', ajax = list(url = action), 
+                                                                                paging = F,  searchHighlight = TRUE),
                                                                  filter = 'none', 
                                                                  selection = 'single') 
     
@@ -201,8 +236,8 @@ displayDataTable <-reactive({
                                                       extensions = 'ColReorder',
                                                       options = list(dom = 'Rlfrtip', #ajax = list(url = action1), 
                                                                     #scrollX = "auto",
-                                                                     scrollY = "400px",
-                                                                     paging = F, 
+                                                                  #   scrollY = "400px",
+                                                                     paging = T, 
                                                                      searchHighlight = TRUE,
                                                                      columnDefs = list(list(
                                                                        targets = 1: ncol(editClinicalTable()), # applies to the entire table
@@ -243,6 +278,7 @@ di = clinicalInput()
 
 })
 
+
 ##############################
 ## Expression Profiles plot 
 ##############################
@@ -276,7 +312,6 @@ output$exProfiles <- renderPlot({
   cat("create expression alert\n")
   createAlert(session, "alert1", alertId = "Expression-alert", title = "Current Status", style = "info",
                content = "Generating boxplot of expression data", append = TRUE, dismiss = FALSE) 
-  
   par(mar=c(2+round(max(nchar(sampleNames(dataInput())))/2),4,2,1))
   title <- paste(isolate(input$GSE), '/', isolate(input$platform), title.detail, sep ='') # need 
   
@@ -297,8 +332,13 @@ output$exProfiles <- renderPlot({
   
   print(exp.prof.plot)
   
+  cat("close expression alert\n")
   closeAlert(session, "Expression-alert")
   
+  Sys.sleep(1)
+  cat("close welcome modal\n")  
+  toggleModal(session, "welcomeModal", toggle = "close")
+  toggleModal(session, "welcomeModal", toggle = "close")
 }
 
 ) 

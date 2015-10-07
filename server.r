@@ -1,4 +1,4 @@
-TRACE = TRUE
+TRACE = FALSE
 
 library(DT)  ## tested on development version 0.1.32
 library(shiny)
@@ -21,13 +21,23 @@ source("plot.shiny.km.R")
 
 #options(shiny.deprecation.messages=FALSE)
 
+COUNTER = 1
+
 shinyServer(function(input, output, session){
   
-  toggleModal(session, "welcomeModal", toggle = "open")
+  
   source("server-reactives.R", local = TRUE)
   source("server-output.R", local = TRUE)
   source("formatDE.R", local = TRUE)
   observe({
+    
+    if (is.null(input$tabs)) {
+      cat("\ntoggle #", COUNTER, "\n\n")
+      toggleModal(session, "welcomeModal", toggle = "open")
+    }
+    COUNTER = COUNTER + 1
+    
+    
       if (is.null(input$tabs) | input$tabs!= "Differential Expression Analysis") {
         return(NULL)
       }

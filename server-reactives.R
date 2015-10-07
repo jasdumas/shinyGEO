@@ -2,9 +2,17 @@
 ## Reactives
 #############################################################################
 
+cat("sourcing server-reactives..\n")
+
+createAlert(session, "alert0", alertId = "Welcome-alert", title = "shinyGEO", style = "danger",
+  	content = "shinyGEO is a tool for downloading and analyzing gene expression data from the
+                Gene Expression Omnibus (GEO), in order to evaluate whether or not a gene of interest is (1) associated with survival in datasets with this information and (2) differentially expressed across two or more groups.", dismiss = TRUE)
+
 createAlert(session, "alert1", alertId = "GSE-alert", 
-            title = "Enter a GSE accession number and click the Submit button to begin", style = "danger",
-            content = NULL, append = TRUE, dismiss = FALSE) 
+            title = "Please select a GSE accession number to begin", style = "danger",
+            content = HTML("To find a dataset, search the <a href = 'http://www.ncbi.nlm.nih.gov/geo/\'>Gene Expression Omnibus</a> and filter by 'Expression profiling by array'."),
+
+ append = TRUE, dismiss = FALSE) 
 
 ###################################################
 # Edit table reactiveValues()
@@ -12,7 +20,7 @@ createAlert(session, "alert1", alertId = "GSE-alert",
 values.edit <- reactiveValues(table = NULL, platformGeneColumn = NULL, original = NULL, log2 = FALSE)
 reproducible <-reactiveValues(code = NULL, report = NULL)
 
-GLOBAL <-reactiveValues(needGSE = TRUE)
+#GLOBAL <-reactiveValues(processing = FALSE, getGSE = FALSE)
 
 
 ### functions to append/aggregate a new line to the aceEditor
@@ -36,11 +44,6 @@ observeEvent(input$KMbutton, {
 })
 
 
-observeEvent(input$submitButton, { 
-  closeAlert(session, "geneSymbolAlert")
-  values.edit$table <- NULL  
-  values.edit$platformGeneColumn <- NULL
-})
 
 observeEvent(input$platform, {
   closeAlert(session, "geneSymbolAlert")
@@ -63,11 +66,22 @@ observeEvent(input$tabs,{
   cat("selected tab = ", input$tabs, "\n")  
   if (is.null(dataInput())) {
       updateTabsetPanel(session, "tabs", selected = "Expression Profiles")
+
+      cat("\ntoggle #", COUNTER, "\n\n")
+      toggleModal(session, "welcomeModal", toggle = "open")
+
+     COUNTER = COUNTER + 1
+
       closeAlert(session, "Gene-alert")
   }
   
 })
 
+observeEvent(input$submitButton, { 
+  closeAlert(session, "geneSymbolAlert")
+  values.edit$table <- NULL  
+  values.edit$platformGeneColumn <- NULL
+})
 
 
 ####################################
@@ -77,21 +91,25 @@ dataInput <- reactive({
   input$submitButton
   # Runs the intial input once the button is pressed from within the 
   # reactive statement
-  
+  cat("dataInput\n")
   if (is.null(isolate(input$GSE))) return(NULL)
   if (TRACE) cat("In dataInput reactive...\n")  
-  GSE = isolate(gsub(" ", "", (input$GSE)))   # remove white space
+  GSE = isolate(input$GSE)   
   if (GSE=="") return(NULL)
   closeAlert(session, "GSE-alert")
   closeAlert(session, "GPL-alert")
   cat("creating alert...\n")
+
+  content = "Downloading Series (GSE) data from GEO" 
+
    createAlert(session, "alert1", alertId = "GSE-alert", title = "Current Status", style = "info",
-              content = "Downloading Series (GSE) data from GEO", append = TRUE, dismiss = FALSE) 
+              content = content , append = TRUE, dismiss = FALSE) 
   code = paste0("data.series = getGEO(GEO = \"", GSE, "\", AnnotGPL = FALSE, getGPL = FALSE)")
   add.line(code)
-  getGEO(GEO = isolate(GSE), AnnotGPL=FALSE, getGPL = FALSE)  
-})
 
+    geo = getGEO(GEO = isolate(GSE), AnnotGPL=FALSE, getGPL = FALSE)  
+    geo
+})
 
 ####################################
 ### display Gene Series Info  ######
@@ -117,13 +135,14 @@ Platforms <- reactive({
 ### Platforms: the chosen platform Index 
 #########################################  
 platformIndex <- reactive({
+  input$submitPlatform
   if (TRACE) cat("In platformIndex reactive...\n")
-  if (is.null(dataInput()) | length(input$platform) ==0) {
+  if (is.null(dataInput()) | length(isolate(input$platform)) ==0) {
     return(NULL)
   }
 #  if (length(dataInput())==1) return (1)
-  cat("matching platform = ", input$platform, "\n")
-  m = match(input$platform, as.character(sapply(dataInput(), annotation)))    
+  cat("matching platform = ", isolate(input$platform), "\n")
+  m = match(isolate(input$platform), as.character(sapply(dataInput(), annotation)))    
   if (is.na(m)) return(NULL)
   return(m)
 })
