@@ -103,6 +103,13 @@ shinyServer(function(input, output, session){
       output$SurvMessage <-renderText({""})
       output$kmSurvival <- renderPlot({
 
+      time = as.double(parse.modal()[,1])
+      outcome = as.integer(parse.modal()[,2])
+      x = x()
+        
+      save(time, outcome, x, file = "check.RData")
+        
+        
       return(plot.shiny.km(time = as.double(parse.modal()[,1]), 
                            death = as.integer(parse.modal()[,2]), 
                            x = x(), 
