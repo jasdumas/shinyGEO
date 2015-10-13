@@ -1,5 +1,7 @@
 TRACE = FALSE
 
+WELCOME = TRUE
+
 library(DT)  ## tested on development version 0.1.32
 library(shiny)
 library(GEOquery)

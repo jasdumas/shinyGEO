@@ -5,7 +5,7 @@
 bsModalNoClose <-function(...) {
 	b = bsModal(...)
 	b[[2]]$`data-backdrop` = "static"
-	b[[2]]$`data-keyboard` = "false"
+#	b[[2]]$`data-keyboard` = "false"
 	a = b[[3]][[1]]$children[[1]]
 
 	a[[3]][[3]] = NULL   ## remove footer (includes close button)
@@ -49,7 +49,7 @@ navbar.header = list(
    
    DT::dataTableOutput("irisData"),
 
-   bsModalNoClose("welcomeModal", NULL, "no_trigger", size = "large",
+   bsModalNoClose("welcomeModal", NULL, "GSEButton", size = "large",
 	#h4("Dataset selection", style = "color: darkred;"),
     bsAlert("alert0"), 
     bsAlert("alert1"),
