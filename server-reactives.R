@@ -528,7 +528,7 @@ parse.modal <- reactive ({
   editSelectedCols()[time()],
   editSelectedCols()[outcome()])
   ## removes any null strings present in the rows of the data.frame
-  parse.modal <- parse.modal[!apply(parse.modal, 1, function(x) any(x=="")),] 
+  #parse.modal <- parse.modal[!apply(parse.modal, 1, function(x) any(x=="")),] 
   return(parse.modal)
 }) 
 
