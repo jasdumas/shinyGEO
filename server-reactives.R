@@ -65,10 +65,11 @@ observeEvent(reproducible$report, {
 observeEvent(input$tabs,{
   cat("selected tab = ", input$tabs, "\n")  
   if (is.null(dataInput())) {
-      updateTabsetPanel(session, "tabs", selected = "Expression Profiles")
+      updateTabsetPanel(session, "tabs", selected = "Home")
 
       cat("\ntoggle #", COUNTER, "\n\n")
-      toggleModal(session, "welcomeModal", toggle = "open")
+ 
+     if (WELCOME) toggleModal(session, "welcomeModal", toggle = "open")
 
      COUNTER = COUNTER + 1
 

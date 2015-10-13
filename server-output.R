@@ -33,6 +33,17 @@ opp = list(dom = 'Rlfrtip', #ajax = list(url = action1),
 #                  filter = 'none')
 #  })
 
+#############################################
+# dynamically change shinyTitle
+#############################################
+shinyTitle <-reactive({
+  input$submitPlatform
+  gse = isolate(input$GSE)
+  platform = isolate(input$platform)
+  if (is.null(gse) | gse == "") return("shinyGEO")
+  paste0("shinyGEO - ", gse, "/", platform, sep = "")
+})
+output$shinyTitle = renderText(shinyTitle())
 
 # when platform info is availabe the other drop-down boxes are shown in the sidebar panel
 displayPlatform <-function() {
@@ -73,6 +84,7 @@ PlatformLinks <- reactive({
 output$PlatformLinks <-renderUI( {
   HTML(PlatformLinks())
 })
+
 
 observe ({
   ## only show plaforms for selected series ##
@@ -335,7 +347,7 @@ output$exProfiles <- renderPlot({
   cat("close expression alert\n")
   closeAlert(session, "Expression-alert")
   
-  Sys.sleep(1)
+  #Sys.sleep(1)
   cat("close welcome modal\n")  
   toggleModal(session, "welcomeModal", toggle = "close")
   toggleModal(session, "welcomeModal", toggle = "close")
