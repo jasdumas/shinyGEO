@@ -100,11 +100,20 @@ tab.survival.analysis = tabPanel("Survival Analysis", icon = icon("life-ring"),
         HTML("<button id='Survadd' type='button' class='btn btn-info action-button'>Save R Code</button>"),
         shinyBS::bsModal("parseModal", "Selected Survival Analysis Parameters", "parseButton", size = "large",
             fluidRow(
-                column(4, textInput("survfind", label = "Find", value = "")),
-                column(4, textInput("survreplace", label = "Replace", value = "")),
-                column(4, actionButton("parseEnter", label = "Submit"), 
-                actionButton("undo", label="Revert Changes")) # not valid as a revert yet
-            ),
+
+                column(4, textInput("survfind", label = "Find", value = ""),
+                	  textInput("survreplace", label = "Replace", 
+				value = ""),
+                	  actionButton("parseEnter", label = "Submit"), 
+			  # not valid as a revert yet
+                	  actionButton("undo", label="Revert Changes")),
+
+		column(3),
+		column(4, 
+			uiOutput("eventYes"), uiOutput("eventNo")
+		)
+	   ), 
+            
             DT::dataTableOutput("selectedCols")
             #print("in parseModal window...")
         ),
