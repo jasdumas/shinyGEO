@@ -1,4 +1,4 @@
-TRACE = FALSE
+TRACE = TRUE
 
 WELCOME = TRUE
 
@@ -109,9 +109,9 @@ shinyServer(function(input, output, session){
         
       save(time, outcome, x, file = "check.RData")
         
-        
       return(plot.shiny.km(time = as.double(parse.modal()[,1]), 
-                           death = as.integer(parse.modal()[,2]), 
+                           #death = as.integer(parse.modal()[,2]), 
+                           death = as.integer(KM$outcome), 
                            x = x(), 
                            col = colorsDE3()))
  

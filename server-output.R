@@ -33,6 +33,22 @@ opp = list(dom = 'Rlfrtip', #ajax = list(url = action1),
 #                  filter = 'none')
 #  })
 
+## drop down boxes for event = yes and event = no
+output$eventYes <- renderUI({  
+  selectInput('eventYes', 'event = yes', 
+              choices = KM$eventNames, #width='20%',
+              selected = 0, multiple = TRUE, selectize = TRUE
+  )
+})
+
+output$eventNo <- renderUI({  
+  selectInput('eventNo', 'event = no', 
+              choices = KM$eventNames, #width='20%',
+              selected = 0, multiple = TRUE, selectize = TRUE
+  )
+})
+
+
 #############################################
 # dynamically change shinyTitle
 #############################################
