@@ -122,7 +122,8 @@ analyses.common = conditionalPanel(condition = "input.tabs == 'Differential Expr
             ),
             div(style = "display:inline-block; width:30%",
                 uiOutput('selectProbes')
-            )
+            ),
+            bsButton("autoAnalysis","Generate Analysis(1 of 2)", style="success")
         )
     )
 ) 
