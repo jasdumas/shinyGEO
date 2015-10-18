@@ -22,6 +22,8 @@ reproducible <-reactiveValues(code = NULL, report = NULL)
 
 #GLOBAL <-reactiveValues(processing = FALSE, getGSE = FALSE)
 
+KM <-reactiveValues(eventNames = NULL, outcome = NULL)
+
 
 ### functions to append/aggregate a new line to the aceEditor
 add.line <-function(line) {
@@ -65,10 +67,11 @@ observeEvent(reproducible$report, {
 observeEvent(input$tabs,{
   cat("selected tab = ", input$tabs, "\n")  
   if (is.null(dataInput())) {
-      updateTabsetPanel(session, "tabs", selected = "Expression Profiles")
+      #updateTabsetPanel(session, "tabs", selected = "Home")
 
       cat("\ntoggle #", COUNTER, "\n\n")
-      toggleModal(session, "welcomeModal", toggle = "open")
+ 
+     if (WELCOME) toggleModal(session, "welcomeModal", toggle = "open")
 
      COUNTER = COUNTER + 1
 
@@ -81,6 +84,7 @@ observeEvent(input$submitButton, {
   closeAlert(session, "geneSymbolAlert")
   values.edit$table <- NULL  
   values.edit$platformGeneColumn <- NULL
+  KM$outcome = NULL
 })
 
 
@@ -429,6 +433,7 @@ editClinicalTable <- reactive({
   replace.str = isolate(replace.str())
   
   if (find.str == "" & replace.str == "") {   # if there is nothing entered it returns the original table
+    cat("\t return current table\n")
     return(values.edit$table)
   }
   exactMatch = isolate(input$checkbox) # exact match condition
@@ -439,6 +444,7 @@ editClinicalTable <- reactive({
   
   newClinical <- values.edit$table
   
+  cat("\t set newClinical\n")
   ### if factor, change to character.  Otherwise we can't replace it. ##
   if (is.factor(newClinical[,column.num])) {
     newClinical[,column.num] = as.character(newClinical[,column.num])
@@ -520,6 +526,15 @@ x <- reactive ({ # not seen in sidebar - changed through the gene/probe drop-dow
 
 #### reactive column selection in summary form for edit bsModal for survival ####
 
+observeEvent(input$parseButton, {
+  cat("updating event names\n")
+  cat("outcome = ", outcome(), "\n")
+  values = unique(as.character(parse.modal()[,2]))
+  cat("valuess= ", values, "\n")
+  ans = setdiff(values, c("", " ", NA))
+  KM$eventNames = ans
+})
+
 parse.modal <- reactive ({ 
   input$parseEnter
   if (TRACE) cat("In parse.modal reactive...\n")
@@ -527,7 +542,7 @@ parse.modal <- reactive ({
   editSelectedCols()[time()],
   editSelectedCols()[outcome()])
   ## removes any null strings present in the rows of the data.frame
-  parse.modal <- parse.modal[!apply(parse.modal, 1, function(x) any(x=="")),] 
+  #parse.modal <- parse.modal[!apply(parse.modal, 1, function(x) any(x=="")),] 
   return(parse.modal)
 }) 
 
@@ -537,8 +552,24 @@ parse.modal <- reactive ({
 find.str.surv <- reactive({input$survfind})       
 replace.str.surv <- reactive({input$survreplace})
 
+
+###########################################################
+# Currently, clicking submit will format the time column,
+# overwriting the original table; while the outcome will
+# be changed to 0s and 1s based on the drop down selection.
+# The updated outcome is saved in KM$outcome, and the 
+# original outcomes are not overwritten. This is partly
+# because overwriting the originals causes some kind of
+# issue where the clinical data tables get stuck on 
+# 'processing' and are not displayed
+###########################################################
 editSelectedCols <- reactive({
-  input$parseEnter  # trigger actionButton 
+  input$parseEnter  # trigger actionButton
+
+  # make sure to isolate everything so we're not repeatedly calling this
+  time.col = isolate(time())
+  outcome.col = isolate(outcome())
+ 
   if (TRACE) cat("In editSelectedCols reactive...\n")
   find.str.surv = isolate(find.str.surv())
   replace.str.surv = isolate(replace.str.surv())
@@ -556,23 +587,43 @@ editSelectedCols <- reactive({
   }
   
   ### if factor for both columns, change to character.  Otherwise we can't replace it. ##
-  if (is.factor(newCols[,time()]) || is.factor(newCols[,outcome()])) {
-    newCols[,time()] = as.character(newCols[,time()])
-    newCols[,outcome()] = as.character(newCols[,outcome()])
+  if (is.factor(newCols[,time.col]) || is.factor(newCols[,outcome.col])) {
+    newCols[,time.col] = as.character(newCols[,time.col])
+    newCols[,outcome.col] = as.character(newCols[,outcome.col])
   }
   
-  newCols[[time()]] = gsub(find.str.surv, replace.str.surv, newCols[[time()]], fixed = T)  ## fixed = T for symbols
-  g1 = grep(find.str.surv, newCols[,time()])  
-  newCols[g1,time()] = replace.str.surv 
-  cat("replacing time() ", find.str.surv, " with ", replace.str.surv, "\n")
-  
+  newCols[[time.col]] = gsub(find.str.surv, replace.str.surv, newCols[[time.col]], fixed = T)  ## fixed = T for symbols
+  g1 = grep(find.str.surv, newCols[,time.col])  
+  newCols[g1,time.col] = replace.str.surv 
+  cat("replacing time.col ", find.str.surv, " with ", replace.str.surv, "\n")
+ 
+ ##################################
+ ## find and replace for outcome ##  
+ ##################################
   ## duplicate of time() partial replace block which applies over the entire selected columns
-  newCols[[outcome()]] = gsub(find.str.surv, replace.str.surv, newCols[[outcome()]], fixed = T)
-  g2 = grep(find.str.surv, newCols[,outcome()])  
-  newCols[g2,outcome()] = replace.str.surv 
-  cat("replacing outcome() ", find.str.surv, " with ", replace.str.surv, "\n")
-  
-  values.edit$table = newCols
+#  newCols[[outcome()]] = gsub(find.str.surv, replace.str.surv, newCols[[outcome()]], fixed = T)
+#  g2 = grep(find.str.surv, newCols[,outcome()])  
+#  newCols[g2,outcome()] = replace.str.surv 
+#  cat("replacing outcome() ", find.str.surv, " with ", replace.str.surv, "\n")
+
+  eventYes = isolate(input$eventYes)
+  eventNo = isolate(input$eventNo)
+  tmp = rep(NA, nrow(newCols)) 
+  cat("event = ", isolate(eventYes), "\n")
+  cat("no = ", isolate(eventNo), "\n")
+  tmp[newCols[[outcome.col]] %in% eventYes ] = 1
+  tmp[newCols[[outcome.col]] %in% eventNo ] = 0
+
+  if (all(is.na(tmp))) return (values.edit$table)
+
+  cat("print tmp: ")
+  print(tmp)
+
+  KM$outcome = tmp
+
+
+  values.edit$table <- newCols
+
   return (values.edit$table)  
   
 }) # end of editSelectedCols() reactive

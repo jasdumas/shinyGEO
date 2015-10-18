@@ -6987,6 +6987,16 @@ position:relative;
 bottom:13px;
 
 }
-button:$autoAnalysis{
+#autoAnalysis{
 margin-bottom:26px;
 }
+#genBtn{
+            position:relative;
+            float:right;
+            margin:5px;
+        }
+#manuBtn{
+            position:relative;
+            float:right;
+            margin:5px;
+        }

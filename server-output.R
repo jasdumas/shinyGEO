@@ -33,6 +33,33 @@ opp = list(dom = 'Rlfrtip', #ajax = list(url = action1),
 #                  filter = 'none')
 #  })
 
+## drop down boxes for event = yes and event = no
+output$eventYes <- renderUI({  
+  selectInput('eventYes', 'event = yes', 
+              choices = KM$eventNames, #width='20%',
+              selected = 0, multiple = TRUE, selectize = TRUE
+  )
+})
+
+output$eventNo <- renderUI({  
+  selectInput('eventNo', 'event = no', 
+              choices = KM$eventNames, #width='20%',
+              selected = 0, multiple = TRUE, selectize = TRUE
+  )
+})
+
+
+#############################################
+# dynamically change shinyTitle
+#############################################
+shinyTitle <-reactive({
+  input$submitPlatform
+  gse = isolate(input$GSE)
+  platform = isolate(input$platform)
+  if (is.null(gse) | gse == "") return("shinyGEO")
+  paste0("shinyGEO - ", gse, "/", platform, sep = "")
+})
+output$shinyTitle = renderText(shinyTitle())
 
 # when platform info is availabe the other drop-down boxes are shown in the sidebar panel
 displayPlatform <-function() {
@@ -73,6 +100,7 @@ PlatformLinks <- reactive({
 output$PlatformLinks <-renderUI( {
   HTML(PlatformLinks())
 })
+
 
 observe ({
   ## only show plaforms for selected series ##
@@ -335,7 +363,7 @@ output$exProfiles <- renderPlot({
   cat("close expression alert\n")
   closeAlert(session, "Expression-alert")
   
-  Sys.sleep(1)
+  #Sys.sleep(1)
   cat("close welcome modal\n")  
   toggleModal(session, "welcomeModal", toggle = "close")
   toggleModal(session, "welcomeModal", toggle = "close")
@@ -379,7 +407,102 @@ output$survOutcome <- renderUI({
 
 }) # end of observe for time/outcome
 
+#Auto-Generation of columns
+## Functions for autogen 
+calc.columns <- function(this){
+  # First need to grep the first row of the data, then lapply a function that will return true for
+  time.pattern = c("distant-relapse free survival","time","follow up time (months)")
+  outcome.pattern = c("distant-relapse event","outcome","dead of disease")
+  
+  is.time.column <- function(x){
+    ans = grepl(paste(time.pattern,collapse="|"),x)
+    if(any(ans)){
+      return(TRUE)
+    }
+    return(FALSE)
+  }
+  is.outcome.column <- function(x){
+    ans = grepl(paste(outcome.pattern,collapse="|"),x)
+    if(any(ans)){
+      return(TRUE)
+    }
+    return(FALSE)
+  }
+  x.time = colnames(this)[apply(this,2,is.time.column)]
+  y.outcome = colnames(this)[apply(this,2,is.outcome.column)]
+  if(length(x.time) > 1){
+    
+    x.time = x.time[1]
+    createAlert(session, "warningAlert", alertId = "warningAlert", title = "System Warning for Time Column",
+                content = "<p>We have found multiple column names while finding your columns, we have chosen the best fit.</p>", style= 'danger', dismiss = TRUE, append = TRUE)
+  }
+  if(length(y.outcome) > 1)
+  {
+    y.outcome = y.outcome[1]
+    createAlert(session, "warningAlert", alertId = NULL, title = "System Warning for Outcome Column",
+                content = "<p>We have found multiple column names while finding your columns, we have chosen the best fit.</p>", style= 'danger', dismiss = TRUE, append = TRUE)
+  }
+  
+  ans = c(x.time,y.outcome)
+  return (ans) 
+}
 
+reduce <- function(column){
+  gsub(".*: ","",column)
+}
+reduce.columns <- function(time,outcome,this){
+  reduced.time = reduce(this[[time]])
+  reduced.outcome = reduce(this[[outcome]])
+  reduced.outcome = replace(reduced.outcome,(reduced.outcome == "NO" | reduced.outcome == "censored"),0)
+  reduced.outcome = replace(reduced.outcome,(reduced.outcome == "YES" | reduced.outcome == "uncensored"),1)
+  ans = list(time = reduced.time, outcome = reduced.outcome)
+  return (ans)
+}
+
+#main function
+main.gen <- function(){
+  print("Genearating automatic column selection and formatting...")
+  this = values.edit$table
+  #Get the columns
+  columns.data = calc.columns(this) 
+  #Reduce and analyze
+  new = reduce.columns(columns.data[1],columns.data[2],this)
+  time.analysis <<- new$time
+  outcome.orig = as.character(this[[columns.data[2]]])
+  outcome.new = new$outcome
+  outcome.no = unique(outcome.orig[outcome.new == 0])
+  outcome.yes = unique(outcome.orig[outcome.new == 1])
+  # Create data frame for time output
+  time_both <- data.frame(this[[columns.data[1]]],new$time)
+  #Render UI
+  toggleModal(session,"autogenModal",toggle="toggle")
+  columnItems = as.character(unique(this[[columns.data[2]]]))
+  updateSelectizeInput(session,"autoColumn.time",choices=colnames(this),selected=columns.data[1])
+  updateSelectizeInput(session,"autoColumn.outcome",choices=colnames(this),selected=columns.data[2])
+  updateSelectizeInput(session,"columnEvent1",choices=columnItems,selected=outcome.yes,server=TRUE)
+  updateSelectizeInput(session,"columnEvent0",choices=columnItems,selected=outcome.no,server=TRUE)
+  output$timetable <- renderDataTable(time_both)
+  outcome.analysis <<- outcome.new
+  
+}
+observeEvent(input$autoAnalysis, main.gen())
+
+observeEvent(input$genBtn,
+      
+           ({
+             output$kmSurvival <- renderPlot({
+               
+               return(plot.shiny.km(time = as.double(time.analysis), 
+                                    #death = as.integer(parse.modal()[,2]), 
+                                    death = as.integer(outcome.analysis), 
+                                    x = x(), 
+                                    col = colorsDE3()))
+               
+             })
+             toggleModal(session,"autogenModal",toggle = "toggle")
+             tags$script(HTML("window.location.href= '/#kmSurvial'"))
+           })
+)
 output$selectedCols <- DT::renderDataTable({ 
   datatable(data = parse.modal(), rownames = F,
 		options = list(dom = "Rlrtip", paging = F),
