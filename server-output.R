@@ -366,7 +366,6 @@ output$exProfiles <- renderPlot({
   #Sys.sleep(1)
   cat("close welcome modal\n")  
   toggleModal(session, "welcomeModal", toggle = "close")
-  toggleModal(session, "welcomeModal", toggle = "close")
 }
 
 ) 
@@ -408,11 +407,12 @@ output$survOutcome <- renderUI({
 }) # end of observe for time/outcome
 
 #Auto-Generation of columns
-## Functions for autogen 
+## Functions for autogen
+##
 calc.columns <- function(this){
   # First need to grep the first row of the data, then lapply a function that will return true for
-  time.pattern = c("distant-relapse free survival","time","follow up time (months)")
-  outcome.pattern = c("distant-relapse event","outcome","dead of disease")
+  time.pattern = c("distant-relapse free survival","time","survival \\(mo\\)")
+  outcome.pattern = c("distant-relapse event","outcome","dead of disease","dss censor","os censor")
   
   is.time.column <- function(x){
     ans = grepl(paste(time.pattern,collapse="|"),x)
@@ -432,15 +432,20 @@ calc.columns <- function(this){
   y.outcome = colnames(this)[apply(this,2,is.outcome.column)]
   if(length(x.time) > 1){
     
+   
+    createAlert(session, "warningAlert", alertId = "warningAlert", title = "Warning: Multiple Time Columns Found",
+                content = c("<p>We have found multiple column names while finding your columns (", paste(x.time),"), we have chosen the best fit.</p>"), style= 'danger', dismiss = TRUE, append = TRUE)
     x.time = x.time[1]
-    createAlert(session, "warningAlert", alertId = "warningAlert", title = "System Warning for Time Column",
-                content = "<p>We have found multiple column names while finding your columns, we have chosen the best fit.</p>", style= 'danger', dismiss = TRUE, append = TRUE)
+  }
+  else if(length(x.time) == 0){
+    x.time = NA
+    
   }
   if(length(y.outcome) > 1)
   {
+    createAlert(session, "warningAlert", alertId = NULL, title = "Warning: Multiple Outcome Columns Found",
+                content = c("<p>We have found multiple column names while finding your columns (", paste(y.outcome), ") we have chosen the best fit.</p>"), style= 'danger', dismiss = TRUE, append = TRUE)
     y.outcome = y.outcome[1]
-    createAlert(session, "warningAlert", alertId = NULL, title = "System Warning for Outcome Column",
-                content = "<p>We have found multiple column names while finding your columns, we have chosen the best fit.</p>", style= 'danger', dismiss = TRUE, append = TRUE)
   }
   
   ans = c(x.time,y.outcome)
@@ -486,6 +491,9 @@ main.gen <- function(){
   
 }
 observeEvent(input$autoAnalysis, main.gen())
+# Seperate out the column formatting, and calculation, observe the input values on the boxes 
+# if they change, reformat the colums that are given.
+#
 
 observeEvent(input$genBtn,
       
