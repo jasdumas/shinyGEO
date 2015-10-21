@@ -74,12 +74,20 @@ genBSModal<-function (id, title, trigger, ..., size)
            shiny::tags$div(class = "modal-content", 
                  shiny::tags$div(class = "modal-header", 
                                  shiny::tags$button(type = "button",  class = "close", `data-dismiss` = "modal", shiny::tags$span(shiny::HTML("&times;"))), 
+                                 bsButton("manuBtn", "Manual Selection", icon = NULL, style = "info",
+                                          size = "default", type = "action", block = FALSE, disabled = FALSE,
+                                          value = FALSE), 
+                                 bsButton("genBtn", "Generate Analysis", icon = NULL, style = "success",
+                                          size = "default", type = "action", block = FALSE, disabled = FALSE,
+                                          value = FALSE),
                                  shiny::tags$h4(class = "modal-title", title)
+                             
+                                 
                  ), 
                  shiny::tags$div(class = "modal-body", 
                                  fluidRow(
                                    column(12,
-                                          tags$h4(class="intro","ShinyGeo has automatically detected columns within your data for you. Please confirm these are correct and then generate the analysis."),
+                                          tags$h4(class="intro","ShinyGeo has automatically detected and formatted columns within your data for you. Please confirm these are correct and then generate the analysis."),
                                           bsAlert("warningAlert")
                                    )
                                  ),
@@ -103,18 +111,10 @@ genBSModal<-function (id, title, trigger, ..., size)
                                                    selectizeInput('columnEvent0',label="Event: No",choices = NULL, multiple = TRUE)
                                           ))
                                      )
-                                ), 
-                 shiny::tags$div(class = "modal-footer", 
-                                 bsButton("manuBtn", "Manual Selection", icon = NULL, style = "info",
-                                          size = "default", type = "action", block = FALSE, disabled = FALSE,
-                                          value = FALSE), 
-                                 bsButton("genBtn", "Generate Analysis", icon = NULL, style = "success",
-                                          size = "default", type = "action", block = FALSE, disabled = FALSE,
-                                          value = FALSE)
-                 )      
+                 )
            )
-      )
-  )
+       )
+   )
 }
 
 
