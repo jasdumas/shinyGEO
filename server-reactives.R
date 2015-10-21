@@ -636,6 +636,7 @@ observeEvent(profiles(),  {
   initialCode <- paste0(
      
 "
+# Initial Data Download
 library(DT)  ## tested on development version 0.1.32
 library(shiny)
 library(GEOquery)
@@ -671,7 +672,7 @@ data.expr = exprs(data.series[[data.index]])
 observeEvent(input$exprAdd, {
   if (TRACE) cat("In report Append for expression profiles...\n")
 
-  exp <- paste0( "## Expression Profiles Plot\n",
+  exp <- paste0( "# Expression Profiles Plot\n",
     "
 ex <- data.expr
 if (is.null(ex)) return (NULL)
@@ -778,7 +779,7 @@ observeEvent(input$DEadd, {
 
 ######################################
   
-  s2function <- paste0("## Differential Expression Plot",
+  s2function <- paste0("# Differential Expression Plot",
                        
 "
 stripchart2 <- function(x,y, group.names = NULL, jitter = 0.3, line.off = 0.3, 
