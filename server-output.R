@@ -2,8 +2,6 @@
 # display functions for conditional panels              ##
 ##########################################################
 
-
-
 load("series/series.RData")
 load("platforms/platforms.RData")
 
@@ -74,16 +72,24 @@ output$displayPlatform <- renderText(displayPlatform())
 outputOptions(output, 'displayPlatform', suspendWhenHidden=FALSE)
 #outputOptions(output, 'processing', suspendWhenHidden=FALSE)
 
-output$selectGenes <- renderUI({
-  selectInput("selectGenes", label = "Select Gene",
-              choice = geneNames(), multiple = F,
-              selected = 0)
-})
 
-output$selectProbes <- renderUI({
-  selectInput("selectProbes", label = "Select Probe", 
-              choice = probeNames(), multiple = F,
-              selected = "")
+observe({
+
+  options=  list(
+      render = I(
+        "{
+            option: function(item, escape) {
+                return '<div> <strong>' + item.genes + '</strong> - ' +  escape(item.probes) + '</div>';
+            }
+        }"
+      )
+    )
+
+  updateSelectizeInput(session, "selectGenes", 
+	label = "Select Gene", server = TRUE, 
+ 	choices = geneNames(), options = options 
+  )
+
 })
 
 PlatformLinks <- reactive({

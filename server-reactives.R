@@ -2,6 +2,7 @@
 ## Reactives
 #############################################################################
 
+TRACE = TRUE 
 cat("sourcing server-reactives..\n")
 
 createAlert(session, "alert0", alertId = "Welcome-alert", title = "shinyGEO", style = "danger",
@@ -195,29 +196,53 @@ observe({
 ##############################################
 geneNames <- reactive ({
   if (TRACE) cat("In geneNames reactive...\n")
-  if (is.null(platInfo())) return (NULL)
+
+  plat.info = platInfo()
+
+  if (is.null(plat.info)) {
+	cat("\t\treturn NULL...\n")
+	return (NULL)
+  }
+  cat("\t\tfind column...\n")
+
  
   gene.column = values.edit$platformGeneColumn
   if (is.null(gene.column)) {
     check.names = c("Gene Symbol", "GeneSymbol", "Symbol",
                  "GENE_SYMBOL")
-    m = check.names%in%colnames(platInfo()) 
+    m = check.names%in%colnames(plat.info) 
     w = which(m)
     if (length(w) == 0) {
       createAlert(session, "alert2", alertId = "geneSymbolAlert", title = "Could not find gene symbol", style = "danger",
                   content = "A gene symbol for this platform could not be found. Please select another platform or analyze another dataset.", 
-                  append = FALSE, dismiss = FALSE)
+                  append = FALSE, dismiss = TRUE)
       values.edit$platformGeneColumn = NULL
-      return(NULL)
+      gene.column = NULL
+    } else { 
+      gene.column = check.names[w[1]]
+      values.edit$platformGeneColumn = gene.column
     }
-    gene.column = check.names[w[1]]
-    values.edit$platformGeneColumn = gene.column
   }
- 
-  #cat("finding column: ", gene.column, "\n")
-  m = match(gene.column,colnames(platInfo()))
-  t = unique(platInfo()[,m])  
-  return(sort(as.character(t)))
+
+  probes = as.character(plat.info$ID)
+  genes = "Gene not specified"
+  if (!is.null(gene.column)) { 
+  cat("finding column: ", gene.column, "\n")
+    genes = as.character(plat.info[[gene.column]])
+    cat("gene[1] = ", genes[1], "\n")
+    label = paste0(genes, " (",  probes, ")")
+  } else {
+    label = probes
+  } 
+
+  # create data.frame for use with selectizeInput #
+
+  cat("creating geneName data.frame...\n")
+  dd = data.frame(value = probes, label = label, genes = genes, probes = probes)
+  cat("done\n")
+  print(head(dd))
+  return(dd)
+
 })
 
 ########################################
@@ -344,10 +369,10 @@ exprInput <- reactive({
 ########################################
 ### selected probe as row number
 ########################################  
-selectedProbe <- reactive ({
-  if (TRACE) cat("In selectedProbe reactive...\n")
-  return(match(input$selectProbes,rownames(exprInput())))
-})
+#selectedProbe <- reactive ({
+#  if (TRACE) cat("In selectedProbe reactive...\n")
+#  return(match(input$selectProbes,rownames(exprInput())))
+#})
 
 ########################################
 ### ColumnNames of clinicial data table
@@ -521,7 +546,7 @@ outcome <- reactive ({
 
 x <- reactive ({ # not seen in sidebar - changed through the gene/probe drop-downs above plot area
   if (TRACE) cat("In x reactive...\n")
-  x = profiles()[selectedProbe(),]
+  x = profiles()[input$selectGenes,]
 })
 
 #### reactive column selection in summary form for edit bsModal for survival ####
@@ -749,7 +774,7 @@ observeEvent(input$DEadd, {
   
   script.GSE = paste0("GSE = ",quote.it(input$GSE), "\n")
   script.GPL =   paste0("GPL = ", quote.it(isolate(Platforms()[platformIndex()])), "\n")
-  script.probe = paste0("PROBE = ", quote.it(input$selectProbes), "\n")
+#  script.probe = paste0("PROBE = ", quote.it(input$selectProbes), "\n")
   script.log2 = paste0("LOG2 = ", values.edit$log2, "\n")
   script.DE.column = paste0("DE.column = ", quote.it(input$selectedColumn), "\n")
   
@@ -759,14 +784,14 @@ observeEvent(input$DEadd, {
     
   print(script.GSE)
   print(script.GPL)
-  print(script.probe)
+#  print(script.probe)
   print(script.log2)
   print(script.DE.column)
   print(script.DE.groups)
   
   test.file = paste0("test/", input$GSE, "_test.R")
   
-  cmd = paste0("echo '", script.GSE, script.GPL, script.probe, script.log2, 
+  cmd = paste0("echo '", script.GSE, script.GPL, script.log2, 
                script.DE.column, script.DE.groups, "' > ", test.file)
   
   #cmd = "echo 'hello, how are you\n' > tmp.R"
@@ -853,7 +878,7 @@ k = clinical %in% selected
 y = clinical
 y[!k] = NA
 y = factor(y, levels = input$Group1Values )
-main = paste(input$GSE, input$selectGenes, input$selectProbes, sep = '\')
+main = paste(input$GSE, input$selectGenes, sep = '\')
 print(stripchart2(x,y, group.names = labelsDE(), main = main, col=colorsDE()))
 
 ")
