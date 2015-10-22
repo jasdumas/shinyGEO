@@ -128,11 +128,9 @@ analyses.common = conditionalPanel(condition = "input.tabs == 'Differential Expr
     #bsCollapse(id = "GeneSelection", open = "Select a Gene and Probe",
     #    bsCollapsePanel("Select a Gene and Probe",
             div(style = "display:inline-block; width:30%",
-                uiOutput('selectGenes')
-            ),
-            div(style = "display:inline-block; width:30%",
-                uiOutput('selectProbes')
-            ),
+#                uiOutput('selectGenes')
+                selectizeInput('selectGenes', "Select Gene", choices = NULL)
+       ),
 	    hr()
      #   )
    # )
