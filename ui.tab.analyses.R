@@ -147,26 +147,33 @@ tab.DE.analysis = tabPanel("Differential Expression Analysis", icon = icon("flas
 # Survival tab
 ####################
 tab.survival.analysis = tabPanel("Survival Analysis", icon = icon("life-ring"), 
-    bsCollapse(id = "SurvDataTable", open = "SurvDataTable",
-        bsCollapsePanel("Select Time and Outcome From Clinical Data",
-            div(style = "display:inline-block; width:30%",
-              uiOutput('survTime')
-            ),
-            div(style = "display:inline-block; width:30%",
-                uiOutput('survOutcome')
-            ),
-            actionButton("parseButton", "Format Columns"), 
-                DT::dataTableOutput("clinicalDataForSurvival")
-            )
-    ),
+    #bsCollapse(id = "SurvDataTable", open = "SurvDataTable",
+        #bsCollapsePanel("Select Time and Outcome From Clinical Data",
+            #div(style = "display:inline-block; width:30%",
+             # uiOutput('survTime')
+            #),
+            #div(style = "display:inline-block; width:30%",
+            #    uiOutput('survOutcome')
+            #),
+            #actionButton("parseButton", "Format Columns"), 
+            #    DT::dataTableOutput("clinicalDataForSurvival")
+            #)
+    #),
          
-    shiny::hr(),
+    #shiny::hr(),
     #tags$div(HTML("<hr style = \"background-color: red; height:4px\">")), 
-    uiOutput("SurvMessage"),
-    actionButton("formatDEButton2", "Format Graph"), # add on
-    formatBSModal("Format2", "Format", "formatDEButton2", applyID = "applyFormatDE2", size = "large",
-    htmlOutput("formatDE2")),
-        #actionButton("Survadd", "Save R Code"),
+    #uiOutput("SurvMessage"),
+      conditionalPanel(condition= "output.kmSurvial != NULL",
+                       actionButton("formatDEButton2", "Format Graph"), # add on
+                       formatBSModal("Format2", "Format", "formatDEButton2", applyID = "applyFormatDE2", size = "large", htmlOutput("formatDE2"))
+                  ),
+    
+    
+
+                                        
+            
+    
+        actionButton("Survadd", "Save R Code"),
         HTML("<button id='Survadd' type='button' class='btn btn-info action-button'>Save R Code</button>"),
         shinyBS::bsModal("parseModal", "Selected Survival Analysis Parameters", "parseButton", size = "large",
             fluidRow(

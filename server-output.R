@@ -435,7 +435,7 @@ calc.columns <- function(this){
     
    
     createAlert(session, "warningAlert", alertId = "warn1", title = "Warning: Multiple Time Columns Found",
-                content = c("<p>shinyGeo has located multiple time columns:  ", paste(x.time,collapse=", ",sep="' '"),"). We have chosen the best fit.</p>"), style= 'danger', dismiss = TRUE, append = TRUE)
+                content = c("<p>shinyGeo has located multiple time columns:  \"", paste(x.time,collapse=", "),"\". We have chosen the best fit.</p>"), style= 'danger', dismiss = TRUE, append = TRUE)
     x.time = x.time[1]
   }
   else if(length(x.time) == 0){
@@ -445,7 +445,7 @@ calc.columns <- function(this){
   if(length(y.outcome) > 1)
   {
     createAlert(session, "warningAlert", alertId = "warn2", title = "Warning: Multiple Outcome Columns Found",
-                content = c("<p>shinyGeo has located multiple outcome columns: ", paste(y.outcome,collapse=", "), ". We have chosen the best fit.</p>"), style= 'danger', dismiss = TRUE, append = TRUE)
+                content = c("<p>shinyGeo has located multiple outcome columns: \"", paste(y.outcome,collapse=", "), "\". We have chosen the best fit.</p>"), style= 'danger', dismiss = TRUE, append = TRUE)
     y.outcome = y.outcome[1]
   }
   
@@ -466,13 +466,15 @@ reduce.columns <- function(time,outcome,this){
     reduced.outcome = reduce(this[[outcome]])
     reduced.outcome = replace(reduced.outcome,(reduced.outcome == "NO" | reduced.outcome == "censored"),0)
     reduced.outcome = replace(reduced.outcome,(reduced.outcome == "YES" | reduced.outcome == "uncensored"),1)
-    
+    ans = list(outcome = reduced.outcome)
+    return (ans)
     
   }
   else if(is.na(time) && is.na(outcome)){
     createAlert(session, "warningAlert", alertId = "warn3", title = "Warning: No Columns were found",
                 content = c("<p>Oops! shinyGeo could not find columns for survival analysis in your data. Please try the following: <ol><li>View the table and select the columns relevant to time and outcome or..</li><li>Use manual selection and format your data accordingly.</li></ol></p>"), style= 'danger', dismiss = TRUE, append = TRUE)
-    
+    ans = list(time = NA, outcome = NA)
+    return(ans)
   }
   else{
   reduced.time = reduce(this[[time]])
@@ -486,7 +488,7 @@ reduce.columns <- function(time,outcome,this){
 
 #main function
 main.gen <- function(this,columns.data){
-  print("Genearating automatic column selection and formatting...")
+  print("Generating automatic column selection and formatting...")
   #Reduce and analyze
   new = reduce.columns(columns.data[1],columns.data[2],this)
   time.analysis <<- new$time
@@ -499,6 +501,7 @@ main.gen <- function(this,columns.data){
   #Render UI
   toggleModal(session,"autogenModal",toggle="toggle")
   columnItems = as.character(unique(this[[columns.data[2]]]))
+  columnItems = setdiff(columnItems,c(""," "))
   updateSelectizeInput(session,"autoColumn.time",choices=colnames(this),selected=columns.data[1])
   updateSelectizeInput(session,"autoColumn.outcome",choices=colnames(this),selected=columns.data[2])
   updateSelectizeInput(session,"columnEvent1",choices=columnItems,selected=outcome.yes,server=TRUE)
@@ -516,25 +519,30 @@ observeEvent(input$autoAnalysis,({
   
   
 }))
-          
+i.check = 0          
 observeEvent(input$autoColumn.time,({
-  this = values.edit$table
-  new = reduce.columns(input$autoColumn.time,NA,this)
-  time.analysis <<- new
-  time_both <- data.frame(this[[input$autoColumn.time]],new$time)
-  output$timetable <- renderDataTable(time_both)
+    this = values.edit$table
+    new = reduce.columns(input$autoColumn.time,NA,this)
+    time.analysis <<- new$time
+    time_both <- data.frame(this[[input$autoColumn.time]],new$time)
+    output$timetable <- renderDataTable(time_both)
+  
   
 }))
 observeEvent(input$autoColumn.outcome,({
-  this = values.edit$table
-  new = reduce.columns(NA,input$autoColumn.outcome,this)
-  outcome.orig = as.character(this[[input$autoColumn.outcome]])
-  outcome.new = new
-  outcome.no = unique(outcome.orig[outcome.new == 0])
-  outcome.yes = unique(outcome.orig[outcome.new == 1])
-  columnItems = as.character(unique(this[[input$autoColumn.outcome]]))
-  updateSelectizeInput(session,"columnEvent1",choices=columnItems,selected=outcome.yes,server=TRUE)
-  updateSelectizeInput(session,"columnEvent0",choices=columnItems,selected=outcome.no,server=TRUE)
+    this = values.edit$table
+    selected = input$autoColumn.outcome
+    selected = setdiff(selected, c("", " "))
+    new = reduce.columns(NA,input$autoColumn.outcome,this)
+    outcome.orig = as.character(this[[input$autoColumn.outcome]])
+    outcome.new = new$outcome
+    outcome.no = unique(outcome.orig[outcome.new == 0])
+    outcome.yes = unique(outcome.orig[outcome.new == 1])
+    columnItems = as.character(unique(this[[selected]]))
+    outcome.analysis <<- outcome.new
+    updateSelectizeInput(session,"columnEvent1",choices=columnItems,selected=outcome.yes,server=TRUE)
+    updateSelectizeInput(session,"columnEvent0",choices=columnItems,selected=outcome.no,server=TRUE)
+
 }))
 
  
