@@ -46,7 +46,7 @@ shinyServer(function(input, output, session){
 
       PLOT = TRUE
       
-      if (input$selectProbes == "") {
+      if (input$selectGenes == "") {
         cat("\n\n=====NO GENE=====\n\n")
         output$selectGroupsMessage <-renderUI({HTML("<h3>Please Select a Gene and Probe to Analyze</h3>")})
         createAlert(session, "alert2", alertId = "Gene-alert", 
@@ -71,7 +71,7 @@ shinyServer(function(input, output, session){
       } else  {
           output$selectGroupsMessage <-renderText({""})
           output$plot <- renderPlot({
-              x = profiles()[selectedProbe(),] # effected by data transformation
+              x = profiles()[input$selectGenes,] # effected by data transformation
               iv = input$selectedColumn
               m = match(as.character(iv), colnames(clinicalInput()))  # GD: change grep to match
               clinical = as.character(clinicalInput()[,m])  # clinicalInput() should be the new edited table once fixed
@@ -84,7 +84,7 @@ shinyServer(function(input, output, session){
               ## make sure levels are in selected order for plot
               y = factor(y, levels = input$Group1Values)
               
-              main = paste(input$GSE, input$selectGenes, input$selectProbes, sep = "/")
+              main = paste(input$GSE, input$selectGenes, sep = "/")
               #gd              
               #stripchart2(x,y, col = colorsDE(), group.names = labelsDE(), main = main, ylab = "log2 expression")
               #jd
@@ -95,29 +95,29 @@ shinyServer(function(input, output, session){
     }
   })  # end observe
   
-  observe({
-    if (!(input$parseEnter)) {  
-      output$SurvMessage <-renderUI({HTML("<h3>Please Choose The Columns for Survival Analysis</h3>")})
-      output$kmSurvival <-renderPlot({NULL})
-    } 
-    else  {
-      output$SurvMessage <-renderText({""})
-      output$kmSurvival <- renderPlot({
+  #observe({
+    #if (!(input$parseEnter)) {  
+     # output$SurvMessage <-renderUI({HTML("<h3>Please Choose The Columns for Survival Analysis</h3>")})
+      #output$kmSurvival <-renderPlot({NULL})
+    #} 
+   # else  {
+      #output$SurvMessage <-renderText({""})
+      #output$kmSurvival <- renderPlot({
 
-      time = as.double(parse.modal()[,1])
-      outcome = as.integer(parse.modal()[,2])
-      x = x()
+      #time = as.double(parse.modal()[,1])
+      #outcome = as.integer(parse.modal()[,2])
+      #x = x()
         
-      save(time, outcome, x, file = "check.RData")
+      #save(time, outcome, x, file = "check.RData")
         
-      return(plot.shiny.km(time = as.double(parse.modal()[,1]), 
+    #  return(plot.shiny.km(time = as.double(parse.modal()[,1]), 
                            #death = as.integer(parse.modal()[,2]), 
-                           death = as.integer(KM$outcome), 
-                           x = x(), 
-                           col = colorsDE3()))
+     #                      death = as.integer(KM$outcome), 
+      #                     x = x(), 
+       #                    col = colorsDE3()))
  
-      })
-    }
-  }) # end of second observe
+    #  })
+    #}
+ # }) # end of second observe
   
 })

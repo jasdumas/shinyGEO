@@ -6993,13 +6993,15 @@ margin-bottom:26px;
 #genBtn{
             position:relative;
             float:right;
-	    right:250px;       
-	    margin-bottom:2px; 
+	    right:300px;       
+	    bottom:5px; 
 }
 #manuBtn{
             position:relative;
             float:right;
             margin-left:5px;
-	    margin-bottom:2px;
-	    right: 250px;
+	    bottom:5px;
+	    right: 285px;
         }
+
+

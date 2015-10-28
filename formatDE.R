@@ -114,8 +114,8 @@ observeEvent(input$applyFormatDE, {
 #############
 
 formatTableDE2 <-reactive({
-  time.surv = as.double(parse.modal()[,1])
-  event.surv = as.integer(parse.modal()[,2])
+  time.surv = as.double(time.analysis)
+  event.surv = as.integer(outcome.analysis)
   
   if (length(time.surv) == 0 & length(event.surv) == 0) {return(NULL)} # the length is always 2 (Time & Outcome)
   df = c("High Expression", "Low Expression")

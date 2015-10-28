@@ -2,8 +2,6 @@
 # display functions for conditional panels              ##
 ##########################################################
 
-
-
 load("series/series.RData")
 load("platforms/platforms.RData")
 
@@ -74,16 +72,24 @@ output$displayPlatform <- renderText(displayPlatform())
 outputOptions(output, 'displayPlatform', suspendWhenHidden=FALSE)
 #outputOptions(output, 'processing', suspendWhenHidden=FALSE)
 
-output$selectGenes <- renderUI({
-  selectInput("selectGenes", label = "Select Gene",
-              choice = geneNames(), multiple = F,
-              selected = 0)
-})
 
-output$selectProbes <- renderUI({
-  selectInput("selectProbes", label = "Select Probe", 
-              choice = probeNames(), multiple = F,
-              selected = "")
+observe({
+
+  options=  list(
+      render = I(
+        "{
+            option: function(item, escape) {
+                return '<div> <strong>' + item.genes + '</strong> - ' +  escape(item.probes) + '</div>';
+            }
+        }"
+      )
+    )
+
+  updateSelectizeInput(session, "selectGenes", 
+	label = "Select Gene", server = TRUE, 
+ 	choices = geneNames(), options = options 
+  )
+
 })
 
 PlatformLinks <- reactive({
@@ -281,6 +287,27 @@ displayDataTable <-reactive({
 })
 
 
+observe({
+  
+  output$summaryModalTable <- DT::renderDataTable({ datatable(as.data.frame(clinicalDataSummary()), rownames = TRUE,  
+                                                              extensions = 'ColReorder',
+                                                              options = list(dom = 'Rlfrtip', ajax = list(url = action), 
+                                                                             paging = F,  searchHighlight = TRUE),
+                                                              filter = 'none', 
+                                                              selection = 'single') 
+    
+  })
+  
+  
+  dd = clinicalDataSummary()
+  action = dataTableAjax(session, data=dd, rownames = TRUE) # for the row_output as characters
+  
+  
+  
+})
+
+
+
 ##############################################
 # set output variables to display the table
 ##############################################
@@ -435,7 +462,7 @@ calc.columns <- function(this){
     
    
     createAlert(session, "warningAlert", alertId = "warn1", title = "Warning: Multiple Time Columns Found",
-                content = c("<p>shinyGeo has located multiple time columns:  \"", paste(x.time,collapse=", "),"\". We have chosen the best fit.</p>"), style= 'danger', dismiss = TRUE, append = TRUE)
+                content = paste(c("<strong>Columns Found</strong>:", paste(x.time,collapse=", "),"<br><br> shinyGeo has chosen the best fit.")), style= 'danger', dismiss = TRUE, append = TRUE)
     x.time = x.time[1]
   }
   else if(length(x.time) == 0){
@@ -445,7 +472,7 @@ calc.columns <- function(this){
   if(length(y.outcome) > 1)
   {
     createAlert(session, "warningAlert", alertId = "warn2", title = "Warning: Multiple Outcome Columns Found",
-                content = c("<p>shinyGeo has located multiple outcome columns: \"", paste(y.outcome,collapse=", "), "\". We have chosen the best fit.</p>"), style= 'danger', dismiss = TRUE, append = TRUE)
+                content = paste(c("<strong>Columns Found</strong>: ", paste(y.outcome,collapse=", "),"<br><br> shinyGEO has chosen best fit.")), style= 'danger', dismiss = TRUE, append = TRUE)
     y.outcome = y.outcome[1]
   }
   
@@ -519,6 +546,12 @@ observeEvent(input$autoAnalysis,({
   
   
 }))
+observeEvent(input$gBack,({
+  
+  toggleModal(session,"summaryBSModal",toggle = "close")
+  
+}))
+
 i.check = 0          
 observeEvent(input$autoColumn.time,({
     this = values.edit$table
