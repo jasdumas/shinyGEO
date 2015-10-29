@@ -462,7 +462,7 @@ calc.columns <- function(this){
     
    
     createAlert(session, "warningAlert", alertId = "warn1", title = "Warning: Multiple Time Columns Found",
-                content = paste(c("<strong>Columns Found</strong>:", paste(x.time,collapse=", "),"<br><br> shinyGeo has chosen the best fit.")), style= 'danger', dismiss = TRUE, append = TRUE)
+                content = paste(c("<strong>Columns Found</strong>:", paste(x.time,collapse=", "),"<br><br> shinyGEO has chosen the best fit.")), style= 'danger', dismiss = TRUE, append = TRUE)
     x.time = x.time[1]
   }
   else if(length(x.time) == 0){
@@ -499,7 +499,7 @@ reduce.columns <- function(time,outcome,this){
   }
   else if(is.na(time) && is.na(outcome)){
     createAlert(session, "warningAlert", alertId = "warn3", title = "Warning: No Columns were found",
-                content = c("<p>Oops! shinyGeo could not find columns for survival analysis in your data. Please try the following: <ol><li>View the table and select the columns relevant to time and outcome or..</li><li>Use manual selection and format your data accordingly.</li></ol></p>"), style= 'danger', dismiss = TRUE, append = TRUE)
+                content = c("<p>Oops! shinyGEO could not find columns for survival analysis in your data. Please try the following: <ol><li>View the table and select the columns relevant to time and outcome or..</li><li>Use manual selection and format your data accordingly.</li></ol></p>"), style= 'danger', dismiss = TRUE, append = TRUE)
     ans = list(time = NA, outcome = NA)
     return(ans)
   }
