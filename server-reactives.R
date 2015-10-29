@@ -475,8 +475,6 @@ editClinicalTable <- reactive({
     newClinical[,column.num] = as.character(newClinical[,column.num])
   }
   
-  ### if the check box for partial match is checked
-  ## TO-DO: I now need adjust for characters ie: \\(months \\)
   partialReplace = isolate(input$survCheckbox)
   
   if (partialReplace) {                 
@@ -984,3 +982,50 @@ if (identical(survComment, survComment)) {
   add.graph("")
 }
 }) # end of observeEvent
+
+##############################
+## Find and Replace to report 
+##############################
+observeEvent(input$Enter, {
+  if (TRACE) cat("In report Append Observe for Find & Replace...\n")
+  
+  find.repace <- paste0("
+
+    find.str = as.character(\"",input$find,"\")
+    column.num = as.character(\"",input$drop2,"\")
+    replace.str = as.character(\"",input$replace, "\")
+    
+    if (find.str == '' & replace.str == '') {   
+      return(values.edit$table)
+    }
+    exactMatch = isolate(input$checkbox) # exact match condition
+    
+    if (exactMatch) {    
+      find.str = paste(\',^,'\', find.str, \',$,'\', sep = '')
+    }
+    
+    newClinical <- as.data.frame(\"",values.edit$table, "\")
+    
+    if (is.factor(newClinical[,column.num])) {
+      newClinical[,column.num] = as.character(newClinical[,column.num])
+    }
+    
+    partialReplace = as.logical(\"",input$survCheckbox, "\")
+    
+    if (partialReplace) {                 
+      newClinical[[column.num]] = gsub(find.str, replace.str, newClinical[[column.num]])  ## fixed = T for symbols
+      g.total = grep(find.str, newClinical[,column.num])  
+      newClinical[g.total,column.num] = replace.str 
+    } else {
+      g.total = grep(find.str, newClinical[,column.num])  
+      newClinical[g.total,column.num] = replace.str 
+    }
+       
+    as.data.frame(\"",values.edit$table, "\") = newClinical
+    return (as.data.frame(\"",values.edit$table, "\"))
+    
+  ")
+  
+  add.graph(find.replace)
+  
+})

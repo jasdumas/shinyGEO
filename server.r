@@ -84,7 +84,7 @@ shinyServer(function(input, output, session){
               ## make sure levels are in selected order for plot
               y = factor(y, levels = input$Group1Values)
               
-              main = paste(input$GSE, input$selectGenes, sep = "/")
+              main = paste(input$GSE, input$selectGenes,  sep = "/")
               #gd              
               #stripchart2(x,y, col = colorsDE(), group.names = labelsDE(), main = main, ylab = "log2 expression")
               #jd
