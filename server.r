@@ -95,28 +95,29 @@ shinyServer(function(input, output, session){
     }
   })  # end observe
   
-  observe({
-    if (!(input$parseEnter)) {  
-      output$SurvMessage <-renderUI({HTML("<h3>Please Choose The Columns for Survival Analysis</h3>")})
-      output$kmSurvival <-renderPlot({NULL})
-    } else  {
-      output$SurvMessage <-renderText({""})
-      output$kmSurvival <- renderPlot({
+  #observe({
+    #if (!(input$parseEnter)) {  
+     # output$SurvMessage <-renderUI({HTML("<h3>Please Choose The Columns for Survival Analysis</h3>")})
+      #output$kmSurvival <-renderPlot({NULL})
+    #} 
+   # else  {
+      #output$SurvMessage <-renderText({""})
+      #output$kmSurvival <- renderPlot({
 
-      time = as.double(parse.modal()[,1])
-      outcome = as.integer(parse.modal()[,2])
-      x = x()
+      #time = as.double(parse.modal()[,1])
+      #outcome = as.integer(parse.modal()[,2])
+      #x = x()
         
-      save(time, outcome, x, file = "check.RData")
+      #save(time, outcome, x, file = "check.RData")
         
-      return(plot.shiny.km(time = as.double(parse.modal()[,1]), 
+    #  return(plot.shiny.km(time = as.double(parse.modal()[,1]), 
                            #death = as.integer(parse.modal()[,2]), 
-                           death = as.integer(KM$outcome), 
-                           x = x(), 
-                           col = colorsDE3()))
+     #                      death = as.integer(KM$outcome), 
+      #                     x = x(), 
+       #                    col = colorsDE3()))
  
-      })
-    }
-  }) # end of second observe
+    #  })
+    #}
+ # }) # end of second observe
   
 })

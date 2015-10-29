@@ -6977,3 +6977,31 @@ button.close {
 .panel-info .panel-title {
   color: #fff;
 }
+#submitButton{
+position:relative;
+bottom:13px;
+
+}
+#submitPlatform{
+position:relative;
+bottom:13px;
+
+}
+#autoAnalysis{
+margin-bottom:26px;
+}
+#genBtn{
+            position:relative;
+            float:right;
+	    right:300px;       
+	    bottom:5px; 
+}
+#manuBtn{
+            position:relative;
+            float:right;
+            margin-left:5px;
+	    bottom:5px;
+	    right: 285px;
+        }
+
+
