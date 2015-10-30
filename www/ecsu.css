@@ -19,6 +19,28 @@ html {
 body {
   margin: 0;
 }
+
+/*!
+ * Background of main panel 
+*/
+.content-wrapper{
+  background-color: white;
+}
+
+/*!
+ * Sidebar background and hovering using Eastern Blue and Eastern Red 
+*/
+
+
+.skin-blue .main-sidebar {
+  	background-color: rgb(0, 38, 73);
+}
+
+.skin-blue .sidebar-menu>li.active>a, .skin-blue .sidebar-menu>li:hover>a {
+        background-color: rgb(124,33,40);
+      }
+
+
 article,
 aside,
 details,

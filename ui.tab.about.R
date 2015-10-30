@@ -1,4 +1,4 @@
-tab.about = tabPanel("About", icon = icon("info-circle"),
+tab.about = tabItem("About",
     HTML("<div class='panel panel-default'>
   <div class='panel-heading'>
     <h3 class='panel-title'>Directions on Usage</h3>
