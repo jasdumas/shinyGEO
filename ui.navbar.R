@@ -33,7 +33,7 @@ gse.button = div(style = "display:inline-block; width: 20%",
 	  )
 
 series.info = div(style = "display:inline-block; width: 20%; position: relative; left:-40px;",
-     		conditionalPanel(condition = "output.displayPlatform=='TRUE'",      
+     		conditionalPanel(condition = "output.sidebarDisplay=='ALL'",      
      			actionButton("dataSeries", "Gene Series Information"),
   			shinyBS::bsModal("dataSeriesDisplay", "Gene Series", "dataSeries", size = "large",
                                         verbatimTextOutput("dataInputPrint"))
@@ -59,13 +59,8 @@ navbar.header = list(
 	 gse.input, gse.button#, series.info
 	),   
 
-    ## Hidden text box to indicate whether platform has been selected ##
-#    conditionalPanel(condition = "input.GSE == 'GSE13'",
-#                    textOutput("displayPlatform")
-#     ), 
-
 	column(5, 
-        	conditionalPanel(condition = "output.displayPlatform=='TRUE'",     
+        	conditionalPanel(condition = "output.sidebarDisplay=='PLATFORM' | output.sidebarDisplay=='ALL'",     
 
  	  	  div(style = "display:inline-block; width: 60%",
             		selectizeInput('platform', label = NULL, choices = NULL, 
@@ -94,15 +89,6 @@ navbar.header = list(
     )                
  
    ),
-
-conditionalPanel(condition = "output.displayPlatform=='adfd'",      
- div(style = "display:inline-block; width: 55%",
-            selectizeInput('GSE2', label = NULL, choices = NULL, 
-              options = list(placeholder = "Please enter a GSE accession number",
-                          maxOptions = 100)
-            )
- )
-),
 
     bsAlert("alert2")
 

@@ -134,32 +134,35 @@ bsTag <- shiny::tags$div(class = "modal sbs-modal fade", id = id, tabindex = "-1
 ####################
 # DE tab
 ####################
-tab.DE.analysis = tabPanel("Differential Expression Analysis", icon = icon("flask"), 
-    uiOutput("selectedColumn", container = div, style = "display:inline-block; width: 20%"),
-    uiOutput("selectedGroups", container = div, style = "display:inline-block; width: 75%"),
+tab.DE.analysis = tabItem(tabName = "DifferentialExpressionAnalysis",
+    bsAlert("alertDE"), 
+
+conditionalPanel(condition = "input.selectGenes!=''",
+
+   # actionButton("ClinicalDataBtn", "View Clinical Data", style = "display:inline-block; width:20%"),
+#    bsButton("ClinicalDataBtn", "View Clinical Data", icon = NULL, style = "success",
+#                        size = "default", type = "action", block = FALSE, disabled = FALSE,
+#                        value = FALSE),
+   uiOutput("selectedColumn", container = div, style = "display:inline-block; width: 20%"),
+    uiOutput("selectedGroups", container = div, style = "display:inline-block; width: 55%"),
                                                     
-    bsCollapse(id = "DiffExpDataTable",
-        bsCollapsePanel("View clinical data table (click on a column to select)",
-            DT::dataTableOutput("clinicalDataForDiffExp")
-        )
-    ),
                                                     
     actionButton("formatDEButton", "Format Graph"),
     #actionButton("DEadd", "Save R Code"),
     HTML("<button id='DEadd' type='button' class='btn btn-info action-button'>Save R Code</button>"),                                                
-    uiOutput("selectGroupsMessage"), 
     plotOutput("plot"),
     formatBSModal("Format", "Format", "formatDEButton", applyID = "applyFormatDE", size = "large",
         htmlOutput("formatDE")#, hr(),               
         #actionButton("applyFormatDE", "Apply Changes")
     )
 )
+)
 
 
 ####################
 # Survival tab
 ####################
-tab.survival.analysis = tabPanel("Survival Analysis", icon = icon("life-ring"), 
+tab.survival.analysis = tabItem("SurvivalAnalysis", 
     #bsCollapse(id = "SurvDataTable", open = "SurvDataTable",
         #bsCollapsePanel("Select Time and Outcome From Clinical Data",
             #div(style = "display:inline-block; width:30%",
@@ -176,7 +179,7 @@ tab.survival.analysis = tabPanel("Survival Analysis", icon = icon("life-ring"),
     #shiny::hr(),
     #tags$div(HTML("<hr style = \"background-color: red; height:4px\">")), 
     #uiOutput("SurvMessage"),
-        summaryBSModal("summaryBSModal","Clinical Data Summary","manuBtn"),
+#        summaryBSModal("summaryBSModal","Clinical Data Summary","manuBtn"),
         actionButton("formatDEButton2", "Format Graph"), # add on
         formatBSModal("Format2", "Format", "formatDEButton2", applyID = "applyFormatDE2", size = "large", htmlOutput("formatDE2")),
         actionButton("Survadd", "Save R Code"),
@@ -206,17 +209,9 @@ tab.survival.analysis = tabPanel("Survival Analysis", icon = icon("life-ring"),
 
 analyses.common = conditionalPanel(condition = "input.tabs == 'Differential Expression Analysis' | input.tabs == 'Survival Analysis'",
     
-    #bsCollapse(id = "GeneSelection", open = "Select a Gene and Probe",
-     #  bsCollapsePanel("Select a Gene and Probe",
-      #      div(style = "display:inline-block; width:30%",
-       #         uiOutput('selectGenes')
-        #    ),
-         #   div(style = "display:inline-block; width:30%",
-          #      uiOutput('selectProbes')
-           # ),
         selectizeInput('selectGenes', "Select Gene", choices = NULL),
         conditionalPanel(condition = "input.tabs =='Survival Analysis'",
-            bsButton("autoAnalysis","Generate Analysis", style="success"),
+            #bsButton("autoAnalysis","Time/Outcome Selection", style="success"),
             genBSModal("autogenModal","Survival Analyses","",size="large"),
             
             style = "display:inline-block"

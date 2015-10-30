@@ -22,14 +22,7 @@ opp = list(dom = 'Rlfrtip', #ajax = list(url = action1),
                            "}")
                        ))
 ) 
-#opp = list(searchHighlight = TRUE, paging = TRUE, scrollY = "400")
 
-#output$irisData = DT::renderDataTable({ datatable(m, rownames = TRUE,
-#  extensions = 'ColReorder',
-#  options = opp,
-#                  select = list(target = "column"),
-#                  filter = 'none')
-#  })
 
 ## drop down boxes for event = yes and event = no
 output$eventYes <- renderUI({  
@@ -51,26 +44,32 @@ output$eventNo <- renderUI({
 # dynamically change shinyTitle
 #############################################
 shinyTitle <-reactive({
-  input$submitPlatform
   gse = isolate(input$GSE)
   platform = isolate(input$platform)
   if (is.null(gse) | gse == "") return("shinyGEO")
   paste0("shinyGEO - ", gse, "/", platform, sep = "")
 })
+
 output$shinyTitle = renderText(shinyTitle())
 
+######################################################
+# Hidden text boxes for conditional output
+######################################################
+
 # when platform info is availabe the other drop-down boxes are shown in the sidebar panel
-displayPlatform <-function() {
-  if (is.null(Platforms())) return(FALSE)
-  return(TRUE)
-}
-output$displayPlatform <- renderText(displayPlatform())
+sidebarDisplay <-reactive({
+  if (is.null(dataInput())) return ("GSE-ONLY")
+  if (is.null(platInfo())) return("PLATFORM")
+  return("ALL")
+})
 
-#output$processing <-renderText(GLOBAL$processing)
+observe({
+cat("display = ", sidebarDisplay(), "\n")
+})
 
 
-outputOptions(output, 'displayPlatform', suspendWhenHidden=FALSE)
-#outputOptions(output, 'processing', suspendWhenHidden=FALSE)
+output$sidebarDisplay <- renderText(sidebarDisplay())
+outputOptions(output, 'sidebarDisplay', suspendWhenHidden=FALSE)
 
 
 observe({
@@ -155,7 +154,7 @@ if (!is.null(pl)) {
 #        x = paste("<br>", p, "</br>", collapse = "")
 
 x = paste(x, collapse = "<br>")
-createAlert(session, "alert1", alertId = "GPL-alert", title = "Please select a platform to continue", style = "danger",
+createAlert(session, "alert1", alertId = "GPL-alert", title = "Please select a platform to continue", style = "success",
             content = x, append = TRUE, dismiss = FALSE) 
 }
 
@@ -338,7 +337,11 @@ di = clinicalInput()
 ## Expression Profiles plot 
 ##############################
 observeEvent(input$submitButton,
-output$exProfiles <- renderPlot({ 
+
+output$exProfiles <- renderPlot({
+  cat("\n\nrendering profiles...\n")
+
+ 
   # Return max 30 exp. samples if there is alot of samples to make the determination easier = unclutterd graphics
   x = profiles()
   if (is.null(x)) return(NULL)
@@ -362,11 +365,12 @@ output$exProfiles <- renderPlot({
     y.label = "Expression"
   }
   
-  closeAlert(session, "GPL-alert")
+#  closeAlert(session, "GPL-alert")
+
 
   cat("create expression alert\n")
   createAlert(session, "alert1", alertId = "Expression-alert", title = "Current Status", style = "info",
-               content = "Generating boxplot of expression data", append = TRUE, dismiss = FALSE) 
+               content = "Generating boxplot of expression data", append = FALSE, dismiss = TRUE) 
   par(mar=c(2+round(max(nchar(sampleNames(dataInput())))/2),4,2,1))
   title <- paste(isolate(input$GSE), '/', isolate(input$platform), title.detail, sep ='') # need 
   
@@ -386,13 +390,12 @@ output$exProfiles <- renderPlot({
                 theme(axis.text.x = element_text(angle = 90, hjust = 1))
   
   print(exp.prof.plot)
-  
+
   cat("close expression alert\n")
   closeAlert(session, "Expression-alert")
-  
-  #Sys.sleep(1)
-  cat("close welcome modal\n")  
-  toggleModal(session, "welcomeModal", toggle = "close")
+ 
+  createAlert(session, "alert1", alertId = "Analysis-alert", title = "Please select an Analysis", style = "success",
+	content = "Gene expression profiles have been downloaded successfully. Please select either a Differential Expression Analysis or a Survival Analysis from the sidebar to continue")
 }
 
 ) 
@@ -649,3 +652,55 @@ output$downloadData <- downloadHandler(
  
 )
 
+  observe({
+    
+      PLOT = TRUE
+      
+      if (input$selectGenes == "") {
+        cat("\n\n=====NO GENE=====\n\n")
+        createAlert(session, "alert2", alertId = "Gene-alert", 
+                    title = "Please select a gene and probe to continue", 
+                    style = "danger",
+                    content = "", append = TRUE,
+                    dismiss = FALSE) 
+        PLOT = FALSE
+      }    
+      else {
+        closeAlert(session, "Gene-alert")
+          if (length(input$Group1Values) == 0) {
+            output$selectGroupsMessage <-renderUI({
+              HTML("<h3>Please Choose The Groups to Compare</h3>")}
+            )
+            PLOT = FALSE
+          }
+      }
+      
+      if (!PLOT) {
+              output$plot <-renderPlot({NULL})
+      } else  {
+          output$selectGroupsMessage <-renderText({""})
+          output$plot <- renderPlot({
+              x = profiles()[input$selectGenes,] # effected by data transformation
+              iv = input$selectedColumn
+              m = match(as.character(iv), colnames(clinicalInput()))  # GD: change grep to match
+              clinical = as.character(clinicalInput()[,m])  # clinicalInput() should be the new edited table once fixed
+              selected = c(as.character(input$Group1Values))
+              k = clinical%in% selected
+    
+              y = clinical
+              y[!k] = NA
+              
+              ## make sure levels are in selected order for plot
+              y = factor(y, levels = input$Group1Values)
+              
+              main = paste(input$GSE, input$selectGenes, sep = "/")
+              #gd              
+              #stripchart2(x,y, col = colorsDE(), group.names = labelsDE(), main = main, ylab = "log2 expression")
+              #jd
+              print(stripchart2(x,y, group.names = labelsDE(), main = main, col=colorsDE()))
+             
+              }) # end of plot reactive
+          
+    }
+  })  # end observe
+ 

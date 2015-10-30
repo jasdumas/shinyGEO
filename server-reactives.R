@@ -9,11 +9,11 @@ createAlert(session, "alert0", alertId = "Welcome-alert", title = "shinyGEO", st
   	content = "shinyGEO is a tool for downloading and analyzing gene expression data from the
                 Gene Expression Omnibus (GEO), in order to evaluate whether or not a gene of interest is (1) associated with survival in datasets with this information and (2) differentially expressed across two or more groups.", dismiss = TRUE)
 
-createAlert(session, "alert1", alertId = "GSE-alert", 
-            title = "Please select a GSE accession number to begin", style = "danger",
-            content = HTML("To find a dataset, search the <a href = 'http://www.ncbi.nlm.nih.gov/geo/\'>Gene Expression Omnibus</a> and filter by 'Expression profiling by array'."),
+       content = HTML("To find a dataset, search the <a href = 'http://www.ncbi.nlm.nih.gov/geo/\'>Gene Expression Omnibus</a> and filter by 'Expression profiling by array'.")
 
- append = TRUE, dismiss = FALSE) 
+createAlert(session, "alert1", alertId = "GSE-begin-alert", 
+            title = "Please select a GSE accession number to begin", style = "success",
+            content = content, append = FALSE, dismiss = FALSE) 
 
 ###################################################
 # Edit table reactiveValues()
@@ -21,7 +21,6 @@ createAlert(session, "alert1", alertId = "GSE-alert",
 values.edit <- reactiveValues(table = NULL, platformGeneColumn = NULL, original = NULL, log2 = FALSE)
 reproducible <-reactiveValues(code = NULL, report = NULL)
 
-#GLOBAL <-reactiveValues(processing = FALSE, getGSE = FALSE)
 
 KM <-reactiveValues(eventNames = NULL, outcome = NULL)
 
@@ -36,16 +35,50 @@ add.graph <-function(line) {  ## add graphic info to ace editor for the report
 }
 
 
-observeEvent(input$DEbutton, {
-	cat("click DE button\n")
-        updateTabsetPanel(session, "tabs", selected = "Differential Expression Analysis")
+################################
+# Tab Observers 
+################################
+observeEvent(input$tabs, {
+  cat("tab change...\n")
+  if (input$tabs == "ClinicalDataSummary") {
+	toggleModal(session, "summaryBSModal", "toggle")
+  }
+
+  if (input$tabs == "DifferentialExpressionAnalysis") {
+  	if (input$selectGenes == "") {
+	  createAlert(session, "alert1", alertId = "SelectGene-alert", title = "Current Status", style = "success",
+              content = "Please select a gene/probe to continue", append = FALSE, dismiss = TRUE) 
+        } 
+  } else if (input$tabs == "SurvivalAnalysis") {
+	closeAlert(session, alertId = "SelectGroups")
+  	if (input$selectGenes == "") {
+	  createAlert(session, "alert1", alertId = "SelectGene-alert", title = "Current Status", style = "success",
+              content = "Please select a gene/probe to continue", append = FALSE, dismiss = TRUE) 
+        } 
+  }
+
+  if (input$tabs != "Home") {
+	closeAlert(session, alertId = "Analysis-alert")
+  } 
+
 })
 
-observeEvent(input$KMbutton, {
-	cat("click KM button\n")
-        updateTabsetPanel(session, "tabs", selected = "Survival Analysis")
-})
 
+observeEvent(input$selectGenes, {
+  cat("observing selectGenes...\n")
+
+  if (input$tabs == "DifferentialExpressionAnalysis" & is.null(input$selectedGroups)) {
+          closeAlert(session, alertId = "SelectGene-alert")
+  	  createAlert(session, "alert1", alertId = "SelectGroups", title = "Group selection", style = "success",
+		content = "You may now view the clinical data and select your groups to continue by first selecting the column with the data of interest."
+	  )
+	}
+   }
+)
+
+observeEvent(input$ClinicalDataBtn, {
+	toggleModal(session, "summaryBSModal", "toggle")
+})
 
 
 observeEvent(input$platform, {
@@ -65,21 +98,6 @@ observeEvent(reproducible$report, {
                   mode = "markdown", theme = "chrome")
 })
 
-observeEvent(input$tabs,{
-  cat("selected tab = ", input$tabs, "\n")  
-  if (is.null(dataInput())) {
-      #updateTabsetPanel(session, "tabs", selected = "Home")
-
-      cat("\ntoggle #", COUNTER, "\n\n")
- 
-     if (WELCOME) toggleModal(session, "welcomeModal", toggle = "open")
-
-     COUNTER = COUNTER + 1
-
-      closeAlert(session, "Gene-alert")
-  }
-  
-})
 
 observeEvent(input$submitButton, { 
   closeAlert(session, "geneSymbolAlert")
@@ -92,6 +110,7 @@ observeEvent(input$submitButton, {
 ####################################
 ### dataInput: the GEO object ######
 ####################################
+
 dataInput <- reactive({
   input$submitButton
   # Runs the intial input once the button is pressed from within the 
@@ -101,18 +120,21 @@ dataInput <- reactive({
   if (TRACE) cat("In dataInput reactive...\n")  
   GSE = isolate(input$GSE)   
   if (GSE=="") return(NULL)
-  closeAlert(session, "GSE-alert")
+ 
+  closeAlert(session, "GSE-begin-alert")
+  closeAlert(session, "GSE-progress-alert")
   closeAlert(session, "GPL-alert")
   cat("creating alert...\n")
 
   content = "Downloading Series (GSE) data from GEO" 
+# content = HTML("<img src = 'PleaseWait.gif' width=50% height =50%>")
 
-   createAlert(session, "alert1", alertId = "GSE-alert", title = "Current Status", style = "info",
+   createAlert(session, "alert1", alertId = "GSE-progress-alert", title = "Current Status", style = "success",
               content = content , append = TRUE, dismiss = FALSE) 
   code = paste0("data.series = getGEO(GEO = \"", GSE, "\", AnnotGPL = FALSE, getGPL = FALSE)")
   add.line(code)
 
-    geo = getGEO(GEO = isolate(GSE), AnnotGPL=FALSE, getGPL = FALSE)  
+    geo = getGEO(GEO = isolate(GSE), AnnotGPL=FALSE, getGPL = FALSE) 
     geo
 })
 
@@ -132,7 +154,7 @@ Platforms <- reactive({
   if (is.null(dataInput())) {
     return(NULL)
   }
-  closeAlert(session, "GSE-alert")  
+  closeAlert(session, "GSE-progress-alert")  
   as.character(sapply(dataInput(), annotation))    
 })
 
@@ -140,14 +162,14 @@ Platforms <- reactive({
 ### Platforms: the chosen platform Index 
 #########################################  
 platformIndex <- reactive({
-  input$submitPlatform
+#  input$submitPlatform
   if (TRACE) cat("In platformIndex reactive...\n")
   if (is.null(dataInput()) | length(isolate(input$platform)) ==0) {
     return(NULL)
   }
-#  if (length(dataInput())==1) return (1)
+  if (length(dataInput())==1) return (1)
   cat("matching platform = ", isolate(input$platform), "\n")
-  m = match(isolate(input$platform), as.character(sapply(dataInput(), annotation)))    
+  m = match((input$platform), as.character(sapply(dataInput(), annotation)))    
   if (is.na(m)) return(NULL)
   return(m)
 })
@@ -402,7 +424,7 @@ clinicalDataSummary <- reactive({
     x[max] = " ..."
     return(x[1:max])
   }
-  a = lapply(a, format.it, 4)
+  #a = lapply(a, format.it, 4)
   
   a = sapply(a, paste, collapse = ", ")
   cbind(variable = vars, values = a)
