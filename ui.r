@@ -114,13 +114,12 @@ body = dashboardBody(
   # please wait conditional panel
 
   ## originally shiny-busy
-  #conditionalPanel(condition="$('submitButton').hasClass('shiny-show-progress')",
-  conditionalPanel(condition="output.busy=='TRUE'",
-        div(style = "position:center; width:100%; height:100; text-align:center",
+#  conditionalPanel(condition="$('html').hasClass('shiny-busy')",
+#        div(style = "position:center; width:100%; height:100; text-align:center",
 #            img(src="PleaseWait.gif", style = "width:50%")
-		"Wait please..."
-        )
-    ),
+#		"Wait please..."
+#        )
+#    ),
 
    analyses.common, 
 
@@ -136,7 +135,6 @@ body = dashboardBody(
       tab.about
     )
 )
-
 
 shinyUI(
 
