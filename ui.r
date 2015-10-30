@@ -42,8 +42,6 @@ header = dashboardHeader(
   title = uiOutput("shinyTitle"), titleWidth = 300, disable = FALSE 
 )
 
-
-
 gse.input = div(style = "display:inline-block; width: 85%",
             selectizeInput('GSE', label = "Accession Number", choices = NULL,width = 500,
               options = list(placeholder = "Please enter a GSE accession number",
@@ -75,20 +73,16 @@ sidebar = dashboardSidebar(width = 400,
 	gse.input, gse.button, gse.platform,
 	conditionalPanel(condition = "output.sidebarDisplay=='ALL'",
 	sidebarMenu(id = "tabs",
-        	menuItem("Home", tabName = "Home", icon = icon("area-chart")),
 		hr(),
+        	menuItem("Home", tabName = "Home", icon = icon("area-chart")),
 		menuItem("Differential Expression Analysis", tabName = "DifferentialExpressionAnalysis", icon = icon("flask")),
 		menuItem("Survival Analysis", tabName = "SurvivalAnalysis", icon = icon("life-ring")),
-		hr(),
 		menuItem("Full Data Table", tabName = "FullDataTable", icon = icon("table")),
 		#menuItem("Clinical Data Summary", tabName = "ClinicalDataSummary", icon = icon("table")),
-		hr(),
 		menuItem("Code", tabName = "Code", icon = icon("code")),
 		menuItem("Report", tabName = "Report", icon = icon("file-text")),
-		hr(),
 		menuItem("About", tabName = "About", icon = icon("info-circle"))
 	     )
-
       )
 )
 
@@ -107,7 +101,6 @@ analyses.common = conditionalPanel(condition = "input.tabs == 'DifferentialExpre
           		bsButton("ClinicalDataBtn","View Clinical Data", style="success")
         	) 
 	),
-        
             hr()
 )
 
