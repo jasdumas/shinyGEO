@@ -14,7 +14,7 @@ source("html.R")
 if (0) {
 #shinyUI(fluidPage(title = "GEO-AWS",
  shinyUI(bootstrapPage(    
- theme = "ecsu.css", 
+ theme = "bootstrap.css", 
   tags$style(type="text/css", "body {padding: 70px;}"),
        
    ############################################################
@@ -69,7 +69,6 @@ gse.platform=  conditionalPanel(condition = "output.sidebarDisplay=='PLATFORM'|o
                 )
 
 sidebar = dashboardSidebar(width = 400,
-  	includeCSS("www/ecsu.css"),
 	gse.input, gse.button, gse.platform,
 	conditionalPanel(condition = "output.sidebarDisplay=='ALL'",
 	sidebarMenu(id = "tabs",
