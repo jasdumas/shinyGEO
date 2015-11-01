@@ -76,9 +76,16 @@ observeEvent(input$selectGenes, {
    }
 )
 
+if (0) {
 observeEvent(input$ClinicalDataBtn, {
 	toggleModal(session, "summaryBSModal", "toggle")
 })
+
+
+observeEvent(input$ClinicalDataBtn2, {
+	toggleModal(session, "testModal", "toggle")
+})
+}
 
 
 observeEvent(input$platform, {
@@ -112,12 +119,22 @@ observeEvent(input$submitButton, {
 ####################################
 
 dataInput <- reactive({
+  add.tab()
   input$submitButton
   # Runs the intial input once the button is pressed from within the 
   # reactive statement
-  cat("dataInput\n")
-  if (is.null(isolate(input$GSE))) return(NULL)
   if (TRACE) cat("In dataInput reactive...\n")  
+
+  if (TEST.DATA) {
+	cat("return GEO.test data\n")
+	subtract.tab()
+	return (GEO.test)
+  }
+
+  if (is.null(isolate(input$GSE))) {
+	subtract.tab()
+	return(NULL)
+  }
   GSE = isolate(input$GSE)   
   if (GSE=="") return(NULL)
  
@@ -135,6 +152,7 @@ dataInput <- reactive({
   add.line(code)
 
     geo = getGEO(GEO = isolate(GSE), AnnotGPL=FALSE, getGPL = FALSE) 
+    subtract.tab()
     geo
 })
 
@@ -150,12 +168,17 @@ output$dataInputPrint <- renderPrint({
 ### Platforms: returns the platform only if the GSE # is entered 
 ################################################################  
 Platforms <- reactive({
+  add.tab()
   if (TRACE) cat("In Platforms reactive...\n")
   if (is.null(dataInput())) {
+    subtract.tab()
     return(NULL)
   }
   closeAlert(session, "GSE-progress-alert")  
-  as.character(sapply(dataInput(), annotation))    
+  ans = as.character(sapply(dataInput(), annotation))   
+  print(ans)
+  subtract.tab()
+  ans 
 })
 
 #########################################
@@ -163,13 +186,19 @@ Platforms <- reactive({
 #########################################  
 platformIndex <- reactive({
 #  input$submitPlatform
+  add.tab()
   if (TRACE) cat("In platformIndex reactive...\n")
+  if (TEST.DATA) {
+	subtract.tab()
+	return(1)
+  }
   if (is.null(dataInput()) | length(isolate(input$platform)) ==0) {
     return(NULL)
   }
   if (length(dataInput())==1) return (1)
   cat("matching platform = ", isolate(input$platform), "\n")
-  m = match((input$platform), as.character(sapply(dataInput(), annotation)))    
+  m = match((input$platform), as.character(sapply(dataInput(), annotation)))   
+  subtract.tab() 
   if (is.na(m)) return(NULL)
   return(m)
 })
@@ -178,6 +207,7 @@ platformIndex <- reactive({
 ### return selected platform info as a table
 ################################################  
 platInfo <- reactive({
+  add.tab()
   if (TRACE) cat("In platInfo reactive...\n")
   if (is.null(Platforms()) | is.null(platformIndex())) return (NULL)
 
@@ -193,13 +223,21 @@ platInfo <- reactive({
   cat("Platforms() = ", a, "\n")
   cat("platformIndex = ", b, "\n")
   cat("downloading platform now...\n")
+
+  t = NULL
+  if (TEST.DATA) {
+	t = GPL.test
+  } else { 
+    t = Table(getGEO(Platforms()[platformIndex()]))
+  }
   
-  t = Table(getGEO(Platforms()[platformIndex()]))
-  
+
+ 
   k = t[,"ID"]
   common.probes = intersect(row.names(exprInput()), as.character(k))
   n = match(common.probes, k)
   r = t[n,]
+  subtract.tab()
   return(r)
 })
 
@@ -207,27 +245,28 @@ platInfo <- reactive({
 ## we do this so the user is not waiting for genes/probes
 ## to be displayed when moving to Differential Expression
 ## Analysis panel
-observe({
-  platformIndex()
-  geneNames()
-  probeNames()
-})
+#observe({
+#  platformIndex()
+#  geneNames()
+#  probeNames()
+#})
 
 ##############################################
 ### unique gene names for selected platform
 ##############################################
 geneNames <- reactive ({
+  add.tab()
   if (TRACE) cat("In geneNames reactive...\n")
 
   plat.info = platInfo()
 
   if (is.null(plat.info)) {
-	cat("\t\treturn NULL...\n")
+        subtract.tab()
+	cat("return NULL...\n")
 	return (NULL)
   }
-  cat("\t\tfind column...\n")
+  cat("find column...\n")
 
- 
   gene.column = values.edit$platformGeneColumn
   if (is.null(gene.column)) {
     check.names = c("Gene Symbol", "GeneSymbol", "Symbol",
@@ -245,8 +284,9 @@ geneNames <- reactive ({
       values.edit$platformGeneColumn = gene.column
     }
   }
-
+  cat("gene column is  ", gene.column, "\n")
   probes = as.character(plat.info$ID)
+  cat("got probes...\n")
   genes = "Gene not specified"
   if (!is.null(gene.column)) { 
   cat("finding column: ", gene.column, "\n")
@@ -259,28 +299,45 @@ geneNames <- reactive ({
 
   # create data.frame for use with selectizeInput #
 
-  cat("creating geneName data.frame...\n")
-  dd = data.frame(value = probes, label = label, genes = genes, probes = probes)
-  cat("done\n")
-  print(head(dd))
-  return(dd)
+  cat("probes1 = ", probes[1], "\n")
+  cat("label1 = ", label[1], "\n")
+  cat("gene1 = ", genes[1], "\n")
 
+  cat("length probes = ", length(probes), "\n")
+  cat("length label = ", length(label), "\n")
+  cat("length genes = ", length(genes), "\n")
+
+  cat("creating geneName data.frame...\n")
+#  save(probes, label, genes, file = "look.RData")
+  
+  tmp = 1:length(probes)
+
+#  dd = data.frame(value = tmp, label = tmp, genes = tmp, probes = tmp)
+  dd = data.frame(value = probes, label = label, genes = genes, probes = probes)
+#  save(probes, label, genes, dd, file = "look.RData")
+  cat("data.frame created\n")
+  subtract.tab()
+  return(dd)
 })
 
 ########################################
 ### selected Gene index
 ########################################  
 selectedGene <- reactive ({
+  add.tab()
   if (TRACE) cat("In selectGene reactive...\n")
   gene.column = values.edit$platformGeneColumn
-  if (is.null(input$selectGenes) | is.null(gene.column)) return (NULL)
-  
+  if (is.null(input$selectGenes) | is.null(gene.column)) {
+	subtract.tab()
+	return (NULL)
+  }
   # without this line, this will find all probes that do not
   # have a matching gene, i.e., the selected gene is ""
   if (input$selectGenes == "") return(NULL)
   #cat("using gene column = ", gene.column, "\n")
   m = match(gene.column,colnames(platInfo()))
   g = grep(paste("^",input$selectGenes,"$",sep=""), as.character(platInfo()[,m]))
+  subtract.tab()
   return(g)
 })
 
@@ -288,9 +345,17 @@ selectedGene <- reactive ({
 ### probe names for current expression data
 #############################################  
 probeNames <- reactive({
+  add.tab()
   if (TRACE) cat("In probeNames reactive...\n")
-  if (is.null(dataInput())) return(NULL)
-  else if (is.null(selectedGene())) return(NULL)
+  if (is.null(dataInput())) {
+	subtract.tab()
+	return(NULL)
+  }
+  else if (is.null(selectedGene())) {
+	subtract.tab()
+	return(NULL)
+  }
+  subtract.tab()
   return (as.character(platInfo()[selectedGene(),match("ID",colnames(platInfo()))]))
 })
 
@@ -298,8 +363,17 @@ probeNames <- reactive({
 # clinicalInput: Clinical Data
 #######################################################
 clinicalInput <- reactive({
+  add.tab()
   if (TRACE) cat("In clinicalInput reactive...\n")
+
+  if (TEST.DATA) {
+	values.edit$table = CLINICAL.test
+	subtract.tab()
+	return(CLINICAL.test)
+  }
+
   if (is.null(dataInput()) | is.null(platformIndex())) {
+    subtract.tab()
     return(NULL)
   }
   ### Checks if initial values.edit$table is NULL (which it is set to initially)
@@ -308,7 +382,7 @@ clinicalInput <- reactive({
   } else {
     code = paste0("data.p = pData(data.series[[data.index]])")
     add.line(code)
-    p = as.data.frame(pData(phenoData(object = dataInput()[[platformIndex()]])))
+      p = as.data.frame(pData(phenoData(object = dataInput()[[platformIndex()]])))
   } 
   #####################################################################
   #  display only columns that have more than one possible value; this
@@ -332,78 +406,46 @@ clinicalInput <- reactive({
   p = p[m,]
   
   values.edit$table = p
-  
+  subtract.tab()	
   return(p)
 
 })
-# to-do commit for a revert button for the survival analysis table
-###########################
-### Original Clinical Table 
-###########################
-# originalTable <- reactive({
-#   if (TRACE) cat("In clinicalInput reactive...\n")
-#   if (is.null(dataInput()) | is.null(platformIndex())) {
-#     return(NULL)
-#   }
-#   ### Checks if initial values.edit$table is NULL (which it is set to initially)
-#   if (!is.null(values.edit$original)) {
-#     p = values.edit$original
-#   } else {
-#     p = as.data.frame(pData(phenoData(object = dataInput()[[platformIndex()]])))
-#   } 
-#   #####################################################################
-#   #  display only columns that have more than one possible value; this
-#   #   removes many columns such as contact info. In addition all 
-#   #   columns specified by RM.COLS will be removed
-#   #####################################################################
-#   
-#   RM.COLS = c("status", "last_update_date", "submission_date")
-#   num.levels = apply(p, 2, function(x) nlevels(as.factor(x)))
-#   p = p[,num.levels > 1]
-#   m = match(RM.COLS, colnames(p))
-#   m=m[!is.na(m)]
-#   if (length(m) > 0) p=p[,-m, drop = FALSE]
-#   m = match(colnames(exprInput()), rownames(p))
-#   p = p[m,]
-#   values.edit$original = p
-#   return(p)
-#   
-# })
-
 
 ######################################################
 # exprInput - expression data for selected platform
 ######################################################
 exprInput <- reactive({
+  add.tab()
   if (TRACE) cat("In exprInput reactive...\n")
   pi = platformIndex()
   cat("pi = ", pi, "\n")
-  if (is.null(dataInput()) | is.null(pi)) return(NULL)
+  if (is.null(dataInput()) | is.null(pi)) {
+	subtract.tab()
+	return(NULL)
+  }
   pl=Platforms()[platformIndex()]
   code = paste0("data.index = match(\"", pl, "\", sapply(data.series, annotation))")
   add.line(code)
   code = paste0("data.expr = exprs(data.series[[data.index]])")
   add.line(code)
   ans = exprs(dataInput()[[pi]])
+  subtract.tab()
   return(ans)
 })
-
-########################################
-### selected probe as row number
-########################################  
-#selectedProbe <- reactive ({
-#  if (TRACE) cat("In selectedProbe reactive...\n")
-#  return(match(input$selectProbes,rownames(exprInput())))
-#})
 
 ########################################
 ### ColumnNames of clinicial data table
 ########################################  
 ColumnNames <- reactive({
+  add.tab()
   if (TRACE) cat("In ColumnNames reactive...\n")
-  if (is.null(clinicalInput()) | is.null(exprInput())) return(NULL)
+  if (is.null(clinicalInput()) | is.null(exprInput())) {
+	subtract.tab()
+	return(NULL)
+  }
   vars = colnames(clinicalInput())
   vars <- as.list(vars)
+  subtract.tab()
   return(vars)
 })
 
@@ -411,10 +453,16 @@ ColumnNames <- reactive({
 ### Summary of Clinical Data table
 ########################################  
 clinicalDataSummary <- reactive({
+  add.tab()
   if (TRACE) cat("In clinicalDataSummary reactive...\n")
   t = clinicalInput()
-  if (is.null(t)) return(NULL)
+  if (is.null(t)) {
+	subtract.tab()
+	return(NULL)
+  }
+  cat("colnames = ")
   vars = colnames(t)
+  cat("got ncols = ", length(vars), "\n")
   a = apply(t, 2, function(x)levels(as.factor(x)))
   
   ## format function to truncate row contents with a place holder " ..."
@@ -427,6 +475,8 @@ clinicalDataSummary <- reactive({
   #a = lapply(a, format.it, 4)
   
   a = sapply(a, paste, collapse = ", ")
+  cat("end clinicalDataSummary reactive\n")
+  subtract.tab()
   cbind(variable = vars, values = a)
 })
 
@@ -435,15 +485,18 @@ clinicalDataSummary <- reactive({
 # get possible values of the selected column names
 ###################################################
 groupsForSelectedColumn <- reactive({
+  add.tab()
   if (TRACE) cat("In groupsForSelectedColumn reactive...\n")
   vars = values.edit$table
-  #if (is.null(vars)) return(NULL)      
-  if (is.null(vars) | is.null(input$selectedColumn)) return(NULL)      
+  if (is.null(vars) | is.null(input$selectedColumn)) {
+	subtract.tab()
+	return(NULL)   
+  }
   
   vars <- vars[, as.character(input$selectedColumn)] 
   vars = factor(vars)
+  subtract.tab()
   return(as.list(levels(vars)))
-  print(vars)
 })  
 
 ###################################################
@@ -452,9 +505,11 @@ groupsForSelectedColumn <- reactive({
 # a cut-off 
 ###################################################
 defaultGroupsForSelectedColumn <- reactive({
+  add.tab()
   if (TRACE) cat("In defaultGroupsForSelectedColumn reactive...\n")
   g = groupsForSelectedColumn()
-  if (length(g) > 8) return(NULL) 
+  subtract.tab()
+  if (length(g) > 5) return(NULL) 
   g    
 })
 
@@ -473,7 +528,8 @@ replace.str <- reactive({input$replace})
 column.num <- reactive({as.character(input$drop2)}) 
 
 editClinicalTable <- reactive({
-  input$Enter    
+  input$Enter  
+  add.tab()  
   if (TRACE) cat("In editClinicalTable reactive...\n")
   find.str = isolate(find.str())
   column.num = isolate(column.num())
@@ -481,6 +537,7 @@ editClinicalTable <- reactive({
   
   if (find.str == "" & replace.str == "") {   # if there is nothing entered it returns the original table
     cat("\t return current table\n")
+    subtract.tab()
     return(values.edit$table)
   }
   exactMatch = isolate(input$checkbox) # exact match condition
@@ -515,6 +572,7 @@ editClinicalTable <- reactive({
 
   cat("replacing table..\n")    
   values.edit$table = newClinical
+  subtract.tab()
   return (values.edit$table)
   
 }) # end of editClinicalTable() reactive
@@ -523,6 +581,8 @@ editClinicalTable <- reactive({
 # Expression profiles - data transformation
 ###########################################
 profiles <- reactive({
+  cat("HHHH in profiles\n")
+  add.tab()
   if (TRACE) cat("In profiles reactive...\n")
   ### log2 transform (auto-detect) citation ###
   # Edgar R, Domrachev M, Lash AE.
@@ -538,17 +598,18 @@ profiles <- reactive({
   if (LogC & input$radio == 1) { 
     ex[which(ex <= 0)] <- NaN
     values.edit$log2 = TRUE
+  subtract.tab()
   return (ex <- log2(ex)) 
   }    
   
   if (input$radio == 2) {
     values.edit$log2 = TRUE
+    subtract.tab()
     return (ex <- log2(exprInput()))   # forced Yes
   }
   values.edit$log2 = FALSE
+  subtract.tab()
   return (ex <- exprInput())  # No
-
-  
 })
 
 ###########################################
@@ -567,8 +628,11 @@ outcome <- reactive ({
 })
 
 x <- reactive ({ # not seen in sidebar - changed through the gene/probe drop-downs above plot area
+  add.tab()
   if (TRACE) cat("In x reactive...\n")
+  subtract.tab()
   x = profiles()[input$selectGenes,]
+  x
 })
 
 #### reactive column selection in summary form for edit bsModal for survival ####
@@ -584,12 +648,14 @@ observeEvent(input$parseButton, {
 
 parse.modal <- reactive ({ 
   input$parseEnter
+  add.tab()
   if (TRACE) cat("In parse.modal reactive...\n")
   parse.modal <- data.frame(
   editSelectedCols()[time()],
   editSelectedCols()[outcome()])
   ## removes any null strings present in the rows of the data.frame
-  #parse.modal <- parse.modal[!apply(parse.modal, 1, function(x) any(x=="")),] 
+  #parse.modal <- parse.modal[!apply(parse.modal, 1, function(x) any(x=="")),]
+  subtract.tab() 
   return(parse.modal)
 }) 
 
@@ -612,7 +678,7 @@ replace.str.surv <- reactive({input$survreplace})
 ###########################################################
 editSelectedCols <- reactive({
   input$parseEnter  # trigger actionButton
-
+  add.tab()
   # make sure to isolate everything so we're not repeatedly calling this
   time.col = isolate(time())
   outcome.col = isolate(outcome())
@@ -630,6 +696,7 @@ editSelectedCols <- reactive({
 #   }
   
   if (find.str.surv == "" & replace.str.surv == "") {   # if there is nothing entered it returns the selected columns
+    subtract.tab()
     return(newCols)
   }
   
@@ -671,6 +738,7 @@ editSelectedCols <- reactive({
 
   values.edit$table <- newCols
 
+  subtract.tab()
   return (values.edit$table)  
   
 }) # end of editSelectedCols() reactive
@@ -710,7 +778,7 @@ data.expr = exprs(data.series[[data.index]])
   if (identical(initialCode, initialCode)) { # if the GSE and platform are the same, don't keep adding the same info
     add.graph("")
   }
-  
+ cat("END Initial\n") 
 })
 
 ######################################

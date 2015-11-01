@@ -110,7 +110,7 @@ output$PlatformLinks <-renderUI( {
 observe ({
   ## only show plaforms for selected series ##
   pl = Platforms()
-  cat("upate for pl = ", pl, "\n")
+  cat("update for pl = ", pl, "\n")
   selected = NULL
   
   if (!is.null(pl)) {
@@ -125,11 +125,9 @@ observe ({
     pl.accession = platforms.accession
     pl.description = platforms.description
   }
-  
+ 
+cat("update platform dropdown\n") 
 updateSelectizeInput(session, inputId='platform', server = TRUE,
-                     
-#output$platform <- renderUI({  
-#  selectInput('platform', 'Platform', Platforms(), multiple = F, selectize = FALSE)        
                choices = data.frame(label = pl.accession, value = pl.accession, name = pl.description),
                selected = selected,
                options = list(
@@ -143,7 +141,6 @@ updateSelectizeInput(session, inputId='platform', server = TRUE,
                     }"
                  ))
                )
-#}
 
 if (!is.null(pl)) {
 	 d = dataInput()
@@ -154,10 +151,11 @@ if (!is.null(pl)) {
 #        x = paste("<br>", p, "</br>", collapse = "")
 
 x = paste(x, collapse = "<br>")
+cat("create platform alert\n")
 createAlert(session, "alert1", alertId = "GPL-alert", title = "Please select a platform to continue", style = "success",
             content = x, append = TRUE, dismiss = FALSE) 
 }
-
+cat("done create platform alert\n")
 })
 
 
@@ -268,16 +266,19 @@ displayDataTable <-reactive({
   DT::renderDataTable({ datatable(editClinicalTable(), rownames = TRUE,
                                                       extensions = 'ColReorder',
                                                       options = list(dom = 'Rlfrtip', #ajax = list(url = action1), 
+								    autoWidth = TRUE,
                                                                      scrollX = "auto",
                                                                      scrollY = "400px",
                                                                      paging = T, 
                                                                      searchHighlight = TRUE,
                                                                      columnDefs = list(list(
                                                                        targets = 1: ncol(editClinicalTable()), # applies to the entire table
+									width = '200px',
+
                                                                        render = JS(
                                                                          "function(data, type, row, meta) {",
-                                                                         "return type == 'display' && data.length > 20 ?",
-                                                                         "'<span title=\"' + data + '\">' + data.substr(0, 20) + '...</span>' : data;",
+                                                                         "return type == 'display' && data.length > 50 ?",
+                                                                         "'<span title=\"' + data + '\">' + data.substr(0, 50) + '...</span>' : data;",
                                                                          "}")
                                                                      ))), 
                                                       select = list(target = "column"),
@@ -302,7 +303,9 @@ observe({
   action = dataTableAjax(session, data=dd, rownames = TRUE) # for the row_output as characters
   
   
-  
+  output$summaryModalTable <- displayDataTable() 
+
+ 
 })
 
 
@@ -336,15 +339,19 @@ di = clinicalInput()
 ##############################
 ## Expression Profiles plot 
 ##############################
-observeEvent(input$submitButton,
+#observeEvent(input$submitButton,
 
+if (EXPRESSION.PLOT) { 
 output$exProfiles <- renderPlot({
   cat("\n\nrendering profiles...\n")
 
- 
   # Return max 30 exp. samples if there is alot of samples to make the determination easier = unclutterd graphics
   x = profiles()
-  if (is.null(x)) return(NULL)
+  cat("profiles() done\n")
+  if (is.null(x)) {
+	cat("no profiles\n")
+	return(NULL)
+  }
   n = ncol(x)
   if (n > 30) {
     s = sample(1:n, 30)
@@ -373,7 +380,8 @@ output$exProfiles <- renderPlot({
                content = "Generating boxplot of expression data", append = FALSE, dismiss = TRUE) 
   par(mar=c(2+round(max(nchar(sampleNames(dataInput())))/2),4,2,1))
   title <- paste(isolate(input$GSE), '/', isolate(input$platform), title.detail, sep ='') # need 
-  
+ 
+  cat("expression alert created\n") 
   #library(tidyr) # possible move from reshape2 to tidyr
   #x1 = gather(data = x, na.rm =TRUE)
   fixed.df <- as.data.frame(x=x, stringsAsFactors = FALSE)
@@ -399,7 +407,8 @@ output$exProfiles <- renderPlot({
 }
 
 ) 
-) 
+}
+#) 
 
 ####################
 ####################
@@ -536,38 +545,46 @@ main.gen <- function(this,columns.data){
   updateSelectizeInput(session,"autoColumn.outcome",choices=colnames(this),selected=columns.data[2])
   updateSelectizeInput(session,"columnEvent1",choices=columnItems,selected=outcome.yes,server=TRUE)
   updateSelectizeInput(session,"columnEvent0",choices=columnItems,selected=outcome.no,server=TRUE)
-  output$timetable <- renderDataTable(time_both)
+  output$timetable <- DT::renderDataTable({time_both})
   outcome.analysis <<- outcome.new
 }
 
+if (AUTOSELECT.SURVIVAL) {
+
 observeEvent(input$autoAnalysis,({
   print("Column selection and formatting for survival analysis started..")
+  if (is.null(values.edit$table)) return(NULL)
   this = values.edit$table
   columns.data = calc.columns(this)
   main.gen(this,columns.data)
   print("Column selection and formatting for survival analysis finished..")
-  
-  
-}))
-observeEvent(input$gBack,({
-  
-  toggleModal(session,"summaryBSModal",toggle = "close")
-  
 }))
 
-i.check = 0          
+observeEvent(input$gBack,({
+  print("observe gBack\n")  
+  toggleModal(session,"summaryBSModal",toggle = "close")
+  print("done observe gBack\n")  
+}))
+
 observeEvent(input$autoColumn.time,({
+  print("observe autoColumn.time")
     this = values.edit$table
+    if (is.null(values.edit$table)) return(NULL)
     new = reduce.columns(input$autoColumn.time,NA,this)
     time.analysis <<- new$time
     time_both <- data.frame(this[[input$autoColumn.time]],new$time)
-    output$timetable <- renderDataTable(time_both)
-  
-  
+  #  output$timetable <- renderDataTable(time_both)
+    output$timetable <- DT::renderDataTable({time_both})
 }))
+
+
 observeEvent(input$autoColumn.outcome,({
+  print("observe autoColumn.outcome")
+    if (is.null(values.edit$table)) return(NULL)
     this = values.edit$table
     selected = input$autoColumn.outcome
+    cat("selected = ", selected, "\n")
+    if (selected == "") return(NULL)
     selected = setdiff(selected, c("", " "))
     new = reduce.columns(NA,input$autoColumn.outcome,this)
     outcome.orig = as.character(this[[input$autoColumn.outcome]])
@@ -581,10 +598,11 @@ observeEvent(input$autoColumn.outcome,({
 
 }))
 
- 
+
 observeEvent(input$genBtn,
-      
            ({
+	print("observe genBtn\n")
+    	if (is.null(values.edit$table)) return(NULL)
              output$kmSurvival <- renderPlot({
                
                return(plot.shiny.km(time = as.double(time.analysis), 
@@ -602,6 +620,10 @@ observeEvent(input$genBtn,
              tags$script(HTML("window.location.href= '/#kmSurvial'"))
            })
 )
+
+} # end autoselect.survival
+
+
 output$selectedCols <- DT::renderDataTable({ 
   datatable(data = parse.modal(), rownames = F,
 		options = list(dom = "Rlrtip", paging = F),
@@ -652,6 +674,7 @@ output$downloadData <- downloadHandler(
  
 )
 
+if (DE.PLOT) {
   observe({
     
       PLOT = TRUE
@@ -703,4 +726,5 @@ output$downloadData <- downloadHandler(
           
     }
   })  # end observe
- 
+}
+
