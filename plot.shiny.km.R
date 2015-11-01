@@ -67,6 +67,7 @@ plot.shiny.km <- function(time, death, x, title = "",
   
   ## plot graph ### ggplot2/GGally form
   km.group1 = survfit(Surv(time, death) ~ x)
+  cat("in plot.shiny.km, col = ", col, "\n")
   km.group = ggsurv(km.group1, 
                     main = title, xlab = "Time", ylab = "Survival",
                     surv.col = col, cens.col = "black") +
