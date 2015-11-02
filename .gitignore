@@ -4,3 +4,5 @@
 mainPanel.R
 .Rproj.user
 .travis.yml
+
+.RData

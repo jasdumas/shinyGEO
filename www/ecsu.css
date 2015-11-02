@@ -1,0 +1,48 @@
+
+.logo{
+
+color: #FFFFFF;
+}
+#submitButton{
+position:relative;
+bottom:13px;
+
+}
+#submitPlatform{
+position:relative;
+bottom:13px;
+
+}
+#autoAnalysis{
+margin-bottom:26px;
+}
+#genBtn{
+            position:relative;
+            float:right;
+            right:300px;       
+            bottom:5px; 
+}
+#manuBtn{
+            position:relative;
+            float:right;
+            margin-left:5px;
+            bottom:5px;
+            right: 285px;
+        }
+.skin-blue .main-sidebar {
+  	background-color: rgb(0, 38, 73);
+    /*font-color: green;*/
+}
+
+.skin-blue .sidebar-menu li.active>a{
+  background-color: rgb(124,33,40);
+  
+}
+
+.skin-blue .sidebar-menu>li:hover>a {
+        background-color: rgb(124,33,40);
+      }
+
+.skin-blue .sidebar-menu>li>a {
+        color: white;
+}

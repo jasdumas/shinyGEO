@@ -11,10 +11,10 @@ source("ui.tab.reproducible.R")
 source("ui.tab.about.R")
 source("html.R")
 
+
 if (0) {
 #shinyUI(fluidPage(title = "GEO-AWS",
  shinyUI(bootstrapPage(    
- theme = "bootstrap.css", 
   tags$style(type="text/css", "body {padding: 70px;}"),
        
    ############################################################
@@ -37,14 +37,13 @@ if (0) {
 )
 }
 
-
 header = dashboardHeader(
-  title = uiOutput("shinyTitle"), titleWidth = 300, disable = FALSE 
+  title = uiOutput("shinyTitle"), titleWidth = 350, disable = FALSE 
 )
 
-gse.input = div(style = "display:inline-block; width: 85%",
-            selectizeInput('GSE', label = "Accession Number", choices = NULL,width = 500,
-              options = list(placeholder = "Please enter a GSE accession number",
+gse.input = div(style = "display:inline-block; width: 75%",
+            selectizeInput('GSE', label = "Accession Number", choices = NULL, width = 275,
+              options = list(placeholder = "Please enter a GSE #",
                           maxOptions = 100)
             )
           )
@@ -55,8 +54,8 @@ gse.button = div(style = "display:inline-block; width: 11%",
 
 gse.platform=  conditionalPanel(condition = "output.sidebarDisplay=='PLATFORM'|output.sidebarDisplay=='ALL'",
 
-                  div(style = "display:inline-block; width: 85%",
-                        selectizeInput('platform', label = NULL, choices = NULL, width = 500,
+                  div(style = "display:inline-block; width: 75%",
+                        selectizeInput('platform', label = NULL, choices = NULL, width = 275,
                                 options = list(placeholder = "Please select a platform",
                                 maxOptions = 10)
                         )
@@ -68,12 +67,13 @@ gse.platform=  conditionalPanel(condition = "output.sidebarDisplay=='PLATFORM'|o
 #                  )
                 )
 
-sidebar = dashboardSidebar(width = 400,
+sidebar = dashboardSidebar(width = 350,
+  includeCSS('www/ecsu.css'),
 	gse.input, gse.button, gse.platform,
 	conditionalPanel(condition = "output.sidebarDisplay=='ALL'",
 	sidebarMenu(id = "tabs",
 		hr(),
-        	menuItem("Home", tabName = "Home", icon = icon("area-chart")),
+    menuItem("Home", tabName = "Home", icon = icon("home")),
 		menuItem("Differential Expression Analysis", tabName = "DifferentialExpressionAnalysis", icon = icon("flask")),
 		menuItem("Survival Analysis", tabName = "SurvivalAnalysis", icon = icon("life-ring")),
 		menuItem("Full Data Table", tabName = "FullDataTable", icon = icon("table")),
@@ -105,8 +105,7 @@ analyses.common = conditionalPanel(condition = "input.tabs == 'DifferentialExpre
 )
 
 body = dashboardBody(
-    bsAlert("alert1"),
-
+  bsAlert("alert1"),
   uiOutput("test"),
   uiOutput("busy"),
 

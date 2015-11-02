@@ -86,7 +86,7 @@ genBSModal<-function (id, title, trigger, ..., size)
 shiny::tags$div(class = "modal-body",
               fluidRow(
                  column(12,
-                        tags$h4(class="intro","ShinyGeo has automatically detected and formatted columns within your data for you. Please confirm these are correct and then generate the analysis."),
+                        tags$h4(class="intro","shinyGEO has automatically detected and formatted columns within your data for you. Please confirm these are correct and then generate the analysis."),
                         bsAlert("warningAlert")
                  )
                ),
