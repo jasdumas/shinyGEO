@@ -12,12 +12,12 @@ source("ui.tab.about.R")
 source("html.R")
 
 header = dashboardHeader(
-  title = uiOutput("shinyTitle"), titleWidth = 300, disable = FALSE 
+  title = uiOutput("shinyTitle"), titleWidth = 350, disable = FALSE 
 )
 
-gse.input = div(style = "display:inline-block; width: 85%",
-            selectizeInput('GSE', label = "Accession Number", choices = NULL,width = 500,
-              options = list(placeholder = "Please enter a GSE accession number",
+gse.input = div(style = "display:inline-block; width: 75%",
+            selectizeInput('GSE', label = "Accession Number", choices = NULL, width = 275,
+              options = list(placeholder = "Please enter a GSE #",
                           maxOptions = 100)
             )
           )
@@ -28,8 +28,8 @@ gse.button = div(style = "display:inline-block; width: 11%",
 
 gse.platform=  conditionalPanel(condition = "output.sidebarDisplay=='PLATFORM'|output.sidebarDisplay=='ALL'",
 
-                  div(style = "display:inline-block; width: 85%",
-                        selectizeInput('platform', label = NULL, choices = NULL, width = 500,
+                  div(style = "display:inline-block; width: 75%",
+                        selectizeInput('platform', label = NULL, choices = NULL, width = 275,
                                 options = list(placeholder = "Please select a platform",
                                 maxOptions = 10)
                         )
@@ -41,14 +41,14 @@ gse.platform=  conditionalPanel(condition = "output.sidebarDisplay=='PLATFORM'|o
 #                  )
                 )
 
-sidebar = dashboardSidebar(width = 400,
+sidebar = dashboardSidebar(width = 350,
   	includeCSS("www/bootstrap.css"),
   	includeCSS("www/ecsu.css"),
 	gse.input, gse.button, gse.platform,
 	conditionalPanel(condition = "output.sidebarDisplay=='ALL'",
 	sidebarMenu(id = "tabs",
 		hr(),
-        	menuItem("Home", tabName = "Home", icon = icon("area-chart")),
+    menuItem("Home", tabName = "Home", icon = icon("home")),
 		menuItem("Differential Expression Analysis", tabName = "DifferentialExpressionAnalysis", icon = icon("flask")),
 		menuItem("Survival Analysis", tabName = "SurvivalAnalysis", icon = icon("life-ring")),
 		menuItem("Full Data Table", tabName = "FullDataTable", icon = icon("table")),
@@ -80,6 +80,20 @@ analyses.common = conditionalPanel(condition = "input.tabs == 'DifferentialExpre
 )
 
 body = dashboardBody(
+  tags$head(tags$style(HTML('
+                            .skin-blue .main-header .logo {
+                            background-color: rgb(0, 38, 73);
+                            border-bottom: solid
+                     
+                            }
+                            .skin-blue .main-header .logo:hover {
+                            background-color: rgb(0, 38, 73);
+                            }
+                            .skin-blue .main-header .navbar {
+                            background-color: rgb(0, 38, 73)
+
+                            }
+                            '))),
     bsAlert("alert1"),
 
   uiOutput("test"),
