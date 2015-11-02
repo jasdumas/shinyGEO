@@ -97,7 +97,8 @@ analyses.common = conditionalPanel(condition = "input.tabs == 'DifferentialExpre
             		genBSModal("autogenModal","Survival Analyses","",size="large")
         	), 
 		conditionalPanel(condition = "input.tabs =='DifferentialExpressionAnalysis' & input.selectedGenes!=''",
-          		bsButton("ClinicalDataBtn","View Clinical Data", style="success")
+          		bsButton("ClinicalDataBtn","View Clinical Data", style="success"),
+          		bsButton("ClinicalDataBtn2","View Clinical Data", style="success")
         	) 
 	),
             hr()
@@ -108,17 +109,20 @@ body = dashboardBody(
 
   uiOutput("test"),
   uiOutput("busy"),
-  summaryBSModal("summaryBSModal","Clinical Data Summary","manuBtn"),
+
+  summaryBSModal("summaryBSModal","Clinical Data Summary (Large)","ClinicalDataBtn", size = "large"),
+  bsModal("summary2", "Clinical Data Summary (small)", "ClinicalDataBtn2", size = "small", "Small Modal"),
+
 
   # please wait conditional panel
 
   ## originally shiny-busy
-#  conditionalPanel(condition="$('html').hasClass('shiny-busy')",
-#        div(style = "position:center; width:100%; height:100; text-align:center",
+  conditionalPanel(condition="$('html').hasClass('shiny-busy')",
+        div(style = "position:center; width:100%; height:100; text-align:center",
 #            img(src="PleaseWait.gif", style = "width:50%")
-#		"Wait please..."
-#        )
-#    ),
+		"Wait please..."
+       )
+    ),
 
    analyses.common, 
 

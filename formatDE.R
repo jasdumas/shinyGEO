@@ -163,7 +163,7 @@ formatTableDE2 <-reactive({
 
 
 ### store current colors and labels
-reactiveFormat3 = reactiveValues(colorsDE3 = NULL, labels = NULL)
+reactiveFormat3 = reactiveValues(colorsDE3 = current.color.km(1:2), labels = NULL)
 colorsDE3 <-reactive({reactiveFormat3$colorsDE3})
 labelsDE3 <-reactive({reactiveFormat3$labels})
 
