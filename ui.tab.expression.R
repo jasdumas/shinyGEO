@@ -11,7 +11,7 @@ tab.expression = tabItem(tabName = "Home",
 		#	actionButton("KMbutton", "Survival Analysis", class = "btn-info"),
  		#	actionButton("exprAdd", "Save R Code", class = "btn-info"),
 		#	#HTML("<button id='exprAdd' type='button' class='btn btn-info action-button'>Save R Code</button>"),
-			a(id = "normLink", "(options)",style="cursor:pointer")
+			a(id = "normLink", "Normalization Options",style="cursor:pointer")
 		),
                        plotOutput("exProfiles"), 
 		bsModal("normalalizationModal", "Normalization Options", "normLink", size = "small",
