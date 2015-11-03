@@ -302,6 +302,9 @@ observe({
  
 })
 
+observe ({
+  output$clinicalData = displayDataTable()
+})
 
 
 ##############################################
