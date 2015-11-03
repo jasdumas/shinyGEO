@@ -204,15 +204,19 @@ updateSelectizeInput(session, inputId='GSE', label = "Accession Number", server 
 #  }
 #})
 
-
-
 ################################################
 ### Renders drop-down menu for variables/columns 
 ################################################  
 observe({
-  colNames = colnames(editClinicalTable())
-  val = colNames[input$clinicalDataForDiffExp_columns_selected]
-  
+  #colNames = colnames(editClinicalTable())
+  #val = colNames[input$clinicalDataSummary_rows_selected]
+
+  val = NULL
+
+  colNames = rownames(clinicalDataSummary()) 
+  val = input$summaryModalTable_row_last_clicked
+  val = colNames[val]
+ 
   cat("selected column  = ", val, "\n")
   output$selectedColumn <- renderUI({  
       # show possible choices (column names)
@@ -245,7 +249,7 @@ observe({  # observe needed since data object is a reactive function
   
   output$clinicalDataSummary <- DT::renderDataTable({ datatable(as.data.frame(clinicalDataSummary()), rownames = TRUE,  
                                                                  extensions = 'ColReorder',
-                                                                 options = list(dom = 'Rlfrtip', ajax = list(url = action), 
+                                                                 options = list(#dom = 'Rlfrtip', ajax = list(url = action), 
                                                                                 paging = F,  searchHighlight = TRUE),
                                                                  filter = 'none', 
                                                                  selection = 'single') 
@@ -253,8 +257,8 @@ observe({  # observe needed since data object is a reactive function
   })
 
   
-  dd = clinicalDataSummary()
-  action = dataTableAjax(session, data=dd, rownames = TRUE) # for the row_output as characters
+#  dd = clinicalDataSummary()
+#  action = dataTableAjax(session, data=dd, rownames = TRUE) # for the row_output as characters
   
 })
 
@@ -289,21 +293,20 @@ displayDataTable <-reactive({
 
 observe({
   
-  output$summaryModalTable <- DT::renderDataTable({ datatable(as.data.frame(clinicalDataSummary()), rownames = TRUE,  
-                                                              extensions = 'ColReorder',
-                                                              options = list(dom = 'Rlfrtip', ajax = list(url = action), 
-                                                                             paging = F,  searchHighlight = TRUE),
-                                                              filter = 'none', 
-                                                              selection = 'single') 
+  output$summaryModalTable <- DT::renderDataTable({ datatable(as.data.frame(clinicalDataSummary()), rownames = FALSE,  
+    extensions = 'ColReorder',
+    options = list(#dom = 'Rlfrtip', #ajax = list(url = action), 
+                   paging = F,  searchHighlight = TRUE),
+                   filter = 'none', 
+                   selection = 'single') 
     
   })
   
   
-  dd = clinicalDataSummary()
-  action = dataTableAjax(session, data=dd, rownames = TRUE) # for the row_output as characters
+#  dd = clinicalDataSummary()
+#  action = dataTableAjax(session, data=dd, rownames = TRUE) # for the row_output as characters
   
-  
-  output$summaryModalTable <- displayDataTable() 
+#  output$summaryModalTable <- displayDataTable() 
 
  
 })

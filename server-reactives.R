@@ -3,6 +3,8 @@
 #############################################################################
 
 TRACE = TRUE 
+LAST.TAB = "Home"
+
 cat("sourcing server-reactives..\n")
 
 createAlert(session, "alert0", alertId = "Welcome-alert", title = "shinyGEO", style = "danger",
@@ -20,10 +22,7 @@ createAlert(session, "alert1", alertId = "GSE-begin-alert",
 ###################################################
 values.edit <- reactiveValues(table = NULL, platformGeneColumn = NULL, original = NULL, log2 = FALSE)
 reproducible <-reactiveValues(code = NULL, report = NULL)
-
-
 KM <-reactiveValues(eventNames = NULL, outcome = NULL)
-
 
 ### functions to append/aggregate a new line to the aceEditor
 add.line <-function(line) {
@@ -40,9 +39,12 @@ add.graph <-function(line) {  ## add graphic info to ace editor for the report
 ################################
 observeEvent(input$tabs, {
   cat("tab change...\n")
-  if (input$tabs == "ClinicalDataSummary") {
+  if (input$tabs == "FullDataTable") {
 	toggleModal(session, "summaryBSModal", "toggle")
+        updateTabItems(session, "tabs", LAST.TAB) 
+        return (NULL)
   }
+  LAST.TAB <<-input$tabs
 
   if (input$tabs == "DifferentialExpressionAnalysis") {
   	if (input$selectGenes == "") {
@@ -366,23 +368,25 @@ clinicalInput <- reactive({
   add.tab()
   if (TRACE) cat("In clinicalInput reactive...\n")
 
-  if (TEST.DATA) {
-	values.edit$table = CLINICAL.test
-	subtract.tab()
-	return(CLINICAL.test)
-  }
-
   if (is.null(dataInput()) | is.null(platformIndex())) {
     subtract.tab()
     return(NULL)
   }
+  p = NULL
+  cat("set p to NULL\n")
   ### Checks if initial values.edit$table is NULL (which it is set to initially)
   if (!is.null(values.edit$table)) {
     p = values.edit$table
+    cat("p = values.edit$table\n")
   } else {
     code = paste0("data.p = pData(data.series[[data.index]])")
     add.line(code)
+    if (TEST.DATA) {
+        cat("set p to CLINICAL.test\n")
+	p = CLINICAL.test
+    } else {
       p = as.data.frame(pData(phenoData(object = dataInput()[[platformIndex()]])))
+    }
   } 
   #####################################################################
   #  display only columns that have more than one possible value; this
@@ -390,7 +394,8 @@ clinicalInput <- reactive({
   #   columns specified by RM.COLS will be removed
   #####################################################################
   
-  RM.COLS = c("status", "last_update_date", "submission_date")
+  RM.COLS = c("status", "last_update_date", "submission_date", 
+	"supplementary_file", "geo_accession")
   num.levels = apply(p, 2, function(x) nlevels(as.factor(x)))
   
   p = p[,num.levels > 1]
@@ -472,12 +477,13 @@ clinicalDataSummary <- reactive({
     x[max] = " ..."
     return(x[1:max])
   }
-  #a = lapply(a, format.it, 4)
+  a = lapply(a, format.it, Inf)
   
   a = sapply(a, paste, collapse = ", ")
   cat("end clinicalDataSummary reactive\n")
   subtract.tab()
   cbind(variable = vars, values = a)
+  #cbind(values = a)
 })
 
 

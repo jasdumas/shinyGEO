@@ -11,6 +11,32 @@ source("ui.tab.reproducible.R")
 source("ui.tab.about.R")
 source("html.R")
 
+
+if (0) {
+#shinyUI(fluidPage(title = "GEO-AWS",
+ shinyUI(bootstrapPage(    
+  tags$style(type="text/css", "body {padding: 70px;}"),
+       
+   ############################################################
+   # Navigation Bar
+   ############################################################
+   navbarPage(title = uiOutput("shinyTitle"), #title ="shinyGEO", 
+              #id = "tabs", 
+	      inverse = TRUE, position = "fixed-top",
+              windowTitle = "shinyGEO", 
+              collapsible = TRUE,
+              header = navbar.header,
+              tab.expression,
+              tab.analyses,
+              tab.clinical,
+              tab.reproducible,
+              tab.about
+     )  # end NavBar Page
+     
+   ) # end fluidPage and shinyUI
+)
+}
+
 header = dashboardHeader(
   title = uiOutput("shinyTitle"), titleWidth = 350, disable = FALSE 
 )
@@ -42,8 +68,7 @@ gse.platform=  conditionalPanel(condition = "output.sidebarDisplay=='PLATFORM'|o
                 )
 
 sidebar = dashboardSidebar(width = 350,
-  	includeCSS("www/bootstrap.css"),
-  	includeCSS("www/ecsu.css"),
+  includeCSS('www/ecsu.css'),
 	gse.input, gse.button, gse.platform,
 	conditionalPanel(condition = "output.sidebarDisplay=='ALL'",
 	sidebarMenu(id = "tabs",
@@ -80,26 +105,27 @@ analyses.common = conditionalPanel(condition = "input.tabs == 'DifferentialExpre
 )
 
 body = dashboardBody(
-  tags$head(tags$style(HTML('
-                            .skin-blue .main-header .logo {
-                            background-color: rgb(0, 38, 73);
-                            border-bottom: solid
-                     
-                            }
-                            .skin-blue .main-header .logo:hover {
-                            background-color: rgb(0, 38, 73);
-                            }
-                            .skin-blue .main-header .navbar {
-                            background-color: rgb(0, 38, 73)
-
-                            }
-                            '))),
-    bsAlert("alert1"),
-
+  bsAlert("alert1"),
   uiOutput("test"),
   uiOutput("busy"),
 
-  summaryBSModal("summaryBSModal","Clinical Data Summary (Large)","ClinicalDataBtn", size = "large"),
+  summaryBSModal("summaryBSModal","Clinical Data Summary (Large)","ClinicalDataBtn", size = "large",  
+
+  tabsetPanel(
+	tabPanel("Summary", DT::dataTableOutput("summaryModalTable")),
+	tabPanel("Full Clinical Table",   
+    actionButton("tabBut", "Edit Data Table"),
+        DT::dataTableOutput("clinicalData"),
+        shinyBS::bsModal("modalExample", "Edit Data Table", "tabBut", size = "small",
+            uiOutput("dropModal"),
+            textInput("find", label = "Find", value = ""),
+            checkboxInput("checkbox", label = "Exact Match", value = FALSE),
+            textInput("replace", label = "Replace", value = ""),
+            checkboxInput("survCheckbox", label = "Partial Replace", value = FALSE),  ### for survival analysis
+             actionButton("Enter", label = "Submit"))
+	)
+  )
+ ),
   bsModal("summary2", "Clinical Data Summary (small)", "ClinicalDataBtn2", size = "small", "Small Modal"),
 
 
@@ -120,7 +146,7 @@ body = dashboardBody(
       tab.expression,
       tab.DE.analysis,
       tab.survival.analysis,
-      tab.data.full,
+#      tab.data.full,
       tab.data.summary,
       tab.code,
       tab.report,
