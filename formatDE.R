@@ -1,13 +1,19 @@
+# GD: do not create a new palette()!
+# This opens a graphics device and will cause shiny server to crash 
+
 current.color <-function(i) {
-  i = (i-1)%%length(palette("default"))+1
+  i = (i-1)%%length(palette())+1
   palette()[i]
 }
 
 # keeps the km default colors separate from the DE plot
 current.color.km <-function(i) {
-  new.palette = palette(c("red", "blue"))
-  i = (i-1)%%length(new.palette)+1
-  palette()[i]
+#  new.palette = palette(c("red", "blue"))
+#  i = (i-1)%%length(new.palette)+1
+#  palette()[i]
+  if (i==1) return("red")
+  if (i==2) return("blue")
+  return("black")
 }
 
 output$formatDE <- renderUI({ 
@@ -64,6 +70,7 @@ formatTableDE <-reactive({
   #print(p)
   p
 })
+
 
 ### store current colors and labels
 reactiveFormat = reactiveValues(colorsDE = NULL, labels = NULL)
@@ -205,6 +212,4 @@ observeEvent(input$applyFormatDE2, { # trigger on Save Changes button within bsM
   reactiveFormat3$colorsDE3 = colorsDE4()
   reactiveFormat3$labels = labelsDE3()
 })
-
-
 
