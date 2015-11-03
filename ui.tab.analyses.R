@@ -116,7 +116,7 @@ shiny::tags$div(class = "modal-body",
        )
    
 }
-summaryBSModal<-function (id, title, trigger,..., size) { 
+summaryBSModal<-function (id, title, trigger,size, ...) { 
 if (!missing(size)) { 
   if (size == "large") { 
     size = "modal-lg" 
@@ -131,8 +131,9 @@ if (!missing(size)) {
     } 
 
 cat("SIZE = ", size, "\n\n\n")
-bsTag <- shiny::tags$div(class = "modal sbs-modal fade", id = id, tabindex = "-1", `data-sbs-trigger` = trigger, shiny::tags$div(class = size, shiny::tags$div(class = "modal-content", shiny::tags$div(class = "modal-header", shiny::tags$button(type = "button", class = "close", `data-dismiss` = "modal", shiny::tags$span(shiny::HTML("&times;"))), shiny::tags$h4(class = "modal-title", title) ), shiny::tags$div(class = "modal-body", DT::dataTableOutput("summaryModalTable") ), shiny::tags$div(class = "modal-footer", bsButton("gBack","Go Back") ) ) ) ) }
+#bsTag <- shiny::tags$div(class = "modal sbs-modal fade", id = id, tabindex = "-1", `data-sbs-trigger` = trigger, shiny::tags$div(class = size, shiny::tags$div(class = "modal-content", shiny::tags$div(class = "modal-header", shiny::tags$button(type = "button", class = "close", `data-dismiss` = "modal", shiny::tags$span(shiny::HTML("&times;"))), shiny::tags$h4(class = "modal-title", title) ), shiny::tags$div(class = "modal-body", DT::dataTableOutput("summaryModalTable") ), shiny::tags$div(class = "modal-footer", bsButton("gBack","Go Back") ) ) ) ) }
 
+bsTag <- shiny::tags$div(class = "modal sbs-modal fade", id = id, tabindex = "-1", `data-sbs-trigger` = trigger, shiny::tags$div(class = size, shiny::tags$div(class = "modal-content", shiny::tags$div(class = "modal-header", shiny::tags$button(type = "button", class = "close", `data-dismiss` = "modal", shiny::tags$span(shiny::HTML("&times;"))), shiny::tags$h4(class = "modal-title", title) ), shiny::tags$div(class = "modal-body", ... ), shiny::tags$div(class = "modal-footer", bsButton("gBack","Go Back") ) ) ) ) }
 
 ####################
 # DE tab
