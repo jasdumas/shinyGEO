@@ -109,7 +109,23 @@ body = dashboardBody(
   uiOutput("test"),
   uiOutput("busy"),
 
-  summaryBSModal("summaryBSModal","Clinical Data Summary (Large)","ClinicalDataBtn", size = "large"),
+  summaryBSModal("summaryBSModal","Clinical Data Summary (Large)","ClinicalDataBtn", size = "large",  
+
+  tabsetPanel(
+	tabPanel("Summary", DT::dataTableOutput("summaryModalTable")),
+	tabPanel("Full Clinical Table",   
+    actionButton("tabBut", "Edit Data Table"),
+        DT::dataTableOutput("clinicalData"),
+        shinyBS::bsModal("modalExample", "Edit Data Table", "tabBut", size = "small",
+            uiOutput("dropModal"),
+            textInput("find", label = "Find", value = ""),
+            checkboxInput("checkbox", label = "Exact Match", value = FALSE),
+            textInput("replace", label = "Replace", value = ""),
+            checkboxInput("survCheckbox", label = "Partial Replace", value = FALSE),  ### for survival analysis
+             actionButton("Enter", label = "Submit"))
+	)
+  )
+ ),
   bsModal("summary2", "Clinical Data Summary (small)", "ClinicalDataBtn2", size = "small", "Small Modal"),
 
 
@@ -130,7 +146,7 @@ body = dashboardBody(
       tab.expression,
       tab.DE.analysis,
       tab.survival.analysis,
-      tab.data.full,
+#      tab.data.full,
       tab.data.summary,
       tab.code,
       tab.report,
