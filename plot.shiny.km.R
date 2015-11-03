@@ -19,6 +19,7 @@ plot.shiny.km <- function(time, death, x, title = "",
                           subset = rep(TRUE, length(time)), 
                           col = NULL,  ...) {
   
+  
   ## filter out missing data ##
   subset = subset & !is.na(time) & !is.na(death) & !is.na(x) & !is.nan(x)
   x = x[subset]; time = time[subset]; death = death[subset]

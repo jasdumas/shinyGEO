@@ -296,9 +296,6 @@ displayDataTable <-reactive({
   })
 })
 
-observe ({
-  output$clinicalData <- displayDataTable()
-})
 
 observe({
   cat("observe for summaryModalTable\n")  
