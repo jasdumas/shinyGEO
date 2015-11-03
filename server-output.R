@@ -194,21 +194,6 @@ updateSelectizeInput(session, inputId='GSE', label = "Accession Number", server 
     ))
 )
 
-##########################################
-# Only include GSE number               ##
-##########################################
-#observe({
-#  cat("change input$GSE...\n")
-#  GSE = input$GSE
-#  if (!is.null(GSE)) {
-#    cat("GSE = ", GSE, "\n")
-#    GSE = strsplit(GSE, "-")[[1]][1]
-#    choices = c(series)
-#    updateSelectizeInput(session, "GSE", label = "Accession", choices = choices,
-#                         selected = GSE, options = list(create = TRUE), server = FALSE)
-#  }
-#})
-
 ################################################
 ### Renders drop-down menu for variables/columns 
 ################################################  
@@ -317,6 +302,9 @@ observe({
  
 })
 
+observe ({
+  output$clinicalData = displayDataTable()
+})
 
 
 ##############################################

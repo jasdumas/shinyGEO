@@ -1,12 +1,15 @@
+
+# remove new palette() function calls. This is not necessary
+# and creates a graphics window, which can cause the shiny server to crash
 current.color <-function(i) {
-  i = (i-1)%%length(palette("default"))+1
+  #i = (i-1)%%length(palette("default"))+1
   palette()[i]
 }
 
 # keeps the km default colors separate from the DE plot
 current.color.km <-function(i) {
-  new.palette = palette(c("red", "blue"))
-  i = (i-1)%%length(new.palette)+1
+  #new.palette = palette(c("red", "blue"))
+  #i = (i-1)%%length(new.palette)+1
   palette()[i]
 }
 
