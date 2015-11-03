@@ -77,6 +77,7 @@ observeEvent(input$selectGenes, {
 )
 
 observeEvent(input$ClinicalDataBtn2, {
+	cat("testModal\n")
 	toggleModal(session, "testModal", "toggle")
 })
 
