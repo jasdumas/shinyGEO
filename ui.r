@@ -1,3 +1,5 @@
+cat("begin source ui.R\n")
+
 library(shinyAce)
 library(RCurl)
 library(shinyBS)
@@ -163,3 +165,4 @@ dashboardPage(
 ))
 
 
+cat("end source ui.R\n")

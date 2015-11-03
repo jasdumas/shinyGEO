@@ -1,11 +1,9 @@
 #############################################################################
 ## Reactives
 #############################################################################
+cat("begin server-reactives.R\n")
 
-TRACE = TRUE 
 LAST.TAB = "Home"
-
-cat("sourcing server-reactives..\n")
 
 createAlert(session, "alert0", alertId = "Welcome-alert", title = "shinyGEO", style = "danger",
   	content = "shinyGEO is a tool for downloading and analyzing gene expression data from the
@@ -78,19 +76,13 @@ observeEvent(input$selectGenes, {
    }
 )
 
-if (0) {
-observeEvent(input$ClinicalDataBtn, {
-	toggleModal(session, "summaryBSModal", "toggle")
-})
-
-
 observeEvent(input$ClinicalDataBtn2, {
 	toggleModal(session, "testModal", "toggle")
 })
-}
 
 
 observeEvent(input$platform, {
+  cat("observe platform\n")
   closeAlert(session, "geneSymbolAlert")
   values.edit$table <- NULL  
   values.edit$platformGeneColumn <- NULL
@@ -98,17 +90,20 @@ observeEvent(input$platform, {
 
 
 observeEvent(reproducible$code, {
+     cat("updateAceEditor for code\n")
      updateAceEditor(session, "myEditor", reproducible$code,
                          mode="r", theme="chrome")
  })
 
 observeEvent(reproducible$report, {
+     cat("updateAceEditor for report\n")
      updateAceEditor(session, "rmd", reproducible$report, 
                   mode = "markdown", theme = "chrome")
 })
 
 
-observeEvent(input$submitButton, { 
+observeEvent(input$submitButton, {
+  cat("observe submitButton\n") 
   closeAlert(session, "geneSymbolAlert")
   values.edit$table <- NULL  
   values.edit$platformGeneColumn <- NULL
@@ -751,6 +746,7 @@ editSelectedCols <- reactive({
 # Initial Code Append to Report
 ######################################
 observeEvent(profiles(),  {
+  cat("observe profiles\n")
   if (TRACE) cat("In Initial...\n")
   initialCode <- paste0(
      
@@ -1124,3 +1120,6 @@ observeEvent(input$Enter, {
   add.graph(find.replace)
   
                         })
+
+
+cat("end server-reactives.R\n")

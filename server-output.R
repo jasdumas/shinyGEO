@@ -2,6 +2,8 @@
 # display functions for conditional panels              ##
 ##########################################################
 
+cat("begin server-output.R\n")
+
 load("series/series.RData")
 load("platforms/platforms.RData")
 
@@ -73,7 +75,8 @@ outputOptions(output, 'sidebarDisplay', suspendWhenHidden=FALSE)
 
 
 observe({
-
+  add.tab()
+  cat("observing for selectizeInput\n")
   options=  list(
       render = I(
         "{
@@ -88,6 +91,8 @@ observe({
 	label = "Select Gene", server = TRUE, 
  	choices = geneNames(), options = options 
   )
+  cat("done observing for selectizeInput\n")
+  subtract.tab()
 
 })
 
@@ -246,7 +251,8 @@ output$selectedGroups <- renderUI({
 ## displays the Clinical Summary Data Table
 ###########################################
 observe({  # observe needed since data object is a reactive function
-  
+  cat("observe for clinicalDataSummary\n") 
+ 
   output$clinicalDataSummary <- DT::renderDataTable({ datatable(as.data.frame(clinicalDataSummary()), rownames = TRUE,  
                                                                  extensions = 'ColReorder',
                                                                  options = list(#dom = 'Rlfrtip', ajax = list(url = action), 
@@ -292,7 +298,7 @@ displayDataTable <-reactive({
 
 
 observe({
-  
+  cat("observe for summaryModalTable\n")  
   output$summaryModalTable <- DT::renderDataTable({ datatable(as.data.frame(clinicalDataSummary()), rownames = FALSE,  
     extensions = 'ColReorder',
     options = list(#dom = 'Rlfrtip', #ajax = list(url = action), 
@@ -316,29 +322,6 @@ observe({
 ##############################################
 # set output variables to display the table
 ##############################################
-observe({
-
-output$clinicalDataFAKE <- 
-  DT::renderDataTable({ datatable(iris, rownames = TRUE,
-                                  options = list(searchHighlight=TRUE),
-                                  select = list(target = "column"),
-                                  
-                                  filter = "top"
-                                 )
-                    })
-
-output$clinicalData <- displayDataTable()
-output$clinicalDataForSurvival <- displayDataTable()
-output$clinicalDataForDiffExp <- displayDataTable()
-
-#output$test <- renderText(paste0("col = ", colnames(editClinicalTable())[input$clinicalDataForDiffExp_columns_selected]))
-                          
-di = clinicalInput()
-#action1 = dataTableAjax(session, data=di, rownames = TRUE)
-
-})
-
-
 ##############################
 ## Expression Profiles plot 
 ##############################
@@ -416,6 +399,7 @@ output$exProfiles <- renderPlot({
 ####################
 ####################
 observe({
+  cat("observe for survTime and outcome\n")
 
   val1 = input$survTimeUI
   val2 = input$survOutcomeUI
@@ -642,6 +626,7 @@ output$knitDoc <- renderPlot(
   #input$DEadd
   #input$Survadd
   #return(isolate(HTML(knit2html(text = input$rmd, fragment.only = TRUE, quiet = TRUE))))
+  #cat("knitDoc\n")
   print(input$exProfiles)
   )  
    
@@ -731,3 +716,4 @@ if (DE.PLOT) {
   })  # end observe
 }
 
+cat("end server-output.R\n")

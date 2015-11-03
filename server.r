@@ -1,3 +1,13 @@
+STD.ERR = TRUE
+if (STD.ERR) {
+   cat <-function(...) {
+     l = list(...)
+     lapply(l, write, stderr())
+   }
+}
+
+
+cat("begin source server.r\n")
 source("settings.R")
 
 library(DT)  ## tested on development version 0.1.32
@@ -31,3 +41,4 @@ shinyServer(function(input, output, session){
 #  output$test <-renderText(paste0("hi there: ", input$tabs))
 
 })
+cat("end source server.r\n")
