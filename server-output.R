@@ -579,12 +579,13 @@ observeEvent(input$genBtn,
 	print("observe genBtn\n")
     	if (is.null(values.edit$table)) return(NULL)
              output$kmSurvival <- renderPlot({
-               
+               main = paste(input$GSE, geneLabel() , sep = ": ")
+		cat("main = ", main, "\n")
                return(plot.shiny.km(time = as.double(time.analysis), 
                                     #death = as.integer(parse.modal()[,2]), 
                                     death = as.integer(outcome.analysis), 
                                     x = x(), 
-                                    col = colorsDE3()))
+                                    col = colorsDE3(), title = main))
                
              })
              closeAlert(session,"warn1")
@@ -692,7 +693,7 @@ if (DE.PLOT) {
               ## make sure levels are in selected order for plot
               y = factor(y, levels = input$Group1Values)
               
-              main = paste(input$GSE, input$selectGenes, sep = "/")
+              main = paste(input$GSE, geneLabel() , sep = ": ")
               #gd              
               #stripchart2(x,y, col = colorsDE(), group.names = labelsDE(), main = main, ylab = "log2 expression")
               #jd
