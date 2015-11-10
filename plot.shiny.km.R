@@ -62,8 +62,12 @@ plot.shiny.km <- function(time, death, x, title = "",
   
   hr.str = paste("HR = ", round(hr,2), ", ")
   p.str = paste("P = ", round(p.km,4), sep = "")
-  
-  title = paste(hr.str, p.str, sep = "")
+ 
+  if (title=="") { 
+	  title = paste(hr.str, p.str, sep = "")
+  } else {
+	  title = paste0(title, "\n",hr.str, p.str)
+  }
   
   ## plot graph ### ggplot2/GGally form
   km.group1 = survfit(Surv(time, death) ~ x)

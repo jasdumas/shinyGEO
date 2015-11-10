@@ -249,9 +249,10 @@ platInfo <- reactive({
 #  probeNames()
 #})
 
-##############################################
-### unique gene names for selected platform
-##############################################
+#########################################################
+### returns a data.frame of gene and probe names used by
+### selectGenes selectizeInput 
+#########################################################
 geneNames <- reactive ({
   add.tab()
   if (TRACE) cat("In geneNames reactive...\n")
@@ -318,44 +319,17 @@ geneNames <- reactive ({
   return(dd)
 })
 
-########################################
-### selected Gene index
-########################################  
-selectedGene <- reactive ({
-  add.tab()
-  if (TRACE) cat("In selectGene reactive...\n")
-  gene.column = values.edit$platformGeneColumn
-  if (is.null(input$selectGenes) | is.null(gene.column)) {
-	subtract.tab()
-	return (NULL)
-  }
-  # without this line, this will find all probes that do not
-  # have a matching gene, i.e., the selected gene is ""
-  if (input$selectGenes == "") return(NULL)
-  #cat("using gene column = ", gene.column, "\n")
-  m = match(gene.column,colnames(platInfo()))
-  g = grep(paste("^",input$selectGenes,"$",sep=""), as.character(platInfo()[,m]))
-  subtract.tab()
-  return(g)
+
+##############################################################
+## gene label of the form gene (probe) for the selected probe
+##############################################################
+geneLabel <-reactive({
+   if (input$selectGenes == "" ) return("")
+   genes = geneNames()
+   m = match(input$selectGenes, genes$probes)
+   genes$label[m]  
 })
 
-#############################################
-### probe names for current expression data
-#############################################  
-probeNames <- reactive({
-  add.tab()
-  if (TRACE) cat("In probeNames reactive...\n")
-  if (is.null(dataInput())) {
-	subtract.tab()
-	return(NULL)
-  }
-  else if (is.null(selectedGene())) {
-	subtract.tab()
-	return(NULL)
-  }
-  subtract.tab()
-  return (as.character(platInfo()[selectedGene(),match("ID",colnames(platInfo()))]))
-})
 
 #######################################################
 # clinicalInput: Clinical Data

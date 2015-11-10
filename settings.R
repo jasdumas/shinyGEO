@@ -7,8 +7,8 @@ STD.ERR = TRUE
 TEST.DATA = TRUE 
 if (TEST.DATA) {
   ## load RData/GSE13.RData or RData/GSE19915.RData here
-  #load("RData/GSE19915.RData")
-  load("RData/GSE13.RData")
+  load("RData/GSE19915.RData")
+  #load("RData/GSE13.RData")
 }
 
 TRACE = TRUE
