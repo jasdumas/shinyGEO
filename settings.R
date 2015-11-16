@@ -4,7 +4,7 @@
 
 STD.ERR = TRUE
 
-TEST.DATA = TRUE 
+TEST.DATA = FALSE 
 if (TEST.DATA) {
   ## load RData/GSE13.RData or RData/GSE19915.RData here
   load("RData/GSE19915.RData")

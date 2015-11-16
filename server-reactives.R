@@ -724,9 +724,7 @@ observeEvent(profiles(),  {
   cat("observe profiles\n")
   if (TRACE) cat("In Initial...\n")
   initialCode <- paste0(
-     
-"
-# Initial Data Download
+"# Initial Data Download
 library(DT)  ## tested on development version 0.1.32
 library(shiny)
 library(GEOquery)
@@ -745,8 +743,7 @@ data.platform = getGEO(\"", Platforms()[platformIndex()],  "\")
 data.index = match(\"", Platforms()[platformIndex()], "\", sapply(data.series, annotation))
 data.p = pData(data.series[[data.index]])
 data.expr = exprs(data.series[[data.index]])
-
-    ") # end of paste of intial code download
+") # end of paste of intial code download
   
   add.graph(initialCode)
   
@@ -762,8 +759,8 @@ data.expr = exprs(data.series[[data.index]])
 observeEvent(input$exprAdd, {
   if (TRACE) cat("In report Append for expression profiles...\n")
 
-  exp <- paste0( "# Expression Profiles Plot\n",
-    "
+  exp <- paste0( 
+"# Expression Profiles Plot
 ex <- data.expr
 if (is.null(ex)) return (NULL)
 qx <- as.numeric(quantile(ex, c(0., 0.25, 0.5, 0.75, 0.99, 1.0), na.rm=T))
@@ -828,53 +825,50 @@ observeEvent(input$DEadd, {
   if (TRACE) cat("In report append DE...\n")
 
 #########################################################  
-  cat("outputting test script...\n")
-  
-  #GSE = "GSE13"
-  #GPL = "GPL75"
-  #LOG = TRUE
-  #PROBE = "aa000380_s_at"
-  #DE.column = "source_name_ch1"
-  #DE.groups = c("Immature B cells", "Mature B cells")
-  
-  script.GSE = paste0("GSE = ",quote.it(input$GSE), "\n")
-  script.GPL =   paste0("GPL = ", quote.it(isolate(Platforms()[platformIndex()])), "\n")
-#  script.probe = paste0("PROBE = ", quote.it(input$selectProbes), "\n")
-  script.log2 = paste0("LOG2 = ", values.edit$log2, "\n")
-  script.DE.column = paste0("DE.column = ", quote.it(input$selectedColumn), "\n")
-  
-  grps = paste0(sapply(input$Group1Values, quote.it), collapse = ",")
-  grps = paste0("c(", grps, ")")  
-  script.DE.groups = paste0("DE.groups = ", grps)
-    
-  print(script.GSE)
-  print(script.GPL)
-#  print(script.probe)
-  print(script.log2)
-  print(script.DE.column)
-  print(script.DE.groups)
-  
-  test.file = paste0("test/", input$GSE, "_test.R")
-  
-  cmd = paste0("echo '", script.GSE, script.GPL, script.log2, 
-               script.DE.column, script.DE.groups, "' > ", test.file)
-  
-  #cmd = "echo 'hello, how are you\n' > tmp.R"
-  system(cmd)
-  cmd = paste0("cat GEO-script-template.R >> ", test.file)
-  system(cmd) 
-
-  cat("\n==========RUNNING TEST ON", test.file, "========\n")
-  rmarkdown::render(test.file)
-
+#   cat("outputting test script...\n")
+#   
+#   #GSE = "GSE13"
+#   #GPL = "GPL75"
+#   #LOG = TRUE
+#   #PROBE = "aa000380_s_at"
+#   #DE.column = "source_name_ch1"
+#   #DE.groups = c("Immature B cells", "Mature B cells")
+#   
+#   script.GSE = paste0("GSE = ",quote.it(input$GSE), "\n")
+#   script.GPL =   paste0("GPL = ", quote.it(isolate(Platforms()[platformIndex()])), "\n")
+# #  script.probe = paste0("PROBE = ", quote.it(input$selectProbes), "\n")
+#   script.log2 = paste0("LOG2 = ", values.edit$log2, "\n")
+#   script.DE.column = paste0("DE.column = ", quote.it(input$selectedColumn), "\n")
+#   
+#   grps = paste0(sapply(input$Group1Values, quote.it), collapse = ",")
+#   grps = paste0("c(", grps, ")")  
+#   script.DE.groups = paste0("DE.groups = ", grps)
+#     
+#   print(script.GSE)
+#   print(script.GPL)
+# #  print(script.probe)
+#   print(script.log2)
+#   print(script.DE.column)
+#   print(script.DE.groups)
+#   
+#   test.file = paste0("test/", input$GSE, "_test.R")
+#   
+#   cmd = paste0("echo '", script.GSE, script.GPL, script.log2, 
+#                script.DE.column, script.DE.groups, "' > ", test.file)
+#   
+#   #cmd = "echo 'hello, how are you\n' > tmp.R"
+#   system(cmd)
+#   cmd = paste0("cat GEO-script-template.R >> ", test.file)
+#   system(cmd) 
+# 
+#   cat("\n==========RUNNING TEST ON", test.file, "========\n")
+#   rmarkdown::render(test.file)
+# 
 ######################################
-  
-  s2function <- paste0("# Differential Expression Plot",
-                       
-"
+s2function <- paste0(
+"# Differential Expression Plot
 stripchart2 <- function(x,y, group.names = NULL, jitter = 0.3, line.off = 0.3, 
 lwd = 5, col = NULL, main = '', mark = 'mean') {
-
 s = split(x,y)
 if (is.null(group.names)) group.names = names(s)
 if (is.null(col)) col = 1:length(s)
@@ -932,8 +926,7 @@ if (identical(s2function, s2function)) {
 }
   
   s3plot <- paste0(
-"
-yeah = match(as.character(\"",input$selectProbes, "\"),rownames(data.expr))
+"yeah = match(as.character(\"",input$selectProbes, "\"),rownames(data.expr))
 x = data.expr[yeah,] 
 iv = as.character(\"", input$selectedColumn, "\")
 m = match(as.character(iv), colnames(data.p)) 
@@ -953,7 +946,6 @@ if (identical(s3plot, s3plot)) {
   add.graph("")
 }
 
-
 }) # end of observeEvent for DE
 
 ##################################
@@ -962,11 +954,8 @@ if (identical(s3plot, s3plot)) {
 observeEvent(input$Survadd, {
   if (TRACE) cat("In report Append Observe for Survival...\n")
   
-  survCode <- paste0("## Survival Analysis Plot") 
-  add.graph(survCode)
-  
-  survfunction <- paste0("
-
+survfunction <- paste0(
+"# Survival Analysis Plot
 plot.shiny.km <- function(time, death, x, title = '',  
 no.plot = FALSE, 
 subset = rep(TRUE, length(time)), 
@@ -1031,17 +1020,14 @@ title(title)
 ")
 add.graph(survfunction) 
 
-survComment <- paste0("
-                      
-hi = match(as.character(\"",input$selectProbes, "\"),rownames(data.expr))
+survComment <- paste0(
+"hi = match(as.character(\"",input$selectProbes, "\"),rownames(data.expr))
 x = data.expr[hi,]
 #print(plot.shiny.km(time = as.double( \"", parse.modal(),"\" [,1]), death = as.integer(\"", parse.modal(), "\" [,2]), x = x)
-
 print(plot.shiny.km(time = as.double(\"",parse.modal(), "\" [,1]), 
               death = as.integer(\"",parse.modal(), "\" [,2]), 
               x = x(), 
               col = as.character(\"", colorsDE3(), "\") ))
-
 ")
 add.graph(survComment)
 
@@ -1056,7 +1042,7 @@ if (identical(survComment, survComment)) {
 observeEvent(input$Enter, {
   if (TRACE) cat("In report Append Observe for Find & Replace...\n")
   
-  find.repace <- paste0("
+  find.repace <- paste0("# Find and Replace of Clinical Data
                         find.str = as.character(\"",input$find,"\")
                         column.num = as.character(\"",input$drop2,"\")
                         replace.str = as.character(\"",input$replace, "\")

@@ -6,3 +6,9 @@ mainPanel.R
 .travis.yml
 
 .RData
+
+*.history
+
+*.dcf
+
+test/GSE13_test.R
