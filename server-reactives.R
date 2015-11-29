@@ -926,8 +926,8 @@ if (identical(s2function, s2function)) {
 }
   
   s3plot <- paste0(
-"yeah = match(as.character(\"",input$selectProbes, "\"),rownames(data.expr))
-x = data.expr[yeah,] 
+"match.y = match(as.character(\"",input$selectProbes, "\"),rownames(data.expr))
+x = data.expr[match.y,] 
 iv = as.character(\"", input$selectedColumn, "\")
 m = match(as.character(iv), colnames(data.p)) 
 clinical = as.character(data.p[,m])  
@@ -935,8 +935,8 @@ selected = as.character(\"", input$Group1Values,"\")
 k = clinical %in% selected
 y = clinical
 y[!k] = NA
-y = factor(y, levels = input$Group1Values )
-main = paste(input$GSE, input$selectGenes, sep = '\')
+y = factor(y, levels = \"", input$Group1Values,"\" )
+main = paste(\"",input$GSE ,"\", \"", input$selectGenes ,"\", sep = '\')
 print(stripchart2(x,y, group.names = labelsDE(), main = main, col=colorsDE()))
 
 ")
@@ -994,10 +994,8 @@ n = km.group$n
 if(no.plot) {
 return(data.frame(hr = hr, p.km = p.km))
 }
-
 ## plot graph ##
 km.group1 = survfit(Surv(time, death) ~ x)
-
 km.group = ggsurv(km.group1, 
                     main = title, xlab = 'Time', ylab = 'Survival',
                     surv.col = col, cens.col = 'black') 
@@ -1019,11 +1017,9 @@ title(title)
 
 ")
 add.graph(survfunction) 
-
 survComment <- paste0(
-"hi = match(as.character(\"",input$selectProbes, "\"),rownames(data.expr))
-x = data.expr[hi,]
-#print(plot.shiny.km(time = as.double( \"", parse.modal(),"\" [,1]), death = as.integer(\"", parse.modal(), "\" [,2]), x = x)
+"match.h = match(as.character(\"",input$selectProbes, "\"),rownames(data.expr))
+x = data.expr[match.h,]
 print(plot.shiny.km(time = as.double(\"",parse.modal(), "\" [,1]), 
               death = as.integer(\"",parse.modal(), "\" [,2]), 
               x = x(), 

@@ -99,8 +99,8 @@ analyses.common = conditionalPanel(condition = "input.tabs == 'DifferentialExpre
             		genBSModal("autogenModal","Survival Analyses","",size="large")
         	), 
 		conditionalPanel(condition = "input.tabs =='DifferentialExpressionAnalysis' & input.selectedGenes!=''",
-          		bsButton("ClinicalDataBtn","View Clinical Data", style="success"),
-          		bsButton("ClinicalDataBtn2","View Clinical Data", style="success")
+          		bsButton("ClinicalDataBtn","View Clinical Data", style="success") #,
+          		#bsButton("ClinicalDataBtn2","View Clinical Data", style="success")
         	) 
 	),
             hr()
@@ -128,7 +128,8 @@ body = dashboardBody(
 	)
   )
  ),
-  bsModal("summary2", "Clinical Data Summary (small)", "ClinicalDataBtn2", size = "small", "Small Modal"),
+ # empty modal 
+ #bsModal("summary2", "Clinical Data Summary (small)", "ClinicalDataBtn2", size = "small", "Small Modal"),
 
 
   # please wait conditional panel
