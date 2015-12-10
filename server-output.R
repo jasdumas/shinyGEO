@@ -630,13 +630,8 @@ output$selectedCols <- DT::renderDataTable({
 
 returnClinicalTable <- reactive({
   infile <- input$fileUpload
-  if (is.null(infile) & !is.null(values.edit$table)){
+  if (is.null(infile)){
     return(values.edit$table)      
-  }
-  else if(is.null(infile) & is.null(values.edit$table)){
-
-    return(CLINICAL.test)
-    
   }
   else if (!is.null(infile)){
     createAlert(session,"ioAlert3",content = "<H4>Current Status</H4><p><strong>File has been uploaded! You can now view your data table!</p>",style="success",dismiss=FALSE)
