@@ -430,7 +430,7 @@ ColumnNames <- reactive({
 clinicalDataSummary <- reactive({
   add.tab()
   if (TRACE) cat("In clinicalDataSummary reactive...\n")
-  t = clinicalInput()
+  t = returnClinicalTable()
   if (is.null(t)) {
 	subtract.tab()
 	return(NULL)

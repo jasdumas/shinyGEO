@@ -74,7 +74,7 @@ genBSModal<-function (id, title, trigger, ..., size)
            shiny::tags$div(class = "modal-content", 
                  shiny::tags$div(class = "modal-header", 
                shiny::tags$button(type = "button",  class = "close", `data-dismiss` = "modal", shiny::tags$span(shiny::HTML("&times;"))), 
-               bsButton("manuBtn", "Manual Selection", icon = NULL, style = "info",
+               bsButton("manuBtn", "View Data Tablel", icon = NULL, style = "info",
                         size = "default", type = "action", block = FALSE, disabled = FALSE,
                         value = FALSE),
  
@@ -183,7 +183,7 @@ tab.survival.analysis = tabItem("SurvivalAnalysis",
     #shiny::hr(),
     #tags$div(HTML("<hr style = \"background-color: red; height:4px\">")), 
     #uiOutput("SurvMessage"),
-#        summaryBSModal("summaryBSModal","Clinical Data Summary","manuBtn"),
+        summaryBSModal("summaryBSModal","Clinical Data Summary",""),
         actionButton("formatDEButton2", "Format Graph"), # add on
         formatBSModal("Format2", "Format", "formatDEButton2", applyID = "applyFormatDE2", size = "large", htmlOutput("formatDE2")),
         actionButton("Survadd", "Save R Code"),
@@ -215,7 +215,6 @@ analyses.common = conditionalPanel(condition = "input.tabs == 'Differential Expr
     
         selectizeInput('selectGenes', "Select Gene", choices = NULL),
         conditionalPanel(condition = "input.tabs =='Survival Analysis'",
-            #bsButton("autoAnalysis","Time/Outcome Selection", style="success"),
             genBSModal("autogenModal","Survival Analyses","",size="large"),
             
             style = "display:inline-block"

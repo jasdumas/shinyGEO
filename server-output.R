@@ -258,7 +258,7 @@ observe({  # observe needed since data object is a reactive function
 ##########################################################################################
 displayDataTable <-reactive({
   
-  DT::renderDataTable({ datatable(editClinicalTable(), rownames = TRUE,
+  DT::renderDataTable({ datatable(returnClinicalTable(), rownames = TRUE,
                                                       extensions = 'ColReorder',
                                                       options = list(dom = 'Rlfrtip', #ajax = list(url = action1), 
 								    autoWidth = TRUE,
@@ -267,7 +267,7 @@ displayDataTable <-reactive({
                                                                      paging = T, 
                                                                      searchHighlight = TRUE,
                                                                      columnDefs = list(list(
-                                                                       targets = 1: ncol(editClinicalTable()), # applies to the entire table
+                                                                       targets = 1: ncol(returnClinicalTable()), # applies to the entire table
 									width = '200px',
 
                                                                        render = JS(
@@ -535,12 +535,6 @@ observeEvent(input$autoAnalysis,({
   print("Column selection and formatting for survival analysis finished..")
 }))
 
-observeEvent(input$gBack,({
-  print("observe gBack\n")  
-  toggleModal(session,"summaryBSModal",toggle = "close")
-  print("done observe gBack\n")  
-}))
-
 observeEvent(input$autoColumn.time,({
   print("observe autoColumn.time")
     this = values.edit$table
@@ -600,11 +594,58 @@ observeEvent(input$genBtn,
 } # end autoselect.survival
 
 
+
+createAlert(session,"ioAlert",content = "<H4>Directions</H4><p>1. Download the current clinical data you are working with, it will be saved in your 'Downloads' folder.<br>2. Edit the dataset, then save your changes.<br>3. Upload your dataset back.</p>",dismiss=FALSE)
+# start clinical data iotab button events
+output$downloadSet<- downloadHandler(
+    
+    # This function returns a string which tells the client
+    # browser what name to use when saving the file.
+    filename = function() {
+      paste("shinyGEO-dataset", "csv", sep = ".")
+   },
+    
+    # This function should write data to a file given to it by
+    # the argument 'file'.
+    
+    content = function(file) {
+      sep <- ","
+      # Write to a file specified by the 'file' argument
+      write.table(values.edit$table, file, sep = sep,
+                  row.names = FALSE)
+    }
+    
+)
+observeEvent(input$downloadSet,(
+  createAlert(session,"ioAlert2",content = "<H4>Current Status</H4><p><strong>Your file has been downloaded!</p>",style="success",dismiss=FALSE)
+))
+
+
 output$selectedCols <- DT::renderDataTable({ 
   datatable(data = parse.modal(), rownames = F,
 		options = list(dom = "Rlrtip", paging = F),
 		filter = 'none')
 }) 
+
+
+returnClinicalTable <- reactive({
+  infile <- input$fileUpload
+  if (is.null(infile) & !is.null(values.edit$table)){
+    return(values.edit$table)      
+  }
+  else if(is.null(infile) & is.null(values.edit$table)){
+
+    return(CLINICAL.test)
+    
+  }
+  else if (!is.null(infile)){
+    createAlert(session,"ioAlert3",content = "<H4>Current Status</H4><p><strong>File has been uploaded! You can now view your data table!</p>",style="success",dismiss=FALSE)
+    data = read.csv(infile$datapath)
+    return(data)
+  }
+  
+})
+
 
 
 ###################

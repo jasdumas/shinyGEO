@@ -71,6 +71,7 @@ gse.platform=  conditionalPanel(condition = "output.sidebarDisplay=='PLATFORM'|o
 
 sidebar = dashboardSidebar(width = 350,
   includeCSS('www/ecsu.css'),
+  includeScript('www/ecsu.js'),
 	gse.input, gse.button, gse.platform,
 	conditionalPanel(condition = "output.sidebarDisplay=='ALL'",
 	sidebarMenu(id = "tabs",
@@ -111,7 +112,7 @@ body = dashboardBody(
   uiOutput("test"),
   uiOutput("busy"),
 
-  summaryBSModal("summaryBSModal","Clinical Data Summary (Large)","ClinicalDataBtn", size = "large",  
+  summaryBSModal("summaryBSModal","Clinical Data","ClinicalDataBtn", size = "large",  
 
   tabsetPanel(
 	tabPanel("Summary", DT::dataTableOutput("summaryModalTable")),
@@ -125,12 +126,41 @@ body = dashboardBody(
             textInput("replace", label = "Replace", value = ""),
             checkboxInput("survCheckbox", label = "Partial Replace", value = FALSE),  ### for survival analysis
              actionButton("Enter", label = "Submit"))
-	)
-  )
+	),
+	tabPanel("Data I/O",
+	      fluidRow(
+	        column(12,
+	               
+	               bsAlert("ioAlert"),
+	               bsAlert("ioAlert2"),
+	               bsAlert("ioAlert3")
+	               )
+	        
+	      ),
+	      fluidRow(
+	        column(5,
+	               tags$h4(class="ioTitle","Download Dataset"),
+	               hr(),
+	               downloadButton("downloadSet","Download")
+	               
+	              
+	               ),
+	        column(2,
+	              tags$p("")
+	               ),
+	        column(5,
+	               tags$h4(class="ioTitle","Upload Dataset"),
+	               hr(),
+	               fileInput('fileUpload', '',
+	                         accept=c('text/csv', 
+	                                  'text/comma-separated-values,text/plain', 
+	                                  '.csv'))
+	               
+	        )
+	      )
+	   )    
+   )
  ),
- # empty modal 
- #bsModal("summary2", "Clinical Data Summary (small)", "ClinicalDataBtn2", size = "small", "Small Modal"),
-
 
   # please wait conditional panel
 
