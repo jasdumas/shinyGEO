@@ -257,7 +257,7 @@ observe({  # observe needed since data object is a reactive function
 ##########################################################################################
 displayDataTable <-reactive({
   
-  DT::renderDataTable({ datatable(returnClinicalTable(), rownames = TRUE,
+  DT::renderDataTable({ datatable(clinicalDataProcessed(), rownames = TRUE,
                                                       extensions = 'ColReorder',
                                                       options = list(dom = 'Rlfrtip', #ajax = list(url = action1), 
 								    autoWidth = TRUE,
@@ -266,7 +266,7 @@ displayDataTable <-reactive({
                                                                      paging = T, 
                                                                      searchHighlight = TRUE,
                                                                      columnDefs = list(list(
-                                                                       targets = 1: ncol(returnClinicalTable()), # applies to the entire table
+                                                                       targets = 1: ncol(clinicalDataProcessed()), # applies to the entire table
 									width = '200px',
 
                                                                        render = JS(
@@ -628,63 +628,25 @@ output$selectedCols <- DT::renderDataTable({
 
 
 returnClinicalTable <- reactive({
+  add.tab()
+  cat("in returnClinicalTable...\n")  
   infile <- input$fileUpload
+  cat("infile = ", infile, "\n")
   if (is.null(infile)){
+    cat("returning values.edit$table...\n")
+    subtract.tab()
     return(values.edit$table)      
   }
   else if (!is.null(infile)){
     createAlert(session,"ioAlert3",content = "<H4>Current Status</H4><p><strong>File has been uploaded! You can now view your data table!</p>",style="success",dismiss=FALSE)
     data = read.csv(infile$datapath)
+    subtract.tab()
     return(data)
   }
   
 })
 
 
-
-###################
-# Knitr Report
-###################
-output$knitDoc <- renderPlot(
-  #input$exprAdd
-  #input$DEadd
-  #input$Survadd
-  #return(isolate(HTML(knit2html(text = input$rmd, fragment.only = TRUE, quiet = TRUE))))
-  #cat("knitDoc\n")
-  print(input$exProfiles)
-  )  
-   
-# a reactive to supply the content function with the text from the aceEditor
-knit.report <- reactive({
-  knit2html(text = input$rmd, quiet = TRUE)
-})
-### Download knitr report ###
-output$downloadData <- downloadHandler(
-  filename = function() { 
-    paste("report", "html", sep=".") 
-  },
-  
-  content = function(file) {
-    #input$knitDoc ## trial to connect knitr with download button
-    
-    src <- normalizePath('report.Rmd')
-    
-    # temporarily switch to the temp dir, in case you do not have write
-    # permission to the current working directory
-    owd <- setwd(tempdir())
-    on.exit(setwd(owd))
-    file.copy(src, 'report.Rmd')
-  
-    library(rmarkdown)
-    #out <- render('report.Rmd', output_format = html_document())
-    #a <- knit(input$rmd)
-    out <- render(input$rmd, output_format = html_document())
-    
-    file.rename(out, file)
-  
-  }
- 
-)
 
 if (DE.PLOT) {
   observe({
@@ -717,8 +679,8 @@ if (DE.PLOT) {
           output$plot <- renderPlot({
               x = profiles()[input$selectGenes,] # effected by data transformation
               iv = input$selectedColumn
-              m = match(as.character(iv), colnames(clinicalInput()))  # GD: change grep to match
-              clinical = as.character(clinicalInput()[,m])  # clinicalInput() should be the new edited table once fixed
+              m = match(as.character(iv), colnames(clinicalDataProcessed()))  # GD: change grep to match
+              clinical = as.character(clinicalDataProcessed()[,m]) 
               selected = c(as.character(input$Group1Values))
               k = clinical%in% selected
     

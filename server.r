@@ -1,4 +1,4 @@
-STD.ERR = TRUE
+STD.ERR = FALSE 
 if (STD.ERR) {
    cat <-function(...) {
      l = list(...)

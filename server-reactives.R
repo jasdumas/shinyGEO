@@ -331,32 +331,42 @@ geneLabel <-reactive({
 })
 
 
-#######################################################
-# clinicalInput: Clinical Data
-#######################################################
-clinicalInput <- reactive({
+### when platform changes, update clinical table
+observe({
   add.tab()
-  if (TRACE) cat("In clinicalInput reactive...\n")
-
+  if (TRACE) cat("observe platform to update clinical table...\n")
   if (is.null(dataInput()) | is.null(platformIndex())) {
     subtract.tab()
+    values.edit$table = NULL
     return(NULL)
   }
-  p = NULL
-  cat("set p to NULL\n")
-  ### Checks if initial values.edit$table is NULL (which it is set to initially)
-  if (!is.null(values.edit$table)) {
-    p = values.edit$table
-    cat("p = values.edit$table\n")
-  } else {
+
+  # only update table if values.edit$table is null
+  if (is.null(values.edit$table)) {
     code = paste0("data.p = pData(data.series[[data.index]])")
     add.line(code)
     if (TEST.DATA) {
         cat("set p to CLINICAL.test\n")
-	p = CLINICAL.test
+        values.edit$table = CLINICAL.test
     } else {
-      p = as.data.frame(pData(phenoData(object = dataInput()[[platformIndex()]])))
+      values.edit$table = as.data.frame(pData(phenoData(object = dataInput()[[platformIndex()]])))
     }
+  }
+  subtract.tab()
+})
+
+###########################################################################
+# clinicalDataProcessed: processes clinical data in values.edit$table,
+# by removing non-informative columns.   
+##########################################################################
+clinicalDataProcessed <- reactive({
+
+  add.tab()
+  if (TRACE) cat("In clinicalDataProcessed reactive...\n")
+
+  p = values.edit$table
+  if (is.null(p)) {
+	return(NULL)
   } 
   #####################################################################
   #  display only columns that have more than one possible value; this
@@ -414,11 +424,11 @@ exprInput <- reactive({
 ColumnNames <- reactive({
   add.tab()
   if (TRACE) cat("In ColumnNames reactive...\n")
-  if (is.null(clinicalInput()) | is.null(exprInput())) {
+  if (is.null(clinicalDataProcessed()) | is.null(exprInput())) {
 	subtract.tab()
 	return(NULL)
   }
-  vars = colnames(clinicalInput())
+  vars = colnames(clinicalDataProcessed())
   vars <- as.list(vars)
   subtract.tab()
   return(vars)
@@ -430,7 +440,7 @@ ColumnNames <- reactive({
 clinicalDataSummary <- reactive({
   add.tab()
   if (TRACE) cat("In clinicalDataSummary reactive...\n")
-  t = returnClinicalTable()
+  t = clinicalDataProcessed()
   if (is.null(t)) {
 	subtract.tab()
 	return(NULL)
@@ -452,8 +462,7 @@ clinicalDataSummary <- reactive({
   a = sapply(a, paste, collapse = ", ")
   cat("end clinicalDataSummary reactive\n")
   subtract.tab()
-  cbind(variable = vars, values = a)
-  #cbind(values = a)
+  cbind(column = vars, values = a)
 })
 
 

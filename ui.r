@@ -82,7 +82,6 @@ sidebar = dashboardSidebar(width = 350,
 		menuItem("Full Data Table", tabName = "FullDataTable", icon = icon("table")),
 		#menuItem("Clinical Data Summary", tabName = "ClinicalDataSummary", icon = icon("table")),
 		menuItem("Code", tabName = "Code", icon = icon("code")),
-		menuItem("Report", tabName = "Report", icon = icon("file-text")),
 		menuItem("About", tabName = "About", icon = icon("info-circle"))
 	     )
       )

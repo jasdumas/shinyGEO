@@ -2,8 +2,8 @@
 # DEBUG SETTINGS
 ##############################################################
 
-STD.ERR = TRUE
-TEST.DATA = FALSE 
+STD.ERR = FALSE 
+TEST.DATA = TRUE 
 if (TEST.DATA) {
   cat("loading test data...\n")
   ## load RData/GSE13.RData or RData/GSE19915.RData here
