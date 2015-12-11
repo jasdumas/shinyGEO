@@ -181,7 +181,6 @@ body = dashboardBody(
 #      tab.data.full,
       tab.data.summary,
       tab.code,
-      tab.report,
       tab.about
     )
 )
