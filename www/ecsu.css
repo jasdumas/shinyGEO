@@ -4,6 +4,9 @@
 color: #FFFFFF;
 }
 
+td {
+  padding: 5px;
+}
 
 .modal-backdrop{
 background-color:transparent;
@@ -12,7 +15,7 @@ background-color:transparent;
 @media (min-width: 992px){
 #summaryBSModal > .modal-lg {
     width: 1317px;
-    margin: 10px 0 10px 5px !important;
+    margin: 10px 0px 10px 5px !important;
  }
 #downloadSet{
 	border-radius:2px;	
