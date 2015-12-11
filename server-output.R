@@ -116,36 +116,42 @@ observe ({
   ## only show plaforms for selected series ##
   pl = Platforms()
   cat("update for pl = ", pl, "\n")
-  selected = NULL
-  
+ 
+  pl.selected = NULL
+  choices = NULL
+  pl.options = NULL 
   if (!is.null(pl)) {
     cat("updating pl...\n")
     keep = platforms.accession %in% pl
     pl.accession = platforms.accession[keep]
     pl.description = platforms.description[keep]
     if (length(pl.accession) == 1) {
-      selected = NULL #pl.accession
+      pl.selected = pl.accession 
+      choices = pl.selected
+    } else {
+      cat("multiple accessions..\n")
+      pl.selected = NULL
+      choices = data.frame(label = pl.accession, value = pl.accession, 
+		name = pl.description)
+      pl.options = list(
+          render = I(
+             "{
+                option: function(item, escape) {
+                     return '<div> <strong>' + item.label + '</strong> - ' +
+                         escape(item.name) + '</div>';
+                }
+              }"
+          )
+       )
     }
-  } else {
-    pl.accession = platforms.accession
-    pl.description = platforms.description
   }
  
 cat("update platform dropdown\n") 
-updateSelectizeInput(session, inputId='platform', server = TRUE,
-               choices = data.frame(label = pl.accession, value = pl.accession, name = pl.description),
-               selected = selected,
-               options = list(
-                 #create = TRUE, persist = FALSE,
-                 render = I(
-                   "{
-                      option: function(item, escape) {
-                          return '<div> <strong>' + item.label + '</strong> - ' +
-                          escape(item.name) + '</div>';
-                      }
-                    }"
-                 ))
-               )
+updateSelectizeInput(session, inputId='platform', label = "Platform", server = TRUE,
+               choices = choices,
+               selected = pl.selected,
+	       options = pl.options 
+)
 
 if (!is.null(pl)) {
 	 d = dataInput()
@@ -163,13 +169,6 @@ createAlert(session, "alert1", alertId = "GPL-alert", title = "Please select a p
 cat("done create platform alert\n")
 })
 
-
-#output$GSE <- renderUI({
-#  selectizeInput('GSE', label = 'Accession Number', 
-#                 choice = c("",series.accession), 
-#                 multiple = F, selected = NULL           
-#                 )        
-#})
 
 ###############################################################
 # drop down options are in form of GSE number - description

@@ -57,7 +57,7 @@ gse.button = div(style = "display:inline-block; width: 11%",
 gse.platform=  conditionalPanel(condition = "output.sidebarDisplay=='PLATFORM'|output.sidebarDisplay=='ALL'",
 
                   div(style = "display:inline-block; width: 75%",
-                        selectizeInput('platform', label = NULL, choices = NULL, width = 275,
+                        selectizeInput('platform', label = "Platform", choices = NULL, width = 275,
                                 options = list(placeholder = "Please select a platform",
                                 maxOptions = 10)
                         )
