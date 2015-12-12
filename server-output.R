@@ -611,7 +611,7 @@ output$downloadSet<- downloadHandler(
       sep <- ","
       # Write to a file specified by the 'file' argument
       write.table(values.edit$table, file, sep = sep,
-                  row.names = FALSE)
+                  row.names = TRUE, col.names = NA) 
     }
     
 )
@@ -627,25 +627,20 @@ output$selectedCols <- DT::renderDataTable({
 }) 
 
 
-returnClinicalTable <- reactive({
+observe({
   add.tab()
-  cat("in returnClinicalTable...\n")  
+  cat("in file upload observe...\n")  
   infile <- input$fileUpload
-  cat("infile = ", infile, "\n")
-  if (is.null(infile)){
-    cat("returning values.edit$table...\n")
-    subtract.tab()
-    return(values.edit$table)      
-  }
-  else if (!is.null(infile)){
+  if (!is.null(infile)){
     createAlert(session,"ioAlert3",content = "<H4>Current Status</H4><p><strong>File has been uploaded! You can now view your data table!</p>",style="success",dismiss=FALSE)
-    data = read.csv(infile$datapath)
-    subtract.tab()
-    return(data)
+    cat("initial data = ", isolate(nrow(values.edit$table)), ", ", isolate(ncol(values.edit$table)), "\n")
+    data = read.table(infile$datapath, header = TRUE, row.names=1, sep = ",")
+    save(data, file = "check.RData")
+    isolate(values.edit$table <- data)
+    cat("new data = ", isolate(nrow(values.edit$table)), ", ", isolate(ncol(values.edit$table)), "\n")
   }
-  
+  cat("left file upload observe...\n")
 })
-
 
 
 if (DE.PLOT) {
