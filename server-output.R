@@ -635,7 +635,6 @@ observe({
     createAlert(session,"ioAlert3",content = "<H4>Current Status</H4><p><strong>File has been uploaded! You can now view your data table!</p>",style="success",dismiss=FALSE)
     cat("initial data = ", isolate(nrow(values.edit$table)), ", ", isolate(ncol(values.edit$table)), "\n")
     data = read.table(infile$datapath, header = TRUE, row.names=1, sep = ",")
-    save(data, file = "check.RData")
     isolate(values.edit$table <- data)
     cat("new data = ", isolate(nrow(values.edit$table)), ", ", isolate(ncol(values.edit$table)), "\n")
   }
