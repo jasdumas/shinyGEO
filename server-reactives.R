@@ -316,7 +316,8 @@ geneNames <- reactive ({
 #  save(probes, label, genes, dd, file = "look.RData")
   cat("data.frame created\n")
   subtract.tab()
-  return(dd)
+  o = order(genes, probes)
+  return(dd[o,])
 })
 
 
