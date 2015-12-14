@@ -530,52 +530,6 @@ observeEvent(input$genBtn,
 
 
 
-createAlert(session,"ioAlert",content = "<H4>Directions</H4><p>1. Download the current clinical data you are working with, it will be saved in your 'Downloads' folder.<br>2. Edit the dataset, then save your changes.<br>3. Upload your dataset back.</p>",dismiss=FALSE)
-# start clinical data iotab button events
-output$downloadSet<- downloadHandler(
-    
-    # This function returns a string which tells the client
-    # browser what name to use when saving the file.
-    filename = function() {
-      paste("shinyGEO-dataset", "csv", sep = ".")
-   },
-    
-    # This function should write data to a file given to it by
-    # the argument 'file'.
-    
-    content = function(file) {
-      sep <- ","
-      # Write to a file specified by the 'file' argument
-      write.table(values.edit$table, file, sep = sep,
-                  row.names = TRUE, col.names = NA) 
-    }
-    
-)
-observeEvent(input$downloadSet,(
-  createAlert(session,"ioAlert2",content = "<H4>Current Status</H4><p><strong>Your file has been downloaded!</p>",style="success",dismiss=FALSE)
-))
-
-
-output$selectedCols <- DT::renderDataTable({ 
-  datatable(data = parse.modal(), rownames = F,
-		options = list(dom = "Rlrtip", paging = F),
-		filter = 'none')
-}) 
-
-
-observe({
-  add.tab()
-  cat("in file upload observe...\n")  
-  infile <- input$fileUpload
-  if (!is.null(infile)){
-    createAlert(session,"ioAlert3",content = "<H4>Current Status</H4><p><strong>File has been uploaded! You can now view your data table!</p>",style="success",dismiss=FALSE)
-    cat("initial data = ", isolate(nrow(values.edit$table)), ", ", isolate(ncol(values.edit$table)), "\n")
-    data = read.table(infile$datapath, header = TRUE, row.names=1, sep = ",")
-    isolate(values.edit$table <- data)
-    cat("new data = ", isolate(nrow(values.edit$table)), ", ", isolate(ncol(values.edit$table)), "\n")
-  }
-  cat("left file upload observe...\n")
-})
 
 
 if (DE.PLOT) {
@@ -585,19 +539,11 @@ if (DE.PLOT) {
       
       if (input$selectGenes == "") {
         cat("\n\n=====NO GENE=====\n\n")
-#        createAlert(session, "alert2", alertId = "Gene-alert", 
-#                    title = "Please select a gene and probe to continue", 
-#                    style = "danger",
-#                    content = "", append = TRUE,
-#                    dismiss = FALSE) 
         PLOT = FALSE
       }    
       else {
         closeAlert(session, "Gene-alert")
           if (length(input$Group1Values) == 0) {
-            output$selectGroupsMessage <-renderUI({
-              HTML("<h3>Please Choose The Groups to Compare</h3>")}
-            )
             PLOT = FALSE
           }
       }
@@ -605,7 +551,6 @@ if (DE.PLOT) {
       if (!PLOT) {
               output$plot <-renderPlot({NULL})
       } else  {
-          output$selectGroupsMessage <-renderText({""})
           output$plot <- renderPlot({
               x = profiles()[input$selectGenes,] # effected by data transformation
               iv = input$selectedColumn
@@ -616,15 +561,12 @@ if (DE.PLOT) {
     
               y = clinical
               y[!k] = NA
-              
+            
               ## make sure levels are in selected order for plot
-              y = factor(y, levels = input$Group1Values)
-              
+              y = factor(y)
+
               main = paste(input$GSE, geneLabel() , sep = ": ")
-              #gd              
-              #stripchart2(x,y, col = colorsDE(), group.names = labelsDE(), main = main, ylab = "log2 expression")
-              #jd
-              print(stripchart2(x,y, group.names = labelsDE(), main = main, col=colorsDE()))
+              print(stripchart2(x,y, input$Group1Values, group.names = labelsDE(), main = main, col=colorsDE()))
              
               }) # end of plot reactive
           
