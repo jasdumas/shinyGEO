@@ -151,25 +151,25 @@ conditionalPanel(condition = "input.selectGenes!=''",
     uiOutput("selectedGroups", container = div, style = "display:inline-block; width: 50%"),
     br(),                                                
                                                    
-    actionButton("combineGroupsButton", "Combine Groups"), 
+    actionButton("mergeGroupsButton", "Merge Groups"), 
     actionButton("formatDEButton", "Format Graph"),
     #actionButton("DEadd", "Save R Code"),
     HTML("<button id='DEadd' type='button' class='btn btn-info action-button'>Save R Code</button>"),                                                
     plotOutput("plot"),
-    formatBSModal("CombineGroupsModal", "Combine Groups", "combineGroupsButton", size = "large", applyID = "applyCombineGroups",
+    formatBSModal("MergeGroupsModal", "Merge Groups", "mergeGroupsButton", size = "large", applyID = "applyMergeGroups",
 
-        bsAlert("combineGroupsAlert"),
-        textInput("newColumnForCombine", "New Column Name", "MergeColumn"),
+        bsAlert("mergeGroupsAlert"),
+        textInput("newColumnForMerge", "New Column Name", "MergeColumn"),
     fluidRow(
-      column(6, uiOutput("combineGroup1")), 
+      column(6, uiOutput("mergeGroup1")), 
       column(6, textInput("group1Label", "New Group Name"))
     ),
     fluidRow(
-      column(6, uiOutput("combineGroup2")), 
+      column(6, uiOutput("mergeGroup2")), 
       column(6, textInput("group2Label", "New Group Name"))
     ),
     fluidRow(
-      column(6, uiOutput("combineGroup3")), 
+      column(6, uiOutput("mergeGroup3")), 
       column(6, textInput("group3Label", "New Group Name"))
     )
    ),
