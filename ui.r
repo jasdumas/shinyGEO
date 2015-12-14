@@ -14,31 +14,6 @@ source("ui.tab.about.R")
 source("html.R")
 
 
-if (0) {
-#shinyUI(fluidPage(title = "GEO-AWS",
- shinyUI(bootstrapPage(    
-  tags$style(type="text/css", "body {padding: 70px;}"),
-       
-   ############################################################
-   # Navigation Bar
-   ############################################################
-   navbarPage(title = uiOutput("shinyTitle"), #title ="shinyGEO", 
-              #id = "tabs", 
-	      inverse = TRUE, position = "fixed-top",
-              windowTitle = "shinyGEO", 
-              collapsible = TRUE,
-              header = navbar.header,
-              tab.expression,
-              tab.analyses,
-              tab.clinical,
-              tab.reproducible,
-              tab.about
-     )  # end NavBar Page
-     
-   ) # end fluidPage and shinyUI
-)
-}
-
 header = dashboardHeader(
   title = uiOutput("shinyTitle"), titleWidth = 350, disable = FALSE 
 )
@@ -179,7 +154,6 @@ body = dashboardBody(
       tab.expression,
       tab.DE.analysis,
       tab.survival.analysis,
-#      tab.data.full,
       tab.data.summary,
       tab.code,
       tab.about

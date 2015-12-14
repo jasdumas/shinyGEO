@@ -398,13 +398,6 @@ observe({
     
   })
   
-  
-#  dd = clinicalDataSummary()
-#  action = dataTableAjax(session, data=dd, rownames = TRUE) # for the row_output as characters
-  
-#  output$summaryModalTable <- displayDataTable() 
-
- 
 })
 
 observe ({
@@ -418,8 +411,6 @@ observe ({
 ##############################
 ## Expression Profiles plot 
 ##############################
-#observeEvent(input$submitButton,
-
 if (EXPRESSION.PLOT) { 
 output$exProfiles <- renderPlot({
   cat("\n\nrendering profiles...\n")
@@ -451,12 +442,11 @@ output$exProfiles <- renderPlot({
     y.label = "Expression"
   }
   
-#  closeAlert(session, "GPL-alert")
-
 
   cat("create expression alert\n")
   createAlert(session, "alert1", alertId = "Expression-alert", title = "Current Status", style = "info",
                content = "Generating boxplot of expression data", append = FALSE, dismiss = TRUE) 
+
   par(mar=c(2+round(max(nchar(sampleNames(dataInput())))/2),4,2,1))
   title <- paste(isolate(input$GSE), '/', isolate(input$platform), title.detail, sep ='') # need 
  
@@ -465,7 +455,7 @@ output$exProfiles <- renderPlot({
   #x1 = gather(data = x, na.rm =TRUE)
   fixed.df <- as.data.frame(x=x, stringsAsFactors = FALSE)
   
-  x1 <- reshape2::melt(fixed.df, na.rm = TRUE, var.ids = 0, 
+  x1 <- reshape2::melt(fixed.df, na.rm = TRUE, id.vars = NULL, 
             variable.name = "variable", 
             value.name = "value")
   
@@ -477,15 +467,15 @@ output$exProfiles <- renderPlot({
   print(exp.prof.plot)
 
   cat("close expression alert\n")
-  closeAlert(session, "Expression-alert")
- 
-  createAlert(session, "alert1", alertId = "Analysis-alert", title = "Please select an Analysis", style = "success",
-	content = "Gene expression profiles have been downloaded successfully. Please select either a Differential Expression Analysis or a Survival Analysis from the sidebar to continue")
-}
+  #closeAlert(session, "Expression-alert")
 
-) 
+  # Analysis-alert causes server to get stuck on Safari, when append = FALSE
+  # This does not happen on Chrome / Firefox. For now, set append = TRUE  
+  createAlert(session, "alert1", alertId = "Analysis-alert", title = "Please select an Analysis", style = "success",
+	content = "Gene expression profiles have been downloaded successfully. Please select either a Differential Expression Analysis or a Survival Analysis from the sidebar to continue", append = TRUE)
+  }
+ ) 
 }
-#) 
 
 ####################
 ####################
