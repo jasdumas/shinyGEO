@@ -214,7 +214,19 @@ observe({
             selected = val, multiple = F, selectize = FALSE
     )
   })
+
+  val = input$selectedColumn
+  output$selectedColumnForCombine <- renderUI({  
+      # show possible choices (column names)
+      selectInput('selectedColumnForCombine', 'Selected Column', 
+            choices = ColumnNames(), #width='20%',
+            selected = val, multiple = F, selectize = FALSE
+    )
+  })
+
 })
+
+
 
 #output$test2 <- renderText(paste0("row = ", input$clinicalData_rows_selected))
 
@@ -231,6 +243,100 @@ output$selectedGroups <- renderUI({
   )
 })
 
+
+####################################################################
+## renders drop-down menus (server-side) for clinical group 
+## selection for combining groups in CombineGroupsModal
+####################################################################
+
+observeEvent(input$combineGroupsButton, ({
+  closeAlert(session, "combine-alert")
+  content = "Merge two or more groups together by selecting the groups from the drop-down boxes on the left, and specifying a name for the new group in the corresponding text boxes on the right. Click on Save, and a new column will be added to the clinical data table."
+add = paste0("<p><p> Selected column: <strong>", input$selectedColumn, "</strong></p>.")
+ 
+content = paste0(content, add)
+    
+  createAlert(session, "combineGroupsAlert", alertId = "combine-alert", title = "Current Status: Merging", style = "info", content = content)
+ })
+)
+output$combineGroup1 <- renderUI({
+    selectInput('selectGroup1', 'Group 1', 
+              choices = groupsForSelectedColumn(), multiple=TRUE,
+              selected = NULL,
+              width='80%',
+              selectize = TRUE
+    )
+})
+
+output$combineGroup2 <- renderUI({
+    selectInput('selectGroup2', 'Group 2', 
+              choices = groupsForSelectedColumn(), multiple=TRUE,
+              selected = NULL,
+              width='80%',
+              selectize = TRUE
+    )
+})
+
+output$combineGroup3 <- renderUI({
+    selectInput('selectGroup3', 'Group 3', 
+              choices = groupsForSelectedColumn(), multiple=TRUE,
+              selected = NULL,
+              width='80%',
+              selectize = TRUE
+    )
+})
+
+observeEvent(input$applyCombineGroups, ({
+
+  content = ""
+  cat("apply now!!\n")
+  col = input$newColumnForCombine
+  
+  g1 = input$selectGroup1
+  g2 = input$selectGroup2 
+  g3 = input$selectGroup3 
+
+  g1 = g1[g1!=""]
+  g2 = g2[g2!=""]
+  g3 = g3[g3!=""]
+
+  g.all = c(g1,g2,g3)
+
+  if (length(g.all) > length(unique(g.all))) {
+        content = paste0(content, 
+		"<p> Error: A value cannot appear in multiple groups <p>")
+  }
+
+  cat("col = ", col, "\n")
+  if (col%in%colnames(values.edit$table)) {
+        content = paste0(content, 
+		"<p> Error: Column Name Exists. Please select a new column name <p>")
+  }
+
+  if (content!= "") {
+  createAlert(session, "combineGroupsAlert", alertId = "combine-alert-error", title = "Save Error", style = "danger", content = content, append = TRUE)
+    return(NULL)
+  }
+
+  X = as.character(values.edit$table[[input$selectedColumn]])
+  Y = rep("", length(X))
+  if (length(g1) > 0 & input$group1Label != "") {
+	Y[X %in% g1] = input$group1Label 
+  }
+  if (length(g2) > 0 & input$group2Label != "") { 
+        Y[X %in% g2] = input$group2Label 
+  } 
+  if (length(g3) > 0 & input$group3Label != "") {
+        Y[X %in% g3] = input$group3Label  
+  }
+  data = values.edit$table
+  data[[col]] = Y
+  isolate(values.edit$table <- data)
+  toggleModal(session, "CombineGroupsModal", "close")
+  updateSelectInput(session, "selectedColumn", choices = ColumnNames(),
+       selected = col)
+  })
+)
 ############################################
 ## displays the Clinical Summary Data Table
 ###########################################
@@ -359,11 +465,9 @@ output$exProfiles <- renderPlot({
   #x1 = gather(data = x, na.rm =TRUE)
   fixed.df <- as.data.frame(x=x, stringsAsFactors = FALSE)
   
-  x1 <- reshape2::melt(fixed.df, na.rm = TRUE, 
+  x1 <- reshape2::melt(fixed.df, na.rm = TRUE, var.ids = 0, 
             variable.name = "variable", 
             value.name = "value")
-#  View(head(x))
-#  View(head(x1))  # to get aes(); X2 column header for GSMXXX values
   
   exp.prof.plot <- ggplot(x1, aes(variable, value)) + 
                 geom_boxplot(outlier.colour = "green") +
@@ -649,11 +753,11 @@ if (DE.PLOT) {
       
       if (input$selectGenes == "") {
         cat("\n\n=====NO GENE=====\n\n")
-        createAlert(session, "alert2", alertId = "Gene-alert", 
-                    title = "Please select a gene and probe to continue", 
-                    style = "danger",
-                    content = "", append = TRUE,
-                    dismiss = FALSE) 
+#        createAlert(session, "alert2", alertId = "Gene-alert", 
+#                    title = "Please select a gene and probe to continue", 
+#                    style = "danger",
+#                    content = "", append = TRUE,
+#                    dismiss = FALSE) 
         PLOT = FALSE
       }    
       else {

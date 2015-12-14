@@ -108,6 +108,7 @@ analyses.common = conditionalPanel(condition = "input.tabs == 'DifferentialExpre
 
 body = dashboardBody(
   bsAlert("alert1"),
+  bsAlert("alert2"),
   uiOutput("test"),
   uiOutput("busy"),
 

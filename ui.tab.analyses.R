@@ -147,14 +147,32 @@ conditionalPanel(condition = "input.selectGenes!=''",
 #    bsButton("ClinicalDataBtn", "View Clinical Data", icon = NULL, style = "success",
 #                        size = "default", type = "action", block = FALSE, disabled = FALSE,
 #                        value = FALSE),
-   uiOutput("selectedColumn", container = div, style = "display:inline-block; width: 20%"),
-    uiOutput("selectedGroups", container = div, style = "display:inline-block; width: 55%"),
-                                                    
-                                                    
+   uiOutput("selectedColumn", container = div, style = "display:inline-block; width: 15%"),
+    uiOutput("selectedGroups", container = div, style = "display:inline-block; width: 50%"),
+    br(),                                                
+                                                   
+    actionButton("combineGroupsButton", "Combine Groups"), 
     actionButton("formatDEButton", "Format Graph"),
     #actionButton("DEadd", "Save R Code"),
     HTML("<button id='DEadd' type='button' class='btn btn-info action-button'>Save R Code</button>"),                                                
     plotOutput("plot"),
+    formatBSModal("CombineGroupsModal", "Combine Groups", "combineGroupsButton", size = "large", applyID = "applyCombineGroups",
+
+        bsAlert("combineGroupsAlert"),
+        textInput("newColumnForCombine", "New Column Name", "MergeColumn"),
+    fluidRow(
+      column(6, uiOutput("combineGroup1")), 
+      column(6, textInput("group1Label", "New Group Name"))
+    ),
+    fluidRow(
+      column(6, uiOutput("combineGroup2")), 
+      column(6, textInput("group2Label", "New Group Name"))
+    ),
+    fluidRow(
+      column(6, uiOutput("combineGroup3")), 
+      column(6, textInput("group3Label", "New Group Name"))
+    )
+   ),
     formatBSModal("Format", "Format", "formatDEButton", applyID = "applyFormatDE", size = "large",
         htmlOutput("formatDE")#, hr(),               
         #actionButton("applyFormatDE", "Apply Changes")
