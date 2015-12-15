@@ -1,13 +1,13 @@
 ###############################################################################
 ### stripchart2 function to dictate the graphical appearance of gene expression
 ##############################################################################
-stripchart2 <- function(x,y, group.names = NULL, jitter = 0.3, line.off = 0.3, 
+stripchart2 <- function(x,y, Group1Values, group.names = NULL, jitter = 0.3, line.off = 0.3, 
                         lwd = 5, col = NULL, main = "", mark = "mean", ...) {
 
   s = split(x,y)
   #print(s)
 
-  if (is.null(group.names)) group.names = names(s)
+  if (is.null(group.names)) group.names = Group1Values 
   
   if (is.null(col)) col = 1:length(s)
   add = NULL
@@ -40,18 +40,25 @@ stripchart2 <- function(x,y, group.names = NULL, jitter = 0.3, line.off = 0.3,
       main = paste(main, add)
     }
   
-  #gd
-  #stripchart(s, vertical=TRUE, method = "jitter", jitter = jitter, col = col, pch = 19, group.names=group.names, main = main,  ...)
-  
-  #jd
-  m = melt(s, na.rm=TRUE)
+  m = melt(s, na.rm=FALSE)
+
+  # re-order levels based on input order according to Group1Values 
+  # this must be done here, as 'melt' reorders alphabetically	
+  f <-function(x,l) {
+	w = which(l%in%x)
+	if (length(w) == 0) return(NA)
+	w
+  } 
+  m$L1 = reorder(m$L1, sapply(m$L1,f,Group1Values))
+
   #View(m)
   stripchart3 <- ggplot(m, aes(x = as.factor(L1), y = value, color=L1)) 
   return(stripchart3 + 
            labs(title = main, y = "log2 expression", x="") +
-           theme(legend.position="none") +
+	   theme(legend.position="none", 
+               axis.text.x = element_text(face = "bold", color = "black")) +
            scale_x_discrete(labels=group.names) +
-           geom_point(position = "jitter", aes(colour = L1)) + 
+           geom_point(position = "jitter", aes(colour = L1), na.rm = TRUE) + 
            scale_colour_manual(values = col) +
            geom_errorbar(stat = "hline", yintercept = "mean", width=0.8,aes(ymax=..y..,ymin=..y..)))
   

@@ -14,31 +14,6 @@ source("ui.tab.about.R")
 source("html.R")
 
 
-if (0) {
-#shinyUI(fluidPage(title = "GEO-AWS",
- shinyUI(bootstrapPage(    
-  tags$style(type="text/css", "body {padding: 70px;}"),
-       
-   ############################################################
-   # Navigation Bar
-   ############################################################
-   navbarPage(title = uiOutput("shinyTitle"), #title ="shinyGEO", 
-              #id = "tabs", 
-	      inverse = TRUE, position = "fixed-top",
-              windowTitle = "shinyGEO", 
-              collapsible = TRUE,
-              header = navbar.header,
-              tab.expression,
-              tab.analyses,
-              tab.clinical,
-              tab.reproducible,
-              tab.about
-     )  # end NavBar Page
-     
-   ) # end fluidPage and shinyUI
-)
-}
-
 header = dashboardHeader(
   title = uiOutput("shinyTitle"), titleWidth = 350, disable = FALSE 
 )
@@ -57,7 +32,7 @@ gse.button = div(style = "display:inline-block; width: 11%",
 gse.platform=  conditionalPanel(condition = "output.sidebarDisplay=='PLATFORM'|output.sidebarDisplay=='ALL'",
 
                   div(style = "display:inline-block; width: 75%",
-                        selectizeInput('platform', label = NULL, choices = NULL, width = 275,
+                        selectizeInput('platform', label = "Platform", choices = NULL, width = 275,
                                 options = list(placeholder = "Please select a platform",
                                 maxOptions = 10)
                         )
@@ -71,6 +46,7 @@ gse.platform=  conditionalPanel(condition = "output.sidebarDisplay=='PLATFORM'|o
 
 sidebar = dashboardSidebar(width = 350,
   includeCSS('www/ecsu.css'),
+  includeScript('www/ecsu.js'),
 	gse.input, gse.button, gse.platform,
 	conditionalPanel(condition = "output.sidebarDisplay=='ALL'",
 	sidebarMenu(id = "tabs",
@@ -81,7 +57,6 @@ sidebar = dashboardSidebar(width = 350,
 		menuItem("Full Data Table", tabName = "FullDataTable", icon = icon("table")),
 		#menuItem("Clinical Data Summary", tabName = "ClinicalDataSummary", icon = icon("table")),
 		menuItem("Code", tabName = "Code", icon = icon("code")),
-		menuItem("Report", tabName = "Report", icon = icon("file-text")),
 		menuItem("About", tabName = "About", icon = icon("info-circle"))
 	     )
       )
@@ -108,10 +83,11 @@ analyses.common = conditionalPanel(condition = "input.tabs == 'DifferentialExpre
 
 body = dashboardBody(
   bsAlert("alert1"),
+  bsAlert("alert2"),
   uiOutput("test"),
   uiOutput("busy"),
 
-  summaryBSModal("summaryBSModal","Clinical Data Summary (Large)","ClinicalDataBtn", size = "large",  
+  summaryBSModal("summaryBSModal","Clinical Data","ClinicalDataBtn", size = "large",  
 
   tabsetPanel(
 	tabPanel("Summary", DT::dataTableOutput("summaryModalTable")),
@@ -125,12 +101,41 @@ body = dashboardBody(
             textInput("replace", label = "Replace", value = ""),
             checkboxInput("survCheckbox", label = "Partial Replace", value = FALSE),  ### for survival analysis
              actionButton("Enter", label = "Submit"))
-	)
-  )
+	),
+	tabPanel("Data I/O",
+	      fluidRow(
+	        column(12,
+	               
+	               bsAlert("ioAlert"),
+	               bsAlert("ioAlert2"),
+	               bsAlert("ioAlert3")
+	               )
+	        
+	      ),
+	      fluidRow(
+	        column(5,
+	               tags$h4(class="ioTitle","Download Dataset"),
+	               hr(),
+	               downloadButton("downloadSet","Download")
+	               
+	              
+	               ),
+	        column(2,
+	              tags$p("")
+	               ),
+	        column(5,
+	               tags$h4(class="ioTitle","Upload Dataset"),
+	               hr(),
+	               fileInput('fileUpload', '',
+	                         accept=c('text/csv', 
+	                                  'text/comma-separated-values,text/plain', 
+	                                  '.csv'))
+	               
+	        )
+	      )
+	   )    
+   )
  ),
- # empty modal 
- #bsModal("summary2", "Clinical Data Summary (small)", "ClinicalDataBtn2", size = "small", "Small Modal"),
-
 
   # please wait conditional panel
 
@@ -149,10 +154,8 @@ body = dashboardBody(
       tab.expression,
       tab.DE.analysis,
       tab.survival.analysis,
-#      tab.data.full,
       tab.data.summary,
       tab.code,
-      tab.report,
       tab.about
     )
 )

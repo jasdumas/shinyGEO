@@ -1,4 +1,4 @@
-STD.ERR = TRUE
+STD.ERR = FALSE 
 if (STD.ERR) {
    cat <-function(...) {
      l = list(...)
@@ -35,6 +35,9 @@ source("plot.shiny.km.R")
 shinyServer(function(input, output, session){
   
   source("server-reactives.R", local = TRUE)
+  source("server-clinical.R", local = TRUE)
+  source("server-merge.R", local = TRUE)
+  source("server-io.R", local = TRUE)
   source("server-output.R", local = TRUE)
   source("formatDE.R", local = TRUE)
 

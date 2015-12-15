@@ -1,4 +1,8 @@
 
+colors <-function() {
+  c(palette(), "darkred", "darkgreen", "darkblue", "orange")
+}
+
 # remove new palette() function calls. This is not necessary
 # and creates a graphics window, which can cause the shiny server to crash
 current.color <-function(i) {
@@ -32,7 +36,7 @@ formatTableDE <-reactive({
   for (i in 1:length(input$Group1Values)) {
 
     col = current.color(i)
-    s=selectizeInput(paste0("colorDE",i), "",choices = colors(), width = '150px', selected = col) 
+    s=selectizeInput(paste0("colorDE",i), "",choices = colors(), width = '200px', selected = col) 
     s[[2]]$class = ""  # remove class
     s[[3]][[1]] = NULL # remove label
     s = gsub("<div>", "", s)
@@ -43,14 +47,13 @@ formatTableDE <-reactive({
     t = textInput(paste0("labelDE",i), "", input$Group1Values[i])
     t[[2]]$class = "" # remove class
     t[[3]][[1]] = ""  # remove label
-    t = gsub("<input id", "<input size = \"20\" id", t)
+    t = gsub("<input id", "<input size = \"50\" id", t)
     t = gsub("\n", "", t)
     t = gsub("class=\"form-control\"", "", t)
     aa.color = c(aa.color,paste(s, collapse = "") )
     aa.label = c(aa.label, paste(t, collapse = ""))
   }  
   aa.color = gsub("<label[ -=A-Za-z0-9\"]*></label>", "", aa.color)
-  
   
   df = cbind(df, aa.label, aa.color)
   df_rows <- apply(df, 1, row_html) 

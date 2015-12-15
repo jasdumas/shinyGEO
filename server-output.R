@@ -116,36 +116,42 @@ observe ({
   ## only show plaforms for selected series ##
   pl = Platforms()
   cat("update for pl = ", pl, "\n")
-  selected = NULL
-  
+ 
+  pl.selected = NULL
+  choices = NULL
+  pl.options = NULL 
   if (!is.null(pl)) {
     cat("updating pl...\n")
     keep = platforms.accession %in% pl
     pl.accession = platforms.accession[keep]
     pl.description = platforms.description[keep]
     if (length(pl.accession) == 1) {
-      selected = NULL #pl.accession
+      pl.selected = pl.accession 
+      choices = pl.selected
+    } else {
+      cat("multiple accessions..\n")
+      pl.selected = NULL
+      choices = data.frame(label = pl.accession, value = pl.accession, 
+		name = pl.description)
+      pl.options = list(
+          render = I(
+             "{
+                option: function(item, escape) {
+                     return '<div> <strong>' + item.label + '</strong> - ' +
+                         escape(item.name) + '</div>';
+                }
+              }"
+          )
+       )
     }
-  } else {
-    pl.accession = platforms.accession
-    pl.description = platforms.description
   }
  
 cat("update platform dropdown\n") 
-updateSelectizeInput(session, inputId='platform', server = TRUE,
-               choices = data.frame(label = pl.accession, value = pl.accession, name = pl.description),
-               selected = selected,
-               options = list(
-                 #create = TRUE, persist = FALSE,
-                 render = I(
-                   "{
-                      option: function(item, escape) {
-                          return '<div> <strong>' + item.label + '</strong> - ' +
-                          escape(item.name) + '</div>';
-                      }
-                    }"
-                 ))
-               )
+updateSelectizeInput(session, inputId='platform', label = "Platform", server = TRUE,
+               choices = choices,
+               selected = pl.selected,
+	       options = pl.options 
+)
 
 if (!is.null(pl)) {
 	 d = dataInput()
@@ -163,13 +169,6 @@ createAlert(session, "alert1", alertId = "GPL-alert", title = "Please select a p
 cat("done create platform alert\n")
 })
 
-
-#output$GSE <- renderUI({
-#  selectizeInput('GSE', label = 'Accession Number', 
-#                 choice = c("",series.accession), 
-#                 multiple = F, selected = NULL           
-#                 )        
-#})
 
 ###############################################################
 # drop down options are in form of GSE number - description
@@ -215,7 +214,19 @@ observe({
             selected = val, multiple = F, selectize = FALSE
     )
   })
+
+  val = input$selectedColumn
+  output$selectedColumnForCombine <- renderUI({  
+      # show possible choices (column names)
+      selectInput('selectedColumnForCombine', 'Selected Column', 
+            choices = ColumnNames(), #width='20%',
+            selected = val, multiple = F, selectize = FALSE
+    )
+  })
+
 })
+
+
 
 #output$test2 <- renderText(paste0("row = ", input$clinicalData_rows_selected))
 
@@ -232,79 +243,8 @@ output$selectedGroups <- renderUI({
   )
 })
 
-############################################
-## displays the Clinical Summary Data Table
-###########################################
-observe({  # observe needed since data object is a reactive function
-  cat("observe for clinicalDataSummary\n") 
- 
-  output$clinicalDataSummary <- DT::renderDataTable({ datatable(as.data.frame(clinicalDataSummary()), rownames = TRUE,  
-                                                                 extensions = 'ColReorder',
-                                                                 options = list(#dom = 'Rlfrtip', ajax = list(url = action), 
-                                                                                paging = F,  searchHighlight = TRUE),
-                                                                 filter = 'none', 
-                                                                 selection = 'single') 
-    
-  })
-
-  
-#  dd = clinicalDataSummary()
-#  action = dataTableAjax(session, data=dd, rownames = TRUE) # for the row_output as characters
-  
-})
-
-###########################################################################################
-## Reactive for displaying the dataTable, since same display will be used multiple times
-##########################################################################################
-displayDataTable <-reactive({
-  
-  DT::renderDataTable({ datatable(editClinicalTable(), rownames = TRUE,
-                                                      extensions = 'ColReorder',
-                                                      options = list(dom = 'Rlfrtip', #ajax = list(url = action1), 
-								    autoWidth = TRUE,
-                                                                     scrollX = "auto",
-                                                                     scrollY = "400px",
-                                                                     paging = T, 
-                                                                     searchHighlight = TRUE,
-                                                                     columnDefs = list(list(
-                                                                       targets = 1: ncol(editClinicalTable()), # applies to the entire table
-									width = '200px',
-
-                                                                       render = JS(
-                                                                         "function(data, type, row, meta) {",
-                                                                         "return type == 'display' && data.length > 50 ?",
-                                                                         "'<span title=\"' + data + '\">' + data.substr(0, 50) + '...</span>' : data;",
-                                                                         "}")
-                                                                     ))), 
-                                                      select = list(target = "column"),
-                                                      filter = 'none')
-  })
-})
 
 
-observe({
-  cat("observe for summaryModalTable\n")  
-  output$summaryModalTable <- DT::renderDataTable({ datatable(as.data.frame(clinicalDataSummary()), rownames = FALSE,  
-    extensions = 'ColReorder',
-    options = list(#dom = 'Rlfrtip', #ajax = list(url = action), 
-                   paging = F,  searchHighlight = TRUE),
-                   filter = 'none', 
-                   selection = 'single') 
-    
-  })
-  
-  
-#  dd = clinicalDataSummary()
-#  action = dataTableAjax(session, data=dd, rownames = TRUE) # for the row_output as characters
-  
-#  output$summaryModalTable <- displayDataTable() 
-
- 
-})
-
-observe ({
-  output$clinicalData = displayDataTable()
-})
 
 
 ##############################################
@@ -313,8 +253,6 @@ observe ({
 ##############################
 ## Expression Profiles plot 
 ##############################
-#observeEvent(input$submitButton,
-
 if (EXPRESSION.PLOT) { 
 output$exProfiles <- renderPlot({
   cat("\n\nrendering profiles...\n")
@@ -346,12 +284,11 @@ output$exProfiles <- renderPlot({
     y.label = "Expression"
   }
   
-#  closeAlert(session, "GPL-alert")
-
 
   cat("create expression alert\n")
   createAlert(session, "alert1", alertId = "Expression-alert", title = "Current Status", style = "info",
                content = "Generating boxplot of expression data", append = FALSE, dismiss = TRUE) 
+
   par(mar=c(2+round(max(nchar(sampleNames(dataInput())))/2),4,2,1))
   title <- paste(isolate(input$GSE), '/', isolate(input$platform), title.detail, sep ='') # need 
  
@@ -360,11 +297,9 @@ output$exProfiles <- renderPlot({
   #x1 = gather(data = x, na.rm =TRUE)
   fixed.df <- as.data.frame(x=x, stringsAsFactors = FALSE)
   
-  x1 <- reshape2::melt(fixed.df, na.rm = TRUE, 
+  x1 <- reshape2::melt(fixed.df, na.rm = TRUE, id.vars = NULL, 
             variable.name = "variable", 
             value.name = "value")
-#  View(head(x))
-#  View(head(x1))  # to get aes(); X2 column header for GSMXXX values
   
   exp.prof.plot <- ggplot(x1, aes(variable, value)) + 
                 geom_boxplot(outlier.colour = "green") +
@@ -374,15 +309,15 @@ output$exProfiles <- renderPlot({
   print(exp.prof.plot)
 
   cat("close expression alert\n")
-  closeAlert(session, "Expression-alert")
- 
-  createAlert(session, "alert1", alertId = "Analysis-alert", title = "Please select an Analysis", style = "success",
-	content = "Gene expression profiles have been downloaded successfully. Please select either a Differential Expression Analysis or a Survival Analysis from the sidebar to continue")
-}
+  #closeAlert(session, "Expression-alert")
 
-) 
+  # Analysis-alert causes server to get stuck on Safari, when append = FALSE
+  # This does not happen on Chrome / Firefox. For now, set append = TRUE  
+  createAlert(session, "alert1", alertId = "Analysis-alert", title = "Please select an Analysis", style = "success",
+	content = "Gene expression profiles have been downloaded successfully. Please select either a Differential Expression Analysis or a Survival Analysis from the sidebar to continue", append = TRUE)
+  }
+ ) 
 }
-#) 
 
 ####################
 ####################
@@ -535,12 +470,6 @@ observeEvent(input$autoAnalysis,({
   print("Column selection and formatting for survival analysis finished..")
 }))
 
-observeEvent(input$gBack,({
-  print("observe gBack\n")  
-  toggleModal(session,"summaryBSModal",toggle = "close")
-  print("done observe gBack\n")  
-}))
-
 observeEvent(input$autoColumn.time,({
   print("observe autoColumn.time")
     this = values.edit$table
@@ -600,56 +529,8 @@ observeEvent(input$genBtn,
 } # end autoselect.survival
 
 
-output$selectedCols <- DT::renderDataTable({ 
-  datatable(data = parse.modal(), rownames = F,
-		options = list(dom = "Rlrtip", paging = F),
-		filter = 'none')
-}) 
 
 
-###################
-# Knitr Report
-###################
-output$knitDoc <- renderPlot(
-  #input$exprAdd
-  #input$DEadd
-  #input$Survadd
-  #return(isolate(HTML(knit2html(text = input$rmd, fragment.only = TRUE, quiet = TRUE))))
-  #cat("knitDoc\n")
-  print(input$exProfiles)
-  )  
-   
-# a reactive to supply the content function with the text from the aceEditor
-knit.report <- reactive({
-  knit2html(text = input$rmd, quiet = TRUE)
-})
-### Download knitr report ###
-output$downloadData <- downloadHandler(
-  filename = function() { 
-    paste("report", "html", sep=".") 
-  },
-  
-  content = function(file) {
-    #input$knitDoc ## trial to connect knitr with download button
-    
-    src <- normalizePath('report.Rmd')
-    
-    # temporarily switch to the temp dir, in case you do not have write
-    # permission to the current working directory
-    owd <- setwd(tempdir())
-    on.exit(setwd(owd))
-    file.copy(src, 'report.Rmd')
-  
-    library(rmarkdown)
-    #out <- render('report.Rmd', output_format = html_document())
-    #a <- knit(input$rmd)
-    out <- render(input$rmd, output_format = html_document())
-    
-    file.rename(out, file)
-  
-  }
- 
-)
 
 if (DE.PLOT) {
   observe({
@@ -658,19 +539,11 @@ if (DE.PLOT) {
       
       if (input$selectGenes == "") {
         cat("\n\n=====NO GENE=====\n\n")
-        createAlert(session, "alert2", alertId = "Gene-alert", 
-                    title = "Please select a gene and probe to continue", 
-                    style = "danger",
-                    content = "", append = TRUE,
-                    dismiss = FALSE) 
         PLOT = FALSE
       }    
       else {
         closeAlert(session, "Gene-alert")
           if (length(input$Group1Values) == 0) {
-            output$selectGroupsMessage <-renderUI({
-              HTML("<h3>Please Choose The Groups to Compare</h3>")}
-            )
             PLOT = FALSE
           }
       }
@@ -678,26 +551,22 @@ if (DE.PLOT) {
       if (!PLOT) {
               output$plot <-renderPlot({NULL})
       } else  {
-          output$selectGroupsMessage <-renderText({""})
           output$plot <- renderPlot({
               x = profiles()[input$selectGenes,] # effected by data transformation
               iv = input$selectedColumn
-              m = match(as.character(iv), colnames(clinicalInput()))  # GD: change grep to match
-              clinical = as.character(clinicalInput()[,m])  # clinicalInput() should be the new edited table once fixed
+              m = match(as.character(iv), colnames(clinicalDataProcessed()))  # GD: change grep to match
+              clinical = as.character(clinicalDataProcessed()[,m]) 
               selected = c(as.character(input$Group1Values))
               k = clinical%in% selected
     
               y = clinical
               y[!k] = NA
-              
+            
               ## make sure levels are in selected order for plot
-              y = factor(y, levels = input$Group1Values)
-              
+              y = factor(y)
+
               main = paste(input$GSE, geneLabel() , sep = ": ")
-              #gd              
-              #stripchart2(x,y, col = colorsDE(), group.names = labelsDE(), main = main, ylab = "log2 expression")
-              #jd
-              print(stripchart2(x,y, group.names = labelsDE(), main = main, col=colorsDE()))
+              print(stripchart2(x,y, input$Group1Values, group.names = labelsDE(), main = main, col=colorsDE()))
              
               }) # end of plot reactive
           
