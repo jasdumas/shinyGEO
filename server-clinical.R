@@ -31,11 +31,13 @@ clinicalDataProcessed <- reactive({
   if (length(m) > 0) p=p[,-m, drop = FALSE]
   
   m = match(colnames(exprInput()), rownames(p))
-  
+  m = m[!is.na(m)]
+ 
   p = p[m,]
   
   values.edit$table = p
   subtract.tab()	
+
   return(p)
 
 })
@@ -52,7 +54,6 @@ clinicalDataSummary <- reactive({
 	subtract.tab()
 	return(NULL)
   }
-  cat("colnames = ")
   vars = colnames(t)
   cat("got ncols = ", length(vars), "\n")
   a = apply(t, 2, function(x)levels(as.factor(x)))
@@ -115,28 +116,33 @@ observe({  # observe needed since data object is a reactive function
 ## Reactive for displaying the dataTable, since same display will be used multiple times
 ##########################################################################################
 displayDataTable <-reactive({
-  
-  DT::renderDataTable({ datatable(clinicalDataProcessed(), rownames = TRUE,
-                                                      extensions = 'ColReorder',
+  add.tab()
+  depend = values.edit$table
+  cat("in displayDataTable reactive...\n") 
+  t = DT::renderDataTable({ datatable(clinicalDataProcessed(), rownames = TRUE,
+       #                                               extensions = 'ColReorder',
                                                       options = list(dom = 'Rlfrtip', #ajax = list(url = action1), 
 								    autoWidth = TRUE,
                                                                      scrollX = "auto",
                                                                      scrollY = "400px",
-                                                                     paging = T, 
+                                                                     paging = F, 
                                                                      searchHighlight = TRUE,
                                                                      columnDefs = list(list(
                                                                        targets = 1: ncol(clinicalDataProcessed()), # applies to the entire table
-									width = '200px',
-
-                                                                       render = JS(
+									width = "200px",
+                                                                        render = JS(
                                                                          "function(data, type, row, meta) {",
-                                                                         "return type == 'display' && data.length > 50 ?",
-                                                                         "'<span title=\"' + data + '\">' + data.substr(0, 50) + '...</span>' : data;",
+                                                                         "return type == 'display' && data.length > 30 ?",
+                                                                         "'<span title=\"' + data + '\">' + data.substr(0, 30) + '...</span>' : data;",
                                                                          "}")
                                                                      ))), 
                                                       select = list(target = "column"),
                                                       filter = 'none')
   })
+cat("end displayDataTable reactive\n")
+subtract.tab()
+
+return(t)
 })
 
 
@@ -154,7 +160,8 @@ observe({
 })
 
 observe ({
-  output$clinicalData = displayDataTable()
+  cat("observe for clinicalData\n")
+  output$clinicalData <- displayDataTable()
 })
 
 

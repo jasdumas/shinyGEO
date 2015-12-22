@@ -314,6 +314,7 @@ observe({
   if (TRACE) cat("observe platform to update clinical table...\n")
   if (is.null(dataInput()) | is.null(platformIndex())) {
     subtract.tab()
+    cat("update table to NULL\n")
     values.edit$table = NULL
     return(NULL)
   }
@@ -323,9 +324,10 @@ observe({
     code = paste0("data.p = pData(data.series[[data.index]])")
     add.line(code)
     if (TEST.DATA) {
-        cat("set p to CLINICAL.test\n")
+        cat("set table to CLINICAL.test\n")
         values.edit$table = CLINICAL.test
     } else {
+	cat("set table pData(dataInput)\n")	
       values.edit$table = as.data.frame(pData(phenoData(object = dataInput()[[platformIndex()]])))
     }
   }

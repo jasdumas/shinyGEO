@@ -13,10 +13,14 @@ background-color:transparent;
 }
 
 @media (min-width: 992px){
+
+
 #summaryBSModal > .modal-lg {
-    width: 1317px;
+    width: 1000px;/* 1317px; */
     margin: 10px 0px 10px 5px !important;
  }
+
+
 #downloadSet{
 	border-radius:2px;	
 	background-color: rgb(0, 38, 73);
