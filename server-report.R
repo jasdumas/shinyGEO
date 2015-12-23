@@ -1,10 +1,9 @@
-
-#####################################
-# removed from server-reactives.R
-#####################################
-
 add.graph <-function(line) {  ## add graphic info to ace editor for the report
-   reproducible$report = paste(isolate(reproducible$report), line, sep = "\n")
+   if (is.null(reproducible$report)) {
+	reproducible$report = line
+   } else {
+     reproducible$report = paste(isolate(reproducible$report), line, sep = "\n")
+  }
 }
 
 observeEvent(reproducible$report, {
@@ -21,38 +20,60 @@ observeEvent(profiles(),  {
   cat("observe profiles\n")
   if (TRACE) cat("In Initial...\n")
   initialCode <- paste0(
-"# Initial Data Download
-library(DT)  ## tested on development version 0.1.32
-library(shiny)
+"## Load required packages ##
 library(GEOquery)
-library(Biobase)
 library(reshape2)
 library(survival)
-library(affy)
-library(limma)
-library(shinyBS)
-library(GGally)
 library(ggplot2)
-library(shinyAce)
-library(knitr)
-data.series = getGEO(GEO = \"", input$GSE, "\", AnnotGPL = FALSE, getGPL = FALSE)
-data.platform = getGEO(\"", Platforms()[platformIndex()],  "\")
-data.index = match(\"", Platforms()[platformIndex()], "\", sapply(data.series, annotation))
+
+## Download data from GEO ##
+GSE = \"", input$GSE, "\"
+GPL = \"", Platforms()[platformIndex()], "\"
+ 
+data.series = getGEO(GEO = GSE, AnnotGPL = FALSE, getGPL = FALSE)
+data.platform = getGEO(GPL)
+data.index = match(GPL, sapply(data.series, annotation))
 data.p = pData(data.series[[data.index]])
 data.expr = exprs(data.series[[data.index]])
 ") # end of paste of intial code download
   
   add.graph(initialCode)
-  
-  if (identical(initialCode, initialCode)) { # if the GSE and platform are the same, don't keep adding the same info
-    add.graph("")
+
+  if (values.edit$log2) {
+	add1  = "data.expr[which(data.expr <= 0)] <- NaN"
+	add2 = "data.expr = log2(data.expr)"
+	add.graph(add1)
+	add.graph(add2)
   }
+  
+  exp = paste0("
+## generate boxplot of expression profiles ##
+title = \"samples\"; 
+s.num = 1:ncol(data.expr)
+n = ncol(data.expr)
+if (n > 30) {
+  s.num = sample(1:n, 30)
+  title = \"selected samples\"
+}
+title = paste0(GSE, \"/\", GPL, \" \", title)
+
+fixed.df <- as.data.frame(x=data.expr[,s.num], stringsAsFactors = FALSE)
+
+x1 <- reshape2::melt(fixed.df, na.rm = TRUE, id.vars = NULL,
+         variable.name = \"variable\", value.name = \"value\")
+
+exp.prof.plot <- ggplot(x1, aes(variable, value)) +
+                geom_boxplot(outlier.colour = \"green\") +
+                labs(title = title, y = \"log2 expression\", x = \"\") +
+                theme(axis.text.x = element_text(angle = 90, hjust = 1))
+
+print(exp.prof.plot)
+")
+
+  add.graph(exp)
+  
  cat("END Initial\n") 
 })
-
-
-
-
 
 
 ######################################
@@ -61,60 +82,7 @@ data.expr = exprs(data.series[[data.index]])
 observeEvent(input$exprAdd, {
   if (TRACE) cat("In report Append for expression profiles...\n")
 
-  exp <- paste0( 
-"# Expression Profiles Plot
-ex <- data.expr
-if (is.null(ex)) return (NULL)
-qx <- as.numeric(quantile(ex, c(0., 0.25, 0.5, 0.75, 0.99, 1.0), na.rm=T))
-LogC <- (qx[5] > 100) |
-(qx[6]-qx[1] >50 & qx[2] >0) |
-(qx[2] > 0 & qx[2] <1 & qx[4] > 1 & qx[4] < 2) 
-if (LogC & as.logical(\"", input$radio == 1, "\")) {
-ex[which(ex <= 0)] <- NaN
-return(ex <- log2(ex)) }
-if (as.logical(\"",input$radio == 2 , "\")) {
-return (ex <- log2(data.expr))
-} else { return (ex <- data.expr)
-}
-x = ex
-if (is.null(x)) return(NULL)
-n = ncol(x)
-if (n > 30) {
-s = sample(1:n, 30)
-x = x[,s]
-}
-if (n > 30) {
-title.detail = ' selected samples'
-} else {
-title.detail = ' samples'
-}
-if (as.logical(\"",input$radio == 1, "\") | as.logical(\"",input$radio == 2, "\")) {
-y.label = 'log2 Expression'       
-} else {
-y.label = 'Expression'
-}
-#par(mar=c(2+round(max(nchar(sampleNames(\"",input$GSE, "\")))/2),4,2,1))
-title <- paste(isolate(\"", input$GSE, "\"), '/', isolate(\"",input$platform, "\") , title.detail, sep ='') 
-
-fixed.df <- as.data.frame(x=x, stringsAsFactors = FALSE)
   
-  x1 <- reshape2::melt(fixed.df, na.rm = TRUE, 
-            variable.name = 'variable', 
-            value.name = 'value')
-  
-  exp.prof.plot <- ggplot(x1, aes(variable, value)) + 
-                geom_boxplot(outlier.colour = 'green') +
-                labs(title = title, y = y.label, x = '') + 
-                theme(axis.text.x = element_text(angle = 90, hjust = 1))
-  
-  print(exp.prof.plot)
-
-") # end of paste
-  add.graph(exp)
-  
-  if (identical(exp, exp)) { # if the GSE and platform are the same, don't keep adding the same info
-    add.graph("")
-  }
 }) # end of observeEvent for expression profiles plot 
 
 
@@ -129,127 +97,39 @@ quote.it <-function(x) paste0("\"", x, "\"")
 observeEvent(input$DEadd, {
   if (TRACE) cat("In report append DE...\n")
 
-#########################################################  
-#   cat("outputting test script...\n")
-#   
-#   #GSE = "GSE13"
-#   #GPL = "GPL75"
-#   #LOG = TRUE
-#   #PROBE = "aa000380_s_at"
-#   #DE.column = "source_name_ch1"
-#   #DE.groups = c("Immature B cells", "Mature B cells")
-#   
-#   script.GSE = paste0("GSE = ",quote.it(input$GSE), "\n")
-#   script.GPL =   paste0("GPL = ", quote.it(isolate(Platforms()[platformIndex()])), "\n")
-# #  script.probe = paste0("PROBE = ", quote.it(input$selectProbes), "\n")
-#   script.log2 = paste0("LOG2 = ", values.edit$log2, "\n")
-#   script.DE.column = paste0("DE.column = ", quote.it(input$selectedColumn), "\n")
-#   
-#   grps = paste0(sapply(input$Group1Values, quote.it), collapse = ",")
-#   grps = paste0("c(", grps, ")")  
-#   script.DE.groups = paste0("DE.groups = ", grps)
-#     
-#   print(script.GSE)
-#   print(script.GPL)
-# #  print(script.probe)
-#   print(script.log2)
-#   print(script.DE.column)
-#   print(script.DE.groups)
-#   
-#   test.file = paste0("test/", input$GSE, "_test.R")
-#   
-#   cmd = paste0("echo '", script.GSE, script.GPL, script.log2, 
-#                script.DE.column, script.DE.groups, "' > ", test.file)
-#   
-#   #cmd = "echo 'hello, how are you\n' > tmp.R"
-#   system(cmd)
-#   cmd = paste0("cat GEO-script-template.R >> ", test.file)
-#   system(cmd) 
-# 
-#   cat("\n==========RUNNING TEST ON", test.file, "========\n")
-#   rmarkdown::render(test.file)
-# 
-######################################
-s2function <- paste0(
-"# Differential Expression Plot
-stripchart2 <- function(x,y, group.names = NULL, jitter = 0.3, line.off = 0.3, 
-lwd = 5, col = NULL, main = '', mark = 'mean') {
-s = split(x,y)
-if (is.null(group.names)) group.names = names(s)
-if (is.null(col)) col = 1:length(s)
-add = NULL
-if (length(s) == 2) {
-m = lapply(s,mean, na.rm=TRUE)
-fc = round(2**(m[[2]] - m[[1]]), 2)
-t = t.test(s[[1]], s[[2]])
-p = round(t$p.value, 3)   
-if (p < 0.001) {
-p = '(P < 0.001)'
-} else {
-p = paste0('(P = ', p, ')')
-}
-add = paste('\nFC = ', fc, p, collapse = '')
-} else if (length(s) > 2) {
-l = lm(x~y); l = summary(l)
-p = 1-pf(l$fstatistic[1], l$fstatistic[2], l$fstatistic[3])
-p = round(p, 3)
-if (p < 0.001) {
-add = '\nP < 0.001'
-} else {
-add = paste0('\nP = ', p)
-}
-} 
-if (is.null(main)) {
-main = '' 
-} else {
-main = paste(main, add)
-}
-me = melt(s, na.rm=TRUE)
-stripchart3 <- ggplot(me, aes(x = as.factor(L1), y = value, color=L1)) 
-return(stripchart3 + 
-labs(title = main, y = 'log2 expression', x='') +
-theme(legend.position='none') +
-scale_x_discrete(labels=group.names) +
-geom_point(position = 'jitter', aes(colour = L1)) + 
-scale_colour_manual(values = col) +
-geom_errorbar(stat = 'hline', yintercept = 'mean', width=0.8,aes(ymax=..y..,ymin=..y..)))
-if (mark %in% c('mean', 'median')) {
-if (mark == 'mean') mm = lapply(s,mean, na.rm=TRUE)
-if (mark == 'median') mm = lapply(s, median, na.rm=TRUE)
-for (i in 1:length(mm)) {
-lines(c(i-line.off, i+line.off), c(mm[[i]], mm[[i]]), lwd = lwd)
-    }
-  }
+s2function = scan(file = "stripchart2.R", what = character(), sep = "\n")
+sapply(s2function, add.graph)
+ 
+vector.it <-function(x) {
+  x = paste0("\"", x, "\"", collapse = ",")
+  paste0("c(", x, ")")
 }
 
-")
 
-add.graph(s2function)
+ 
+## generate differential expression plot ##
+add.probe = paste0("probe = \"", input$selectGenes, "\"") 
+add.column = paste0("column = \"", input$selectedColumn, "\"")
+add.groups = paste0("groups = ", vector.it(input$Group1Values)) 
 
-if (identical(s2function, s2function)) { 
-  add.graph("")
-}
-  
-  s3plot <- paste0(
-"match.y = match(as.character(\"",input$selectProbes, "\"),rownames(data.expr))
-x = data.expr[match.y,] 
-iv = as.character(\"", input$selectedColumn, "\")
-m = match(as.character(iv), colnames(data.p)) 
-clinical = as.character(data.p[,m])  
-selected = as.character(\"", input$Group1Values,"\")
-k = clinical %in% selected
-y = clinical
+add.graph(add.probe)
+add.graph(add.column)
+add.graph(add.groups)
+
+ s3plot <- paste0("
+x = data.expr[probe,]
+y = as.character(data.p[,column]) 
+
+k = y%in% groups
 y[!k] = NA
-y = factor(y, levels = \"", input$Group1Values,"\" )
-main = paste(\"",input$GSE ,"\", \"", input$selectGenes ,"\", sep = '\')
-print(stripchart2(x,y, group.names = labelsDE(), main = main, col=colorsDE()))
+y = factor(y)
 
+group.names = ", vector.it(labelsDE())," 
+main = paste(GSE, \"", geneLabel(), "\", sep = \": \")
+col = ", vector.it(colorsDE()), "
+print(stripchart2(x,y, groups, group.names = group.names, main = main, col=col))
 ")
 add.graph(s3plot)
-
-if (identical(s3plot, s3plot)) { 
-  add.graph("")
-}
 
 }) # end of observeEvent for DE
 
@@ -384,7 +264,7 @@ observeEvent(input$Enter, {
 })
 
 
-
+if (0) {
 #####################################
 # removed from ui.tab.reproducible.R
 #####################################
@@ -394,8 +274,8 @@ tab.report = tabItem("Report",
         ),
              h3("Report"), 
              htmlOutput("knitDoc")
-        
     )
+}
 
 #####################################
 # removed from server-output.R

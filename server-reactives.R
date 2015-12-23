@@ -19,14 +19,13 @@ createAlert(session, "alert1", alertId = "GSE-begin-alert",
 # Edit table reactiveValues()
 ###################################################
 values.edit <- reactiveValues(table = NULL, platformGeneColumn = NULL, original = NULL, log2 = FALSE)
-reproducible <-reactiveValues(code = NULL)#, report = NULL)
+reproducible <-reactiveValues(code = NULL, report = NULL)
 KM <-reactiveValues(eventNames = NULL, outcome = NULL)
 
 ### functions to append/aggregate a new line to the aceEditor
 add.line <-function(line) {
     reproducible$code = paste(isolate(reproducible$code), line, sep = "\n")
 }
-
 
 
 ################################
@@ -314,6 +313,7 @@ observe({
   if (TRACE) cat("observe platform to update clinical table...\n")
   if (is.null(dataInput()) | is.null(platformIndex())) {
     subtract.tab()
+    cat("update table to NULL\n")
     values.edit$table = NULL
     return(NULL)
   }
@@ -323,9 +323,10 @@ observe({
     code = paste0("data.p = pData(data.series[[data.index]])")
     add.line(code)
     if (TEST.DATA) {
-        cat("set p to CLINICAL.test\n")
+        cat("set table to CLINICAL.test\n")
         values.edit$table = CLINICAL.test
     } else {
+	cat("set table pData(dataInput)\n")	
       values.edit$table = as.data.frame(pData(phenoData(object = dataInput()[[platformIndex()]])))
     }
   }
