@@ -19,14 +19,13 @@ createAlert(session, "alert1", alertId = "GSE-begin-alert",
 # Edit table reactiveValues()
 ###################################################
 values.edit <- reactiveValues(table = NULL, platformGeneColumn = NULL, original = NULL, log2 = FALSE)
-reproducible <-reactiveValues(code = NULL)#, report = NULL)
+reproducible <-reactiveValues(code = NULL, report = NULL)
 KM <-reactiveValues(eventNames = NULL, outcome = NULL)
 
 ### functions to append/aggregate a new line to the aceEditor
 add.line <-function(line) {
     reproducible$code = paste(isolate(reproducible$code), line, sep = "\n")
 }
-
 
 
 ################################

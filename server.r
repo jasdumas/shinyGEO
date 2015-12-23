@@ -40,8 +40,8 @@ shinyServer(function(input, output, session){
   source("server-io.R", local = TRUE)
   source("server-output.R", local = TRUE)
   source("server-survival.R", local = TRUE)
+  source("server-report.r", local = TRUE)
   source("formatDE.R", local = TRUE)
-
 #  output$test <-renderText(paste0("hi there: ", input$tabs))
 
 })
