@@ -154,7 +154,12 @@ conditionalPanel(condition = "input.selectGenes!=''",
     actionButton("mergeGroupsButton", "Merge Groups"), 
     actionButton("formatDEButton", "Format Graph"),
     #actionButton("DEadd", "Save R Code"),
-    HTML("<button id='DEadd' type='button' class='btn btn-info action-button'>Save R Code</button>"),                                                
+    HTML("<button id='DEadd' type='button' class='btn btn-info action-button'>Save R Code</button>"),                                   
+
+    bsModal("addCodeDEModal", "R Code Added", "DEadd", size = "small",
+		bsAlert("addCodeDEAlert")
+    ),
+             
     plotOutput("plot"),
     formatBSModal("MergeGroupsModal", "Merge Groups", "mergeGroupsButton", size = "large", applyID = "applyMergeGroups",
 
@@ -204,7 +209,10 @@ tab.survival.analysis = tabItem("SurvivalAnalysis",
         summaryBSModal("summaryBSModal","Clinical Data Summary",""),
         actionButton("formatDEButton2", "Format Graph"), # add on
         formatBSModal("Format2", "Format", "formatDEButton2", applyID = "applyFormatDE2", size = "large", htmlOutput("formatDE2")),
-        actionButton("Survadd", "Save R Code"),
+        HTML("<button id='Survadd' type='button' class='btn btn-info action-button'>Save R Code</button>"),                                   
+        bsModal("addCodeSurvModal", "R Code Added", "Survadd", size = "small",
+		bsAlert("addCodeSurvAlert")
+        ),
        # shinyBS::bsModal("parseModal", "Selected Survival Analysis Parameters", "parseButton", size = "large",
         #    fluidRow(
 
