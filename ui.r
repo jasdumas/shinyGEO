@@ -143,7 +143,7 @@ body = dashboardBody(
   conditionalPanel(condition="$('html').hasClass('shiny-busy')",
         div(style = "position:center; width:100%; height:100; text-align:center",
 #            img(src="PleaseWait.gif", style = "width:50%")
-		"Wait please..."
+		"Please wait..."
        )
     ),
 

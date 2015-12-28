@@ -1,7 +1,12 @@
 
 var x;
 $( document ).ready(function() {
-
+    var isOpera = !!window.opera || navigator.userAgent.indexOf(' OPR/') >= 0;
+    // Opera 8.0+ (UA detection to detect Blink/v8-powered Opera)
+    var isChrome = !!window.chrome && !isOpera;   // Chrome 1+
+    if (!isChrome) {
+        alert( "For the best user experience, we recommend using the Google Chrome browswer, available at:\nhttp://www.google.com/chrome/");
+    } 
   
 $('#manuBtn').click(function(){
 	x = 1;
@@ -39,6 +44,4 @@ $('.nav-tabs > li:nth-child(1)').click(function(event){
 
 
 }); 
-
-
 
