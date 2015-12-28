@@ -82,17 +82,29 @@ observeEvent(input$applyMergeGroups, ({
 
   X = as.character(values.edit$table[[input$selectedColumn]])
   Y = rep("", length(X))
+  
+  add1 = "## merge groups from selected column ##\n"
+  add1 = paste0(add1, "tmp = as.character(data.p[[\"", input$selectedColumn, "\"]])\n")
+  add1 = paste0(add1, "Y = rep(\"\", length(tmp))\n") 
+
   if (length(g1) > 0 & input$group1Label != "") {
 	Y[X %in% g1] = input$group1Label 
+	add1 = paste0(add1, "Y[tmp %in% ", vector.it(g1), "] = \"", input$group1Label, "\"\n")  
   }
   if (length(g2) > 0 & input$group2Label != "") { 
         Y[X %in% g2] = input$group2Label 
+	add1 = paste0(add1, "Y[tmp %in% ", vector.it(g2), "] = \"", input$group2Label, "\"\n")  
   } 
   if (length(g3) > 0 & input$group3Label != "") {
         Y[X %in% g3] = input$group3Label  
+	add1 = paste0(add1, "Y[tmp %in% ", vector.it(g3), "] = \"", input$group3Label, "\"\n")  
   }
   data = values.edit$table
   data[[col]] = Y
+
+  add1 = paste0(add1, "data.p[[\"", col, "\"]] = Y")
+  isolate(add.graph(add1))
+
   isolate(values.edit$table <- data)
   toggleModal(session, "MergeGroupsModal", "close")
   updateSelectInput(session, "selectedColumn", choices = ColumnNames(),
