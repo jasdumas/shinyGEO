@@ -38,6 +38,18 @@ $('.nav-tabs > li:nth-child(1)').click(function(event){
 });
 
 
+function handler1() {
+    $('#exProfiles').children().css("width",'100%');
+    $(this).one("click", handler2);
+}
+
+function handler2() {
+ 
+  $('#exProfiles').children().css("width",'');
+  $(this).one("click", handler1);
+}
+$(".sidebar-toggle").one("click", handler1);
+
 }); 
 
 
