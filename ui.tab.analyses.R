@@ -74,7 +74,7 @@ genBSModal<-function (id, title, trigger, ..., size)
            shiny::tags$div(class = "modal-content", 
                  shiny::tags$div(class = "modal-header", 
                shiny::tags$button(type = "button",  class = "close", `data-dismiss` = "modal", shiny::tags$span(shiny::HTML("&times;"))), 
-               bsButton("manuBtn", "View Data Tablel", icon = NULL, style = "info",
+               bsButton("manuBtn", "View Data Table", icon = NULL, style = "info",
                         size = "default", type = "action", block = FALSE, disabled = FALSE,
                         value = FALSE),
  
