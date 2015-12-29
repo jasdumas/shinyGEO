@@ -187,6 +187,7 @@ cat("done create platform alert\n")
 # but only display the number when selected
 # 'value' is what gets returned to server (GSE number)
 ###############################################################
+
 updateSelectizeInput(session, inputId='GSE', label = "Accession Number", server = TRUE,
     choices =  data.frame(label = series.accession, value = series.accession, name = series.description),
     options = list(
@@ -200,7 +201,6 @@ updateSelectizeInput(session, inputId='GSE', label = "Accession Number", server 
       }"
     ))
 )
-
 ################################################
 ### Renders drop-down menu for variables/columns 
 ################################################  
