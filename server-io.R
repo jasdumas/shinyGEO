@@ -24,6 +24,10 @@ observeEvent(input$downloadSet,(
   createAlert(session,"ioAlert2",content = "<H4>Current Status</H4><p><strong>Your file has been downloaded!</p>",style="success",dismiss=FALSE)
 ))
 
+vector.it <-function(x) {
+  x = paste0("\"", x, "\"", collapse = ",")
+  paste0("c(", x, ")")
+}
 
 observe({
   add.tab()
@@ -32,19 +36,25 @@ observe({
   if (!is.null(infile)){
     data = try(read.table(infile$datapath, header = TRUE, row.names=1, sep = ","), silent = TRUE)
     if (class(data) %in% "try-error") {
-       createAlert(session,"ioAlert3",content = "Error: file could not be uploaded. This most likely includes a file that is not in the correct format (e.g., not a csv file)" , style="danger",dismiss=TRUE, append = FALSE)
+       createAlert(session,"ioAlert3",content = "Error: file could not be uploaded. This is most likely because the file is not in the correct format (e.g., is not a csv file)" , style="danger",dismiss=TRUE, append = FALSE)
 	return(NULL)
     }
 
     # make sure we have row names #
-    
     check = rownames(data)%in%colnames(exprInput())
 
     if (!any(check)) {
        createAlert(session,"ioAlert3",content = "Error: uploaded file must include sample (GSM) numbers in 1st column" , style="danger",dismiss=TRUE, append = FALSE)
     return(NULL)
-
     }
+
+    # make sure no new row names have been added #
+    check = setdiff(rownames(data), isolate(rownames(values.edit$table)))
+    if (length(check) > 0) {
+       createAlert(session,"ioAlert3",content = "Error: Rows cannot be added. Please remove new rows and re-upload the file" , style="danger",dismiss=TRUE, append = FALSE)
+    return(NULL)
+    }
+
 
     ## summary of changes made, starting with addions and deletions ##
     cols.removed = setdiff(isolate(colnames(values.edit$table)), colnames(data)) 
@@ -72,21 +82,67 @@ observe({
     cols.mod = apply(!check, 2, any)  
     cols.mod = names(which(cols.mod))
  
-    format.it <-function(x) {
+      
+   # generate R code for row removal  ##
+   if (length(rows.removed) > 0) {
+	comment = "## Analyze only a subset of rows ##"
+        isolate(add.graph(comment))
+        v1 = paste0("keep = ", vector.it(rownames(data)))
+	v2 = "m = match(keep, rownames(data.p))"
+        v3 = "data.p = data.p[m, , drop = FALSE]" 
+  	isolate(add.graph(v1))
+  	isolate(add.graph(v2))
+  	isolate(add.graph(v3))
+   }
+
+   # generate R code for new columns ## 
+   if (length(cols.added) > 0) {
+       comment = "## Add column to clinical data table ##"
+       isolate(add.graph(comment))
+       for (col in cols.added) {
+ 	  v = vector.it(data[[col]])
+          v = paste0("data.p[[\"", col, "\"]] = ", v)
+	  isolate(add.graph(v))
+       } 
+   } 
+
+   # generate R code to modify columns #
+   if (length(cols.added) > 0) {
+	comment = "## Modify column in clinical data table ##"
+       isolate(add.graph(comment))
+       for (col in cols.mod) {
+ 	  v = vector.it(data[[col]])
+          v = paste0("data.p[[\"", col, "\"]] = ", v)
+	  isolate(add.graph(v))
+       } 
+   } 
+
+
+    format.it <-function(x, label) {
         x = paste0(x, collapse = ", ")
         if (x=="") {
-		x = "none"
+		return(x)
 	}
-	return (x)
+        paste0("<p>", label, x, "</p>")
     } 
+ 
+    save(cols.added, cols.mod, cols.removed, rows.removed, data, values.edit, file = "hi.RData")
+    cols.added = format.it(cols.added, "Columns added: ")
+    cols.mod = format.it(cols.mod, "Columns modified: ")
+    cols.removed = format.it(cols.removed, "Columns removed: ") 
+    rows.removed = format.it(rows.removed, "Rows removed: ")
 
-     
-    cols.added = paste0("<p> Columns added: ", format.it(cols.added), "</p>")
-    cols.mod = paste0("<p> Columns modified: ", format.it(cols.mod), "</p>")
-    cols.removed = paste0("<p> Columns removed: ", format.it(cols.removed), "</p>")
-    rows.removed = paste0("<p> Rows removed: ", format.it(rows.removed), "</p>")
-    content = "<H4>Current Status</H4><p><strong>File has been uploaded! You can now view your data table!</p>"
-    content = paste0(content, cols.removed, cols.added, cols.mod, rows.removed)
+
+    content = "<H4>Current Status</H4><p><strong>Your file has been uploaded, and you may now view the data table. The following changes have been detected: </p>"
+    changes = paste0(cols.removed, cols.added, cols.mod, rows.removed)
+
+    if (changes=="") {
+	cat("no changes!\n")
+	content = paste0(content, "<p> No changes have been detected </p>")
+    } else {
+	cat("we have changes!\n")
+	content = paste0(content, changes)
+    }
 
     createAlert(session,"ioAlert3",content = content, style="success",dismiss=TRUE, append = FALSE)
     cat("initial data = ", isolate(nrow(values.edit$table)), ", ", isolate(ncol(values.edit$table)), "\n")

@@ -18,6 +18,10 @@ header = dashboardHeader(
   title = uiOutput("shinyTitle"), titleWidth = 350, disable = FALSE 
 )
 
+tmp = header$children[[3]]$children[[2]]
+tmp = gsub("\"#\"", "\"#\" id = \"sidebarToggle\"", tmp)
+header$children[[3]]$children[[2]] = tmp
+
 gse.input = div(style = "display:inline-block; width: 75%",
             selectizeInput('GSE', label = "Accession Number", choices = NULL, width = 275,
               options = list(placeholder = "Please enter a GSE #",
@@ -82,6 +86,8 @@ analyses.common = conditionalPanel(condition = "input.tabs == 'DifferentialExpre
 )
 
 body = dashboardBody(
+  shinyjs::useShinyjs(),
+
   bsAlert("alert1"),
   bsAlert("alert2"),
   uiOutput("test"),
@@ -143,7 +149,7 @@ body = dashboardBody(
   conditionalPanel(condition="$('html').hasClass('shiny-busy')",
         div(style = "position:center; width:100%; height:100; text-align:center",
 #            img(src="PleaseWait.gif", style = "width:50%")
-		"Wait please..."
+		"Please wait..."
        )
     ),
 

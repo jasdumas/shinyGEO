@@ -3,39 +3,39 @@
 observe({
   add.tab()
   cat("observe for survTime and outcome\n")
-
+  
   val1 = input$survTimeUI
   val2 = input$survOutcomeUI
-    
-#colNames = colnames(editClinicalTable())
-colNames = colnames(clinicalDataProcessed())
-
-if (!is.null(colNames) & !is.null(val1) & !is.null(val2)) {
-  vals = colNames[input$clinicalDataForSurvival_columns_selected]
-  cat("vals = ", vals, "\n")
-  if (length(vals) == 1) {
-    val1 = vals[1]
-    val2 = NULL
-  } else if (length(vals) == 2) {
-    val1 = vals[1]
-    val2 = vals[2]
+  
+  #colNames = colnames(editClinicalTable())
+  colNames = colnames(clinicalDataProcessed())
+  
+  if (!is.null(colNames) & !is.null(val1) & !is.null(val2)) {
+    vals = colNames[input$clinicalDataForSurvival_columns_selected]
+    cat("vals = ", vals, "\n")
+    if (length(vals) == 1) {
+      val1 = vals[1]
+      val2 = NULL
+    } else if (length(vals) == 2) {
+      val1 = vals[1]
+      val2 = vals[2]
+    }
   }
-}
-
-output$survTime <- renderUI({
-     selectInput("survTimeUI", "Time", choice = ColumnNames(), selected = val1, multiple = F)
-   })
-
-output$survOutcome <- renderUI({
+  
+  output$survTime <- renderUI({
+    selectInput("survTimeUI", "Time", choice = ColumnNames(), selected = val1, multiple = F)
+  })
+  
+  output$survOutcome <- renderUI({
     selectInput("survOutcomeUI", "Outcome", choice = ColumnNames(), val2, multiple = F)
-})
-
-# this prevents the resetting of the drop-down columns after the action is pressed on the surv modal
-#updateSelectInput(session, "survTimeUI", label = "Time", choice = ColumnNames(), selected = input$survTimeUI )
-#updateSelectInput(session, "survOutcomeUI", label = "Outcome", choice = ColumnNames(), selected = input$survOutcomeUI )
-cat("end observe survTime and survOutcome\n")
-subtract.tab()
-
+  })
+  
+  # this prevents the resetting of the drop-down columns after the action is pressed on the surv modal
+  #updateSelectInput(session, "survTimeUI", label = "Time", choice = ColumnNames(), selected = input$survTimeUI )
+  #updateSelectInput(session, "survOutcomeUI", label = "Outcome", choice = ColumnNames(), selected = input$survOutcomeUI )
+  cat("end observe survTime and survOutcome\n")
+  subtract.tab()
+  
 }) # end of observe for time/outcome
 
 
@@ -64,8 +64,6 @@ calc.columns <- function(this){
   x.time = colnames(this)[apply(this,2,is.time.column)]
   y.outcome = colnames(this)[apply(this,2,is.outcome.column)]
   if(length(x.time) > 1){
-    
-   
     createAlert(session, "warningAlert", alertId = "warn1", title = "Warning: Multiple Time Columns Found",
                 content = paste(c("<strong>Columns Found</strong>:", paste(x.time,collapse=", "),"<br><br> shinyGEO has chosen the best fit.")), style= 'danger', dismiss = TRUE, append = TRUE)
     x.time = x.time[1]
@@ -79,6 +77,21 @@ calc.columns <- function(this){
     createAlert(session, "warningAlert", alertId = "warn2", title = "Warning: Multiple Outcome Columns Found",
                 content = paste(c("<strong>Columns Found</strong>: ", paste(y.outcome,collapse=", "),"<br><br> shinyGEO has chosen best fit.")), style= 'danger', dismiss = TRUE, append = TRUE)
     y.outcome = y.outcome[1]
+  }
+  else if(length(y.outcome) == 0){
+    y.outcome = NA
+  }
+  if(is.na(y.outcome) & is.na(x.time)){
+    createAlert(session,"warningAlert",alertId = "warn3",title = "Warning: No survival information was found!", content = "<p>If you believe this is incorrect, you can review the clinical data and select the appropriate columns. </p>",style= 'danger', dismiss = TRUE, append = TRUE)
+    
+    
+  }
+  else if(is.na(y.outcome) & !is.na(x.time)){
+    createAlert(session,"warningAlert",alertId = "warn3",title = "Warning: No survival outcome columns were found!", content = "<p>If you believe this is incorrect, you can review the clinical data and select the appropriate columns. </p>",style= 'danger', dismiss = TRUE, append = TRUE)
+    
+  }
+  else if(is.na(x.time) & !is.na(y.outcome)){
+    createAlert(session,"warningAlert",alertId = "warn3",title = "Warning: No survival time columns were found!", content = "<p>If you believe this is incorrect, you can review the clinical data and select the appropriate columns. </p>",style= 'danger', dismiss = TRUE, append = TRUE)
   }
   
   ans = c(x.time,y.outcome)
@@ -109,12 +122,12 @@ reduce.columns <- function(time,outcome,this){
     return(ans)
   }
   else{
-  reduced.time = reduce(this[[time]])
-  reduced.outcome = reduce(this[[outcome]])
-  reduced.outcome = replace(reduced.outcome,(reduced.outcome == "NO" | reduced.outcome == "censored"),0)
-  reduced.outcome = replace(reduced.outcome,(reduced.outcome == "YES" | reduced.outcome == "uncensored"),1)
-  ans = list(time = reduced.time, outcome = reduced.outcome)
-  return (ans)
+    reduced.time = reduce(this[[time]])
+    reduced.outcome = reduce(this[[outcome]])
+    reduced.outcome = replace(reduced.outcome,(reduced.outcome == "NO" | reduced.outcome == "censored"),0)
+    reduced.outcome = replace(reduced.outcome,(reduced.outcome == "YES" | reduced.outcome == "uncensored"),1)
+    ans = list(time = reduced.time, outcome = reduced.outcome)
+    return (ans)
   }
 }
 
@@ -143,30 +156,32 @@ main.gen <- function(this,columns.data){
 }
 
 if (AUTOSELECT.SURVIVAL) {
-
-observeEvent(input$autoAnalysis,({
-  print("Column selection and formatting for survival analysis started..")
-  if (is.null(values.edit$table)) return(NULL)
-  this = values.edit$table
-  columns.data = calc.columns(this)
-  main.gen(this,columns.data)
-  print("Column selection and formatting for survival analysis finished..")
-}))
-
-observeEvent(input$autoColumn.time,({
-  print("observe autoColumn.time")
+  
+  observeEvent(input$autoAnalysis,({
+    print("Column selection and formatting for survival analysis started..")
+    if (is.null(values.edit$table)) return(NULL)
+    this = values.edit$table
+    columns.data = calc.columns(this)
+    main.gen(this,columns.data)  
+    
+    
+    print("Column selection and formatting for survival analysis finished..")
+  }))
+  
+  observeEvent(input$autoColumn.time,({
+    print("observe autoColumn.time")
     this = values.edit$table
     if (is.null(values.edit$table)) return(NULL)
     new = reduce.columns(input$autoColumn.time,NA,this)
     time.analysis <<- new$time
     time_both <- data.frame(this[[input$autoColumn.time]],new$time)
-  #  output$timetable <- renderDataTable(time_both)
+    #  output$timetable <- renderDataTable(time_both)
     output$timetable <- DT::renderDataTable({time_both})
-}))
-
-
-observeEvent(input$autoColumn.outcome,({
-  print("observe autoColumn.outcome")
+  }))
+  
+  
+  observeEvent(input$autoColumn.outcome,({
+    print("observe autoColumn.outcome")
     if (is.null(values.edit$table)) return(NULL)
     this = values.edit$table
     selected = input$autoColumn.outcome
@@ -182,33 +197,33 @@ observeEvent(input$autoColumn.outcome,({
     outcome.analysis <<- outcome.new
     updateSelectizeInput(session,"columnEvent1",choices=columnItems,selected=outcome.yes,server=TRUE)
     updateSelectizeInput(session,"columnEvent0",choices=columnItems,selected=outcome.no,server=TRUE)
-
-}))
-
-
-observeEvent(input$genBtn,
-           ({
-	print("observe genBtn\n")
-    	if (is.null(values.edit$table)) return(NULL)
-             output$kmSurvival <- renderPlot({
-               main = paste(input$GSE, geneLabel() , sep = ": ")
-		cat("main = ", main, "\n")
-               return(plot.shiny.km(time = as.double(time.analysis), 
-                                    #death = as.integer(parse.modal()[,2]), 
-                                    death = as.integer(outcome.analysis), 
-                                    x = x(), 
-                                    col = colorsDE3(), title = main))
-               
-             })
-             closeAlert(session,"warn1")
-             closeAlert(session,"warn2")
-             closeAlert(session,"warn3")
-             toggleModal(session,"autogenModal",toggle = "toggle")
-             
-             tags$script(HTML("window.location.href= '/#kmSurvial'"))
-           })
-)
-
+    
+  }))
+  
+  
+  observeEvent(input$genBtn,
+               ({
+                 print("observe genBtn\n")
+                 if (is.null(values.edit$table)) return(NULL)
+                 output$kmSurvival <- renderPlot({
+                   main = paste(input$GSE, geneLabel() , sep = ": ")
+                   cat("main = ", main, "\n")
+                   return(plot.shiny.km(time = as.double(time.analysis), 
+                                        #death = as.integer(parse.modal()[,2]), 
+                                        death = as.integer(outcome.analysis), 
+                                        x = x(), 
+                                        col = colorsDE3(), title = main))
+                   
+                 })
+                 closeAlert(session,"warn1")
+                 closeAlert(session,"warn2")
+                 closeAlert(session,"warn3")
+                 toggleModal(session,"autogenModal",toggle = "toggle")
+                 
+                 tags$script(HTML("window.location.href= '/#kmSurvial'"))
+               })
+  )
+  
 } # end autoselect.survival
 
 

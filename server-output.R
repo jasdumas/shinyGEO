@@ -7,6 +7,14 @@ cat("begin server-output.R\n")
 load("series/series.RData")
 load("platforms/platforms.RData")
 
+
+createAlert(session, "addCodeDEAlert", alertId = "DE-add-alert", title = "", style = "success",
+            content = "R Code for Differential Expression Analysis Added", append = FALSE, dismiss = FALSE) 
+
+createAlert(session, "addCodeSurvAlert", alertId = "Surv-add-alert", title = "", style = "success",
+            content = "R Code for Survival Analysis Added", append = FALSE, dismiss = FALSE) 
+
+
 m = matrix(rnorm(1000), ncol=20)
 rownames(m) = paste0("row", 1:nrow(m))
 
@@ -179,6 +187,7 @@ cat("done create platform alert\n")
 # but only display the number when selected
 # 'value' is what gets returned to server (GSE number)
 ###############################################################
+
 updateSelectizeInput(session, inputId='GSE', label = "Accession Number", server = TRUE,
     choices =  data.frame(label = series.accession, value = series.accession, name = series.description),
     options = list(
@@ -192,7 +201,6 @@ updateSelectizeInput(session, inputId='GSE', label = "Accession Number", server 
       }"
     ))
 )
-
 ################################################
 ### Renders drop-down menu for variables/columns 
 ################################################  
