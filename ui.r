@@ -70,7 +70,7 @@ analyses.common = conditionalPanel(condition = "input.tabs == 'DifferentialExpre
  
        	div(style = "display:inline-block; width: 35%",
 		conditionalPanel(condition = "input.tabs =='SurvivalAnalysis'",
-          		bsButton("autoAnalysis","Select Time/Outcome", style="success"),
+          		bsButton("autoAnalysis","Select Time/Outcome", style="success",disabled = TRUE),
             		genBSModal("autogenModal","Survival Analyses","",size="large")
         	), 
 		conditionalPanel(condition = "input.tabs =='DifferentialExpressionAnalysis' & input.selectedGenes!=''",
@@ -82,10 +82,13 @@ analyses.common = conditionalPanel(condition = "input.tabs == 'DifferentialExpre
 )
 
 body = dashboardBody(
-  bsAlert("alert1"),
-  bsAlert("alert2"),
-  uiOutput("test"),
-  uiOutput("busy"),
+  conditionalPanel(condition = "input.tabs != 'About' & input.tabs != 'Code'",
+                   bsAlert("alert1"),
+                   bsAlert("alert2"),
+                   uiOutput("test"),
+                   uiOutput("busy")
+                   ),
+
 
   summaryBSModal("summaryBSModal","Clinical Data","ClinicalDataBtn", size = "large",  
 

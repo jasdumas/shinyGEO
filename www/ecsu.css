@@ -14,7 +14,16 @@ background-color:transparent;
 
 @media (min-width: 992px){
 
+#shiny-tab-DifferentialExpressionAnalysis {
+position:relative;
+bottom:25px;
 
+}
+#shiny-tab-SurvivalAnalysis{
+position:relative;
+bottom:25px;
+
+}
 #summaryBSModal > .modal-lg {
     width: 1150px;/* 1317px; */
     margin: 10px 0px 10px 70px !important;
@@ -40,6 +49,12 @@ input#fileUpload{
 
 
 
+#tabBut{
+margin-bottom:5px;
+
+}
+
+
 
 #submitButton{
 position:relative;
@@ -52,8 +67,12 @@ bottom:13px;
 
 }
 #autoAnalysis{
-margin-bottom:26px;
+    margin-bottom:27px;
+    position: relative;
+    right: 285px;
+    padding: 6px;
 }
+
 #genBtn{
             position:relative;
             float:right;
@@ -89,7 +108,7 @@ margin-bottom:26px;
 #ClinicalDataBtn{
 	margin-bottom:27px;
 	position:relative;
-	right:40px;
+	right:250px;
 
 }
 #selectedGroups{

@@ -207,7 +207,7 @@ tab.survival.analysis = tabItem("SurvivalAnalysis",
     #tags$div(HTML("<hr style = \"background-color: red; height:4px\">")), 
     #uiOutput("SurvMessage"),
         summaryBSModal("summaryBSModal","Clinical Data Summary",""),
-        actionButton("formatDEButton2", "Format Graph"), # add on
+        actionButton("formatDEButton2", "Format Graph",disabled=TRUE), # add on
         formatBSModal("Format2", "Format", "formatDEButton2", applyID = "applyFormatDE2", size = "large", htmlOutput("formatDE2")),
         HTML("<button id='Survadd' type='button' class='btn btn-info action-button'>Save R Code</button>"),                                   
         bsModal("addCodeSurvModal", "R Code Added", "Survadd", size = "small",
