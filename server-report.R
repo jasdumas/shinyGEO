@@ -243,7 +243,7 @@ if (identical(survComment, survComment)) {
 observeEvent(input$Enter, {
   if (TRACE) cat("In report Append Observe for Find & Replace...\n")
   
-  find.repace <- paste0("# Find and Replace of Clinical Data
+  find.replace <- paste0("# Find and Replace of Clinical Data
                         find.str = as.character(\"",input$find,"\")
                         column.num = as.character(\"",input$drop2,"\")
                         replace.str = as.character(\"",input$replace, "\")
