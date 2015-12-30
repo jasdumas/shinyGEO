@@ -26,6 +26,7 @@ values.edit <- reactiveValues(table = NULL, platformGeneColumn = NULL, original 
 reproducible <-reactiveValues(code = NULL, report = NULL)
 KM <-reactiveValues(eventNames = NULL, outcome = NULL)
 
+
 ### functions to append/aggregate a new line to the aceEditor
 add.line <-function(line) {
     reproducible$code = paste(isolate(reproducible$code), line, sep = "\n")

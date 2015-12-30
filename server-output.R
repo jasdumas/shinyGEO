@@ -261,8 +261,49 @@ output$selectedGroups <- renderUI({
 ##############################
 ## Expression Profiles plot 
 ##############################
-if (EXPRESSION.PLOT) { 
-output$exProfiles <- renderPlot({
+
+# Keep for testing for now
+expression22Plot <-reactive({
+	cat("in expression Plot...\n")
+	isolate(closeAlert(session, "GSE-begin-alert"))
+	isolate(closeAlert(session, "GPL-alert"))
+
+  	createAlert(session, "alert1", alertId = "Expression-alert", title = "Current Status", 
+	style = "info", content = "Generating boxplot of expression data", 
+		append = FALSE, dismiss = FALSE) 
+#  closeAlert(session, "Expression-alert")
+
+         df <- data.frame(gp = factor(rep(letters[1:3], each = 10)),
+                      y = rnorm(30))
+     # Compute sample mean and standard deviation in each group
+     library(plyr)
+     ds <- ddply(df, .(gp), summarise, mean = mean(y), sd = sd(y))
+     
+     # Declare the data frame and common aesthetics.
+     # The summary data frame ds is used to plot
+     # larger red points in a second geom_point() layer.
+     # If the data = argument is not specified, it uses the
+     # declared data frame from ggplot(); ditto for the aesthetics.
+     g = ggplot(df, aes(x = gp, y = y)) +
+        geom_point() +
+        geom_point(data = ds, aes(y = mean),
+                   colour = 'red', size = 3)
+	isolate(ALERTS$analysisAlert <- TRUE)
+        return(g)
+})
+
+
+#observe({
+#   alert = ALERTS$analysisAlert
+#   if (alert) {
+#  	createAlert(session, "alert1", alertId = "Analysis-alert", title = "Please select an Analysis", style = "success",
+#	content = "Gene expression profiles have been downloaded successfully. Please select either a Differential Expression Analysis or a Survival Analysis from the sidebar to continue", append = FALSE)
+#    isolate(ALERTS$analysisAlert <- FALSE)
+#    }
+
+#})
+
+expressionPlot <-reactive({
   cat("\n\nrendering profiles...\n")
 
   # Return max 30 exp. samples if there is alot of samples to make the determination easier = unclutterd graphics
@@ -285,19 +326,16 @@ output$exProfiles <- renderPlot({
     title.detail = " samples"
   }
   
-  # Changes y-zxis label if radio choices change
-  if (input$radio == 1 | input$radio == 2) {
-     y.label = "log2 Expression"       
-  } else {
-    y.label = "Expression"
-  }
-  
+  y.label = "log2 expression"  
 
   cat("create expression alert\n")
-  createAlert(session, "alert1", alertId = "Expression-alert", title = "Current Status", style = "info",
-               content = "Generating boxplot of expression data", append = FALSE, dismiss = TRUE) 
 
-  par(mar=c(2+round(max(nchar(sampleNames(dataInput())))/2),4,2,1))
+  isolate(closeAlert(session, "GSE-begin-alert"))
+  isolate(closeAlert(session, "GPL-alert"))
+  createAlert(session, "alert1", alertId = "Expression-alert", title = "Current Status", style = "info",
+               content = "Boxplots of the expression profiles are being generated below. When complete, you may select Differential Expression Analysis or Survival Analysis from the sidebar to continue", append = FALSE, dismiss = FALSE) 
+
+  #par(mar=c(2+round(max(nchar(sampleNames(dataInput())))/2),4,2,1))
   title <- paste(isolate(input$GSE), '/', isolate(input$platform), title.detail, sep ='') # need 
  
   cat("expression alert created\n") 
@@ -314,18 +352,17 @@ output$exProfiles <- renderPlot({
                 labs(title = title, y = y.label, x = "") + 
                 theme(axis.text.x = element_text(angle = 90, hjust = 1))
   
-  print(exp.prof.plot)
-
   cat("close expression alert\n")
-  #closeAlert(session, "Expression-alert")
+  return(exp.prof.plot)
+})
 
-  # Analysis-alert causes server to get stuck on Safari, when append = FALSE
-  # This does not happen on Chrome / Firefox. For now, set append = TRUE  
-  createAlert(session, "alert1", alertId = "Analysis-alert", title = "Please select an Analysis", style = "success",
-	content = "Gene expression profiles have been downloaded successfully. Please select either a Differential Expression Analysis or a Survival Analysis from the sidebar to continue", append = TRUE)
-  }
- ) 
-}
+
+if (EXPRESSION.PLOT) { 
+  output$exProfiles <- renderPlot({print(expressionPlot())})
+} # end EXPRESSION.PLOT
+
+
+
 
 if (DE.PLOT) {
   observe({
