@@ -3,6 +3,10 @@
 #############################################################################
 cat("begin server-reactives.R\n")
 
+shinyjs::onclick("sidebarToggle", 
+#  cat("refreshing display...\n")
+)
+
 LAST.TAB = "Home"
 
 createAlert(session, "alert0", alertId = "Welcome-alert", title = "shinyGEO", style = "danger",
@@ -22,17 +26,19 @@ values.edit <- reactiveValues(table = NULL, platformGeneColumn = NULL, original 
 reproducible <-reactiveValues(code = NULL, report = NULL)
 KM <-reactiveValues(eventNames = NULL, outcome = NULL)
 
+
 ### functions to append/aggregate a new line to the aceEditor
 add.line <-function(line) {
     reproducible$code = paste(isolate(reproducible$code), line, sep = "\n")
 }
-
 
 ################################
 # Tab Observers 
 ################################
 observeEvent(input$tabs, {
   cat("tab change...\n")
+
+
   if (input$tabs == "FullDataTable") {
 	toggleModal(session, "summaryBSModal", "toggle")
         updateTabItems(session, "tabs", LAST.TAB) 

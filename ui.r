@@ -18,6 +18,10 @@ header = dashboardHeader(
   title = uiOutput("shinyTitle"), titleWidth = 350, disable = FALSE 
 )
 
+tmp = header$children[[3]]$children[[2]]
+tmp = gsub("\"#\"", "\"#\" id = \"sidebarToggle\"", tmp)
+header$children[[3]]$children[[2]] = tmp
+
 gse.input = div(style = "display:inline-block; width: 75%",
             selectizeInput('GSE', label = "Accession Number", choices = NULL, width = 275,
               options = list(placeholder = "Please enter a GSE #",
@@ -82,6 +86,7 @@ analyses.common = conditionalPanel(condition = "input.tabs == 'DifferentialExpre
 )
 
 body = dashboardBody(
+<<<<<<< HEAD
   conditionalPanel(condition = "input.tabs != 'About' & input.tabs != 'Code'",
                    bsAlert("alert1"),
                    bsAlert("alert2"),
@@ -90,6 +95,7 @@ body = dashboardBody(
                    ),
 
 
+  shinyjs::useShinyjs(),
   summaryBSModal("summaryBSModal","Clinical Data","ClinicalDataBtn", size = "large",  
 
   tabsetPanel(

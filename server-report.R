@@ -13,12 +13,32 @@ observeEvent(reproducible$report, {
 })
 
 
+observeEvent(input$reportBtn, {
+      cat("generating report\n")
+      test.file = "reports/test.R"
+      createAlert(session, "reportAlert", alertId = "report-alert", title = "Generating Report...", 
+	style = "info", content = "Your report is being generated (this may take 1-2 minutes)", 
+	dismiss = FALSE) 
+      cat(reproducible$report, file = test.file)
+      rmarkdown::render(test.file)
+      createAlert(session, "reportAlert", alertId = "report-alert2", title = "Generating Report...", 
+	style = "success", content = "Your report has been generated", append = FALSE, 
+	dismiss = FALSE)
+      toggleModal(session, "reportModal", "close")
+        system("open reports/test.html")
+ 
+})
+
 ######################################
 # Initial Code Append to Report
 ######################################
 observeEvent(profiles(),  {
   cat("observe profiles\n")
   if (TRACE) cat("In Initial...\n")
+  GSE = input$GSE
+  if (GSE == "") {
+    GSE = strsplit(names(GEO.test),"-")[[1]][1]
+  }
   initialCode <- paste0(
 "## Load required packages ##
 library(GEOquery)
@@ -27,7 +47,7 @@ library(survival)
 library(ggplot2)
 
 ## Download data from GEO ##
-GSE = \"", input$GSE, "\"
+GSE = \"", GSE, "\"
 GPL = \"", Platforms()[platformIndex()], "\"
  
 data.series = getGEO(GEO = GSE, AnnotGPL = FALSE, getGPL = FALSE)
