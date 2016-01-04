@@ -50,7 +50,7 @@ input#fileUpload{
 
 
 #tabBut{
-margin-bottom:5px;
+margin-top:5px;
 
 }
 
@@ -69,7 +69,7 @@ bottom:13px;
 #autoAnalysis{
     margin-bottom:27px;
     position: relative;
-    right: 285px;
+    right: 25px;
     padding: 6px;
 }
 
