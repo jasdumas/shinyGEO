@@ -6,7 +6,7 @@ output$downloadSet<- downloadHandler(
     # This function returns a string which tells the client
     # browser what name to use when saving the file.
     filename = function() {
-      paste("shinyGEO-dataset", "csv", sep = ".")
+      paste(input$GSE,"/",input$platform,"-",Sys.time(),"-clinical", ".csv", sep = "")
    },
     
     # This function should write data to a file given to it by
