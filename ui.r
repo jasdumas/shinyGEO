@@ -113,13 +113,13 @@ body = dashboardBody(
 	tabPanel("Data I/O",
 	      fluidRow(
 	        column(12,
-	               
-	               bsAlert("ioAlert"),
+	               bsAlert("ioAlert1"),
 	               bsAlert("ioAlert2"),
 	               bsAlert("ioAlert3")
 	               )
-	        
 	      ),
+
+
 	      fluidRow(
 	        column(5,
 	               tags$h4(class="ioTitle","Download Dataset"),

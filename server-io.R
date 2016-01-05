@@ -1,12 +1,16 @@
 
-createAlert(session,"ioAlert",content = "<H4>Directions</H4><p>1. Download the current clinical data you are working with, it will be saved in your 'Downloads' folder.<br>2. Edit the dataset, then save your changes.<br>3. Upload your dataset back.</p>",dismiss=FALSE)
+createAlert(session,"ioAlert1",content = "<H4>Directions</H4><p>1. Download the current clinical data you are working with, it will be saved in your 'Downloads' folder.<br>2. Edit the dataset, then save your changes.<br>3. Upload your dataset back.</p>",dismiss=FALSE)
 # start clinical data iotab button events
 output$downloadSet<- downloadHandler(
     
     # This function returns a string which tells the client
     # browser what name to use when saving the file.
     filename = function() {
-      paste(input$GSE,"/",input$platform,"-",Sys.time(),"-clinical", ".csv", sep = "")
+      file = paste(input$GSE,"_",input$platform,"_",Sys.time(),"-clinical", ".csv", sep = "")
+	file = gsub(":", "-",file)
+  msg = paste0("<H4>Current Status</H4><p><strong>The clinical data has been downloaded to the following file: ", file, "</p>")
+  createAlert(session,"ioAlert2",content = msg, style="success",dismiss=FALSE)
+        return(file)
    },
     
     # This function should write data to a file given to it by
@@ -20,9 +24,6 @@ output$downloadSet<- downloadHandler(
     }
     
 )
-observeEvent(input$downloadSet,(
-  createAlert(session,"ioAlert2",content = "<H4>Current Status</H4><p><strong>Your file has been downloaded!</p>",style="success",dismiss=FALSE)
-))
 
 vector.it <-function(x) {
   x = paste0("\"", x, "\"", collapse = ",")
