@@ -96,7 +96,7 @@ ColumnNames <- reactive({
 ###########################################
 observe({  # observe needed since data object is a reactive function
   cat("observe for clinicalDataSummary\n") 
- 
+
   output$clinicalDataSummary <- DT::renderDataTable({ datatable(as.data.frame(clinicalDataSummary()), rownames = TRUE,  
                                                                  extensions = 'ColReorder',
                                                                  options = list(#dom = 'Rlfrtip', ajax = list(url = action), 
@@ -106,10 +106,32 @@ observe({  # observe needed since data object is a reactive function
     
   })
 
-  
-#  dd = clinicalDataSummary()
-#  action = dataTableAjax(session, data=dd, rownames = TRUE) # for the row_output as characters
-  
+
+  output$clinicalDataSummarySummary <- DT::renderDataTable({ datatable(as.data.frame(clinicalDataSummary()[,-1, drop = FALSE]), rownames = TRUE,  
+                          options = list(dom = 'Rlfrtip',  
+ 	                         paging = F, scrollY = "400px",
+				  searchHighlight = TRUE,
+				  columnDefs = list(list(
+                                  	targets = 1,#: ncol(clinicalDataSummary()[-1, drop = FALSE]), # applies to the entire table
+                                        #width = "200px",
+                                        render = JS(
+                                        	"function(data, type, row, meta) {",
+                                                "return type == 'display' && data.length > 300 ?",
+                                                "'<span title=\"' + data + '\">' + data.substr(0, 300) + '...</span>' : data;",
+                                        "}")
+                                   ))
+			  ),
+			  filter = 'none',
+			  caption = HTML("<b> Summary of clinical data </b>"), 
+                          selection = 'none') 
+    
+  })
+
+
+ 
+
+
+ 
 })
 
 ###########################################################################################

@@ -33,6 +33,35 @@ opp = list(dom = 'Rlfrtip', #ajax = list(url = action1),
                        ))
 ) 
 
+output$summary <-renderUI({
+  createAlert(session, "expAlert", alertId = "Expression-alert", title = "Generating expression plot...", style = "info",
+	content = "Please wait", append = FALSE)
+  x = exprInput()
+  if (is.null(x)) {
+	return(NULL)
+  }
+  createAlert(session, "alert1", alertId = "Analysis-alert", title = "Choose an analysis from the sidebar to continue", style = "success",
+               content = "Your selected dataset has been downloaded successfully, and is summarized below. <p>Please select either Differential Expression Analysis or Survival Analysis from the sidebar to continue</p>", append = FALSE, dismiss = TRUE) 
+  
+  p.tag <-function(x) {
+	for (i in 1:length(x)){ 
+		x[i] = paste0("<p>",x[i], "</p>")	
+	} 
+        paste0(x, collapse = "") 
+  }  
+
+  gse = paste0("<b>", input$GSE, "/", input$platform,  
+	" (", ncol(x), " samples, ", nrow(x), " probes)</b>")
+
+  gpl = paste0("Note: Gene symbols are currently retrieved using the following column: ", values.edit$platformGeneColumn)
+  
+  msg = p.tag(c(gse, gpl))
+	
+  HTML(msg)
+
+
+})
+
 
 ## drop down boxes for event = yes and event = no
 output$eventYes <- renderUI({  
@@ -171,8 +200,11 @@ if (!is.null(pl)) {
 
 x = paste(x, collapse = "<br>")
 cat("create platform alert\n")
-createAlert(session, "alert1", alertId = "GPL-alert", title = "Please select a platform to continue", style = "success",
+
+if (!TEST.DATA) {
+  createAlert(session, "alert1", alertId = "GPL-alert", title = "Please select a platform to continue", style = "success",
             content = x, append = TRUE, dismiss = FALSE) 
+}
 }
 cat("done create platform alert\n")
 })
@@ -330,15 +362,12 @@ expressionPlot <-reactive({
 
   cat("create expression alert\n")
 
-  isolate(closeAlert(session, "GSE-begin-alert"))
-  isolate(closeAlert(session, "GPL-alert"))
-  createAlert(session, "alert1", alertId = "Expression-alert", title = "Current Status", style = "info",
-               content = "Boxplots of the expression profiles are being generated below. When complete, you may select Differential Expression Analysis or Survival Analysis from the sidebar to continue", append = FALSE, dismiss = FALSE) 
+#  isolate(closeAlert(session, "GSE-begin-alert"))
+#  isolate(closeAlert(session, "GPL-alert"))
 
   #par(mar=c(2+round(max(nchar(sampleNames(dataInput())))/2),4,2,1))
   title <- paste(isolate(input$GSE), '/', isolate(input$platform), title.detail, sep ='') # need 
  
-  cat("expression alert created\n") 
   #library(tidyr) # possible move from reshape2 to tidyr
   #x1 = gather(data = x, na.rm =TRUE)
   fixed.df <- as.data.frame(x=x, stringsAsFactors = FALSE)
@@ -351,11 +380,17 @@ expressionPlot <-reactive({
                 geom_boxplot(outlier.colour = "green") +
                 labs(title = title, y = y.label, x = "") + 
                 theme(axis.text.x = element_text(angle = 90, hjust = 1))
-  
-  cat("close expression alert\n")
+  isolate(values.edit$profilesPlot <- TRUE) 
+  #closeAlert(session, "Expression-alert")
   return(exp.prof.plot)
 })
 
+observe({
+  if (values.edit$profilesPlot) {
+    closeAlert(session, "Expression-alert")
+    values.edit$profilePlot = FALSE
+  }
+})
 
 if (EXPRESSION.PLOT) { 
   output$exProfiles <- renderPlot({print(expressionPlot())})

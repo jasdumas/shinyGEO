@@ -11,15 +11,23 @@ tab.expression = tabItem(tabName = "Home",
 		#	actionButton("KMbutton", "Survival Analysis", class = "btn-info"),
  		#	actionButton("exprAdd", "Save R Code", class = "btn-info"),
 		#	#HTML("<button id='exprAdd' type='button' class='btn btn-info action-button'>Save R Code</button>"),
-			a(id = "normLink", "Normalization Options",style="cursor:pointer")
+			uiOutput("summary"),
+			a(id = "normLink", "(View expression profiles)",style="cursor:pointer"),
+  			a(id = "platLink", "(View platform data)",style="cursor:pointer") 
 		),
-                       plotOutput("exProfiles"), 
-		bsModal("normalalizationModal", "Normalization Options", "normLink", size = "small",
+
+  #                     plotOutput("exProfiles"), 
+		bsModal("normalalizationModal", "Expression Profiles", "normLink", size = "large",
                        radioButtons("radio", label = "Select a method of log transformation to apply to the data", 
                                     choices = list("Auto-Detect" = 1, "Yes" = 2, "No" = 3), 
-                                    selected = 1, inline = TRUE)
+                                    selected = 1, inline = TRUE),
+			bsAlert("expAlert"),
+                       plotOutput("exProfiles") 
 		)
-                    ) 
+
+                ), 
+		p(), p(), HTML("<hr style = \"width:30px\">"),
+		DT::dataTableOutput("clinicalDataSummarySummary")
              
              )
 
