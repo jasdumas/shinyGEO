@@ -90,6 +90,16 @@ ColumnNames <- reactive({
 })
 
 
+observe({
+  output$platformData <- DT::renderDataTable({ datatable(as.data.frame(platInfo()), rownames = FALSE,  
+                                                                 extensions = 'ColReorder',
+                                                                 options = list(#dom = 'Rlfrtip', ajax = list(url = action), 
+                                                                                paging = TRUE,  searchHighlight = FALSE, 
+									        scrollX = "auto", autoWidth = TRUE),
+                                                                 filter = 'none', 
+                                                                 selection = 'none') 
+  })
+})
 
 ############################################
 ## displays the Clinical Summary Data Table
@@ -100,7 +110,8 @@ observe({  # observe needed since data object is a reactive function
   output$clinicalDataSummary <- DT::renderDataTable({ datatable(as.data.frame(clinicalDataSummary()), rownames = TRUE,  
                                                                  extensions = 'ColReorder',
                                                                  options = list(#dom = 'Rlfrtip', ajax = list(url = action), 
-                                                                                paging = F,  searchHighlight = TRUE),
+                                                                                paging = F,  searchHighlight = TRUE,
+										autoWidth = TRUE, scrollY = "400px"),
                                                                  filter = 'none', 
                                                                  selection = 'single') 
     

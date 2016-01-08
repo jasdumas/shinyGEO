@@ -14,17 +14,19 @@ tab.expression = tabItem(tabName = "Home",
 			uiOutput("summary"),
 			a(id = "normLink", "(View expression profiles)",style="cursor:pointer"),
   			a(id = "platLink", "(View platform data)",style="cursor:pointer") 
-		),
+		)
 
-  #                     plotOutput("exProfiles"), 
+		),
 		bsModal("normalalizationModal", "Expression Profiles", "normLink", size = "large",
                        radioButtons("radio", label = "Select a method of log transformation to apply to the data", 
                                     choices = list("Auto-Detect" = 1, "Yes" = 2, "No" = 3), 
                                     selected = 1, inline = TRUE),
 			bsAlert("expAlert"),
                        plotOutput("exProfiles") 
-		)
+		),
 
+		bsModal("platformModal", "Platform annotation", "platLink", size = "large",
+			DT::dataTableOutput("platformData")
                 ), 
 		p(), p(), HTML("<hr style = \"width:30px\">"),
 		DT::dataTableOutput("clinicalDataSummarySummary")
