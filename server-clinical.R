@@ -91,13 +91,14 @@ ColumnNames <- reactive({
 
 
 observe({
-  output$platformData <- DT::renderDataTable({ datatable(as.data.frame(platInfo()), rownames = FALSE,  
-                                                                 extensions = 'ColReorder',
-                                                                 options = list(#dom = 'Rlfrtip', ajax = list(url = action), 
-                                                                                paging = TRUE,  searchHighlight = FALSE, 
-									        scrollX = "auto", autoWidth = TRUE),
-                                                                 filter = 'none', 
-                                                                 selection = 'none') 
+  output$platformData <- DT::renderDataTable({ datatable(as.data.frame(platInfo()[1:100,]), rownames = FALSE,  
+                                 # extensions = 'ColReorder',
+   				  options = list(dom = 'Rlfrtip', 
+                                 	paging = TRUE, scrollY = "400px", autoWidth = TRUE,
+                                  	searchHighlight = TRUE, scrollX = "auto"
+                          	  ),
+                          	  filter = 'none', 
+                          	  selection = 'none') 
   })
 })
 
@@ -127,8 +128,8 @@ observe({  # observe needed since data object is a reactive function
                                         #width = "200px",
                                         render = JS(
                                         	"function(data, type, row, meta) {",
-                                                "return type == 'display' && data.length > 300 ?",
-                                                "'<span title=\"' + data + '\">' + data.substr(0, 300) + '...</span>' : data;",
+                                                "return type == 'display' && data.length > 150 ?",
+                                                "'<span title=\"' + data + '\">' + data.substr(0, 150) + '...</span>' : data;",
                                         "}")
                                    ))
 			  ),
