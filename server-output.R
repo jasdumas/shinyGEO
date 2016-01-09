@@ -53,13 +53,17 @@ output$summary <-renderUI({
   gse = paste0("<b>", input$GSE, "/", input$platform,  
 	" (", ncol(x), " samples, ", nrow(x), " probes)</b>")
 
-  gpl = paste0("Note: Gene symbols are currently retrieved using the following column: ", values.edit$platformGeneColumn)
   
-  msg = p.tag(c(gse, gpl))
+  msg = p.tag(gse)
 	
   HTML(msg)
 
 
+})
+
+output$GeneColumn <- renderUI({
+  gpl = paste0("Currently searching by probe / ", values.edit$platformGeneColumn)
+  HTML(gpl)
 })
 
 
@@ -124,8 +128,11 @@ observe({
       )
     )
 
+
+  label =  paste0("Select Probe (You May Search By  ", values.edit$platformGeneColumn, ")")
+
   updateSelectizeInput(session, "selectGenes", 
-	label = "Select Gene", server = TRUE, 
+	label = label, server = TRUE, 
  	choices = geneNames(), options = options 
   )
   cat("done observing for selectizeInput\n")

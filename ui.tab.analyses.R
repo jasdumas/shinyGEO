@@ -237,28 +237,13 @@ tab.survival.analysis = tabItem("SurvivalAnalysis",
 
 
 
-analyses.common = conditionalPanel(condition = "input.tabs == 'Differential Expression Analysis' | input.tabs == 'Survival Analysis'",
-    
-        selectizeInput('selectGenes', "Select Gene", choices = NULL),
-        conditionalPanel(condition = "input.tabs =='Survival Analysis'",
-            genBSModal("autogenModal","Survival Analyses","",size="large"),
-            
-            style = "display:inline-block"
-        ),
-         
-        #uiOutput('selectGenes'),
-	    hr()
-   
-) 
-
-
 #####################################################################
 # The complete analyses tab
 #####################################################################
-tab.analyses =  navbarMenu("Analyses", icon = icon("bar-chart-o"),
-                         analyses.common,
-                         tab.DE.analysis,
-                         tab.survival.analysis    
-)
+#tab.analyses =  navbarMenu("Analyses", icon = icon("bar-chart-o"),
+#                         analyses.common,
+#                         tab.DE.analysis,
+#                         tab.survival.analysis    
+#)
 
 

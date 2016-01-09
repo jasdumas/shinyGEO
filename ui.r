@@ -71,16 +71,23 @@ analyses.common = conditionalPanel(condition = "input.tabs == 'DifferentialExpre
         div(style = "display:inline-block; width: 40%",
          	selectizeInput('selectGenes', "Select Gene/Probe", choices = NULL)
 	),
+
+    div(style = "display:inline-block; width: 25%",
+    		a(id = "platLink", "(View platform data)",
+			style="cursor:pointer")
+    ),
+       bsModal("platformModal", "Platform annotation", 
+                       "platLink", size = "large",
+                       DT::dataTableOutput("platformData")
+        ), 
+
+	
  
        	div(style = "display:inline-block; width: 35%",
 		conditionalPanel(condition = "input.tabs =='SurvivalAnalysis'",
           		bsButton("autoAnalysis","Select Time/Outcome", style="success",disabled = TRUE),
             		genBSModal("autogenModal","Survival Analyses","",size="large")
-        	), 
-		conditionalPanel(condition = "input.tabs =='DifferentialExpressionAnalysis' & input.selectedGenes!=''",
-          		bsButton("ClinicalDataBtn","View Clinical Data", style="success") #,
-          		#bsButton("ClinicalDataBtn2","View Clinical Data", style="success")
-        	) 
+        	)
 	),
             hr()
 )

@@ -1,6 +1,6 @@
-  ############################################################
-              # Expression Profiles
-              ############################################################
+############################################################
+# Expression Profiles
+############################################################
               ### add a contional panel that only show this once loaded
 tab.expression = tabItem(tabName = "Home",
 		 conditionalPanel(condition = "output.sidebarDisplay=='ALL'",
@@ -15,8 +15,7 @@ tab.expression = tabItem(tabName = "Home",
 			),
 			div(class = 'panel-body',
 		  		uiOutput("summary"),
-		 	  	a(id = "normLink", "(View expression profiles)",style="cursor:pointer"),
-  			  	a(id = "platLink", "(View platform data)",style="cursor:pointer")
+		 	  	a(id = "normLink", "(View expression profiles)",style="cursor:pointer")
 			)
 		)
 
@@ -29,9 +28,6 @@ tab.expression = tabItem(tabName = "Home",
                        plotOutput("exProfiles") 
 		),
 
-		bsModal("platformModal", "Platform annotation", "platLink", size = "large",
-			DT::dataTableOutput("platformData")
-                ), 
 #		p(), p(), HTML("<hr style = \"width:30px\">"),
 		DT::dataTableOutput("clinicalDataSummarySummary")
 )
