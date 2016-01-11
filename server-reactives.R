@@ -22,7 +22,7 @@ createAlert(session, "alert1", alertId = "GSE-begin-alert",
 ###################################################
 # Edit table reactiveValues()
 ###################################################
-values.edit <- reactiveValues(table = NULL, platformGeneColumn = NULL, original = NULL, log2 = FALSE)
+values.edit <- reactiveValues(table = NULL, platformGeneColumn = NULL, original = NULL, log2 = FALSE, profilesPlot = FALSE)
 reproducible <-reactiveValues(code = NULL, report = NULL)
 KM <-reactiveValues(eventNames = NULL, outcome = NULL)
 
@@ -204,9 +204,10 @@ platInfo <- reactive({
 ")
   add.line(code)
   closeAlert(session, "GPL-alert")
-  createAlert(session, "alert1", alertId = "GPL-alert", title = "Current Status", style = "info",
+  if (!TEST.DATA) {
+    createAlert(session, "alert1", alertId = "GPL-alert", title = "Current Status", style = "info",
               content = "Downloading platform (GPL) data from GEO", append = TRUE, dismiss = FALSE) 
-  
+  }
   a = isolate(Platforms())
   b = isolate(platformIndex())
   cat("Platforms() = ", a, "\n")

@@ -44,8 +44,8 @@ observe({
 ##
 calc.columns <- function(this){
   # First need to grep the first row of the data, then lapply a function that will return true for
-  time.pattern = c("distant-relapse free survival","time","survival \\(mo\\)")
-  outcome.pattern = c("distant-relapse event","outcome","dead of disease","dss censor","os censor")
+  time.pattern = c("distant-relapse free survival","time","survival \\(mo\\)", "survival month")
+  outcome.pattern = c("distant-relapse event","outcome","dead of disease","dss censor","os censor","overall survival", "cancer specific survival", "survival")
   
   is.time.column <- function(x){
     ans = grepl(paste(time.pattern,collapse="|"),x)
@@ -109,8 +109,8 @@ reduce.columns <- function(time,outcome,this){
   }
   else if(is.na(time)){
     reduced.outcome = reduce(this[[outcome]])
-    reduced.outcome = replace(reduced.outcome,(reduced.outcome == "NO" | reduced.outcome == "censored"),0)
-    reduced.outcome = replace(reduced.outcome,(reduced.outcome == "YES" | reduced.outcome == "uncensored"),1)
+    reduced.outcome = replace(reduced.outcome,(reduced.outcome == "NO" | reduced.outcome == "censored" | reduced.outcome == "survival"),0)
+    reduced.outcome = replace(reduced.outcome,(reduced.outcome == "YES" | reduced.outcome == "uncensored" | reduced.outcome == "death"),1)
     ans = list(outcome = reduced.outcome)
     return (ans)
     
@@ -173,6 +173,7 @@ if (AUTOSELECT.SURVIVAL) {
     this = values.edit$table
     if (is.null(values.edit$table)) return(NULL)
     new = reduce.columns(input$autoColumn.time,NA,this)
+    cat("selected = ", input$autoColumn.time, "\n")
     time.analysis <<- new$time
     time_both <- data.frame(this[[input$autoColumn.time]],new$time)
     #  output$timetable <- renderDataTable(time_both)

@@ -43,5 +43,17 @@ $('.nav-tabs > li:nth-child(1)').click(function(event){
 });
 
 
+$('#selectGenes').parent().click(function(event){
+$('#autoAnalysis').removeAttr("disabled");
+
+});
+
+$('#autoAnalysis').click(function(event){
+$('#formatDEButton2').removeAttr("disabled");
+
+});
+
+
+
 }); 
 

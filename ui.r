@@ -58,7 +58,7 @@ sidebar = dashboardSidebar(width = 350,
     menuItem("Home", tabName = "Home", icon = icon("home")),
 		menuItem("Differential Expression Analysis", tabName = "DifferentialExpressionAnalysis", icon = icon("flask")),
 		menuItem("Survival Analysis", tabName = "SurvivalAnalysis", icon = icon("life-ring")),
-		menuItem("Full Data Table", tabName = "FullDataTable", icon = icon("table")),
+		menuItem("View Clinical Data Table", tabName = "FullDataTable", icon = icon("table")),
 		#menuItem("Clinical Data Summary", tabName = "ClinicalDataSummary", icon = icon("table")),
 		menuItem("Code", tabName = "Code", icon = icon("code")),
 		menuItem("About", tabName = "About", icon = icon("info-circle"))
@@ -71,28 +71,37 @@ analyses.common = conditionalPanel(condition = "input.tabs == 'DifferentialExpre
         div(style = "display:inline-block; width: 40%",
          	selectizeInput('selectGenes', "Select Gene/Probe", choices = NULL)
 	),
+
+    div(style = "display:inline-block; width: 25%",
+    		a(id = "platLink", "(View platform data)",
+			style="cursor:pointer")
+    ),
+       bsModal("platformModal", "Platform annotation", 
+                       "platLink", size = "large",
+                       DT::dataTableOutput("platformData")
+        ), 
+
+	
  
        	div(style = "display:inline-block; width: 35%",
 		conditionalPanel(condition = "input.tabs =='SurvivalAnalysis'",
-          		bsButton("autoAnalysis","Select Time/Outcome", style="success"),
+          		bsButton("autoAnalysis","Select Time/Outcome", style="success",disabled = TRUE),
             		genBSModal("autogenModal","Survival Analyses","",size="large")
-        	), 
-		conditionalPanel(condition = "input.tabs =='DifferentialExpressionAnalysis' & input.selectedGenes!=''",
-          		bsButton("ClinicalDataBtn","View Clinical Data", style="success") #,
-          		#bsButton("ClinicalDataBtn2","View Clinical Data", style="success")
-        	) 
+        	)
 	),
             hr()
 )
 
 body = dashboardBody(
+  conditionalPanel(condition = "input.tabs != 'About' & input.tabs != 'Code'",
+                   bsAlert("alert1"),
+                   bsAlert("alert2"),
+                   uiOutput("test"),
+                   uiOutput("busy")
+                   ),
+
+
   shinyjs::useShinyjs(),
-
-  bsAlert("alert1"),
-  bsAlert("alert2"),
-  uiOutput("test"),
-  uiOutput("busy"),
-
   summaryBSModal("summaryBSModal","Clinical Data","ClinicalDataBtn", size = "large",  
 
   tabsetPanel(
@@ -111,13 +120,13 @@ body = dashboardBody(
 	tabPanel("Data I/O",
 	      fluidRow(
 	        column(12,
-	               
-	               bsAlert("ioAlert"),
+	               bsAlert("ioAlert1"),
 	               bsAlert("ioAlert2"),
 	               bsAlert("ioAlert3")
 	               )
-	        
 	      ),
+
+
 	      fluidRow(
 	        column(5,
 	               tags$h4(class="ioTitle","Download Dataset"),

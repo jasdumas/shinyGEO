@@ -25,6 +25,7 @@ library(shinyAce)
 library(knitr)
 library(rmarkdown)
 library(RCurl)
+library(shinyjs)
 
 source("stripchart2.R")
 source("plot.shiny.km.R")

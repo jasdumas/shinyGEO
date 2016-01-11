@@ -90,26 +90,60 @@ ColumnNames <- reactive({
 })
 
 
+observe({
+  output$platformData <- DT::renderDataTable({ datatable(as.data.frame(platInfo()[1:100,]), rownames = FALSE,  
+                                 # extensions = 'ColReorder',
+   				  options = list(dom = 'Rlfrtip', 
+                                 	paging = TRUE, scrollY = "400px", autoWidth = TRUE,
+                                  	searchHighlight = TRUE, scrollX = "auto"
+                          	  ),
+                          	  filter = 'none', 
+                          	  selection = 'none') 
+  })
+})
 
 ############################################
 ## displays the Clinical Summary Data Table
 ###########################################
 observe({  # observe needed since data object is a reactive function
   cat("observe for clinicalDataSummary\n") 
- 
+
   output$clinicalDataSummary <- DT::renderDataTable({ datatable(as.data.frame(clinicalDataSummary()), rownames = TRUE,  
                                                                  extensions = 'ColReorder',
                                                                  options = list(#dom = 'Rlfrtip', ajax = list(url = action), 
-                                                                                paging = F,  searchHighlight = TRUE),
+                                                                                paging = F,  searchHighlight = TRUE,
+										autoWidth = TRUE, scrollY = "400px"),
                                                                  filter = 'none', 
                                                                  selection = 'single') 
     
   })
 
-  
-#  dd = clinicalDataSummary()
-#  action = dataTableAjax(session, data=dd, rownames = TRUE) # for the row_output as characters
-  
+
+  output$clinicalDataSummarySummary <- DT::renderDataTable({ datatable(as.data.frame(clinicalDataSummary()[,-1, drop = FALSE]), rownames = TRUE,  
+                          options = list(dom = 'Rlfrtip',  
+ 	                         paging = F, scrollY = "400px",
+				  searchHighlight = TRUE,
+				  columnDefs = list(list(
+                                  	targets = 1,#: ncol(clinicalDataSummary()[-1, drop = FALSE]), # applies to the entire table
+                                        #width = "200px",
+                                        render = JS(
+                                        	"function(data, type, row, meta) {",
+                                                "return type == 'display' && data.length > 150 ?",
+                                                "'<span title=\"' + data + '\">' + data.substr(0, 150) + '...</span>' : data;",
+                                        "}")
+                                   ))
+			  ),
+			  filter = 'none',
+			  caption = HTML("<b> Summary of clinical data </b>"), 
+                          selection = 'none') 
+    
+  })
+
+
+ 
+
+
+ 
 })
 
 ###########################################################################################
