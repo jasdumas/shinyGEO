@@ -140,6 +140,18 @@ observe({
 
 })
 
+observe({
+ updateSelectizeInput(session, "geneColumn", server = TRUE, 
+	choices = colnames(platInfo()), selected = values.edit$platformGeneColumn) 
+}) 
+
+observeEvent(input$geneColumn, {
+	if (is.null(input$geneColumn) | input$geneColumn == "") return(NULL)
+        cat("COLUMN = ", input$geneColumn, "\n") 
+	values.edit$platformGeneColumn = input$geneColumn
+})
+
+
 PlatformLinks <- reactive({
   pl = Platforms()
   if (is.null(pl)) return(NULL)

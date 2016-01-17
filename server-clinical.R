@@ -91,7 +91,7 @@ ColumnNames <- reactive({
 
 
 observe({
-  output$platformData <- DT::renderDataTable({ datatable(as.data.frame(platInfo()[1:100,]), rownames = FALSE,  
+  output$platformData <- DT::renderDataTable({ datatable(as.data.frame(platInfo()), rownames = FALSE,  
                                  # extensions = 'ColReorder',
    				  options = list(dom = 'Rlfrtip', 
                                  	paging = TRUE, scrollY = "400px", autoWidth = TRUE,
