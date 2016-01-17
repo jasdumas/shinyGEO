@@ -8,7 +8,6 @@ library(shinydashboard)
 source("ui.navbar.R")
 source("ui.tab.expression.R")
 source("ui.tab.analyses.R")
-source("ui.tab.clinical.R")
 source("ui.tab.reproducible.R")
 source("ui.tab.about.R")
 source("html.R")
@@ -107,16 +106,9 @@ body = dashboardBody(
   tabsetPanel(
 	tabPanel("Summary", DT::dataTableOutput("summaryModalTable")),
 	tabPanel("Full Clinical Table",   
-    actionButton("tabBut", "Edit Data Table"),
-        DT::dataTableOutput("clinicalData"),
-        shinyBS::bsModal("modalExample", "Edit Data Table", "tabBut", size = "small",
-            uiOutput("dropModal"),
-            textInput("find", label = "Find", value = ""),
-            checkboxInput("checkbox", label = "Exact Match", value = FALSE),
-            textInput("replace", label = "Replace", value = ""),
-            checkboxInput("survCheckbox", label = "Partial Replace", value = FALSE),  ### for survival analysis
-             actionButton("Enter", label = "Submit"))
+        DT::dataTableOutput("clinicalData")
 	),
+
 	tabPanel("Data I/O",
 	      fluidRow(
 	        column(12,
@@ -169,7 +161,6 @@ body = dashboardBody(
       tab.expression,
       tab.DE.analysis,
       tab.survival.analysis,
-      tab.data.summary,
       tab.code,
       tab.about
     )
