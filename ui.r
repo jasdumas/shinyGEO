@@ -149,18 +149,19 @@ body = dashboardBody(
   # please wait conditional panel
 
   ## originally shiny-busy
-#  conditionalPanel(condition="$('html').hasClass('shiny-busy')",
+  conditionalPanel(
+	condition="$('html').hasClass('shiny-busy') & input.tabs == 'Home'",
 
 #        div(style = "position:center; width:100%; height:100; text-align:center",
 #            img(src="PleaseWait.gif", style = "width:50%")
 #		"Please wait..."
  #      )
 
-#	div(style = "position:fixed; bottom: 50%; right: 80%;
-#		    border: 3px solid;",
-#            	    img(src="PleaseWait.gif", style = "width:50%")
-#        )
-#    ),
+	div(style = "position:fixed; bottom: 40%; right: 10%;
+		    border: 3px solid; text-align: center; background-color: white;",
+            	    img(src="PleaseWait.gif", style = "width:50%")
+        )
+    ),
 
 
    analyses.common, 

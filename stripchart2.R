@@ -2,18 +2,19 @@
 ### stripchart2 function to dictate the graphical appearance of gene expression
 ##############################################################################
 stripchart2 <- function(x,y, Group1Values, group.names = NULL, jitter = 0.3, line.off = 0.3, 
-                        lwd = 5, col = NULL, main = "", mark = "mean", ...) {
+                        lwd = 5, col = NULL, main = "",  ...) {
 
   s = split(x,y)
-  if (length(s) == 0) {
-	return(NULL)
-  }
+  num.groups = sum(sapply(s, function(x)!all(is.na(x)))) 
+  stats = !(all(is.na(x) | length(s) == 0 | num.groups < 2))
 
   if (is.null(group.names)) group.names = Group1Values 
   
   if (is.null(col)) col = 1:length(s)
   add = NULL
-  if (length(s) == 2) {
+
+   
+  if (stats & length(s) == 2) {
     m = lapply(s,mean, na.rm=TRUE)
     fc = round(2**(m[[2]] - m[[1]]), 2)
 
@@ -30,7 +31,7 @@ stripchart2 <- function(x,y, Group1Values, group.names = NULL, jitter = 0.3, lin
     }
     add = paste("\nFC = ", fc, p, collapse = "")
    }
-   } else if (length(s) > 2) {
+ } else if (stats) {
 	#cat("fittin lm...\n")
    	l = lm(x~y); l = summary(l)
 	if (any(l$df == 0)) {
@@ -72,13 +73,7 @@ stripchart2 <- function(x,y, Group1Values, group.names = NULL, jitter = 0.3, lin
            scale_x_discrete(labels=group.names) +
            geom_point(position = "jitter", aes(colour = L1), na.rm = TRUE) + 
            scale_colour_manual(values = col) +
-           geom_errorbar(stat = "hline", yintercept = "mean", width=0.8,aes(ymax=..y..,ymin=..y..)))
+           geom_errorbar(stat = "hline", yintercept = "mean", width=0.8,aes(ymax=..y..,ymin=..y..))
+   )
   
-  if (mark %in% c("mean", "median")) {
-    if (mark == "mean") mm = lapply(s,mean, na.rm=TRUE)
-    if (mark == "median") mm = lapply(s, median, na.rm=TRUE)
-    for (i in 1:length(mm)) {
-      lines(c(i-line.off, i+line.off), c(mm[[i]], mm[[i]]), lwd = lwd)
-    }
-  }
 }
