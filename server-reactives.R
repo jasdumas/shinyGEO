@@ -61,6 +61,9 @@ observeEvent(input$tabs, {
 
   if (input$tabs != "Home") {
 	closeAlert(session, alertId = "Analysis-alert")
+  } else {
+	closeAlert(session, alertId = "SelectGene-alert")
+	closeAlert(session, alertId = "SelectGroups")
   } 
 
 })
@@ -69,7 +72,7 @@ observeEvent(input$tabs, {
 observeEvent(input$selectGenes, {
   cat("observing selectGenes...\n")
 
-  if (input$tabs == "DifferentialExpressionAnalysis" & is.null(input$selectedGroups)) {
+  if (input$tabs == "DifferentialExpressionAnalysis" & is.null(input$Group1Values)) {
           closeAlert(session, alertId = "SelectGene-alert")
   	  createAlert(session, "alert1", alertId = "SelectGroups", title = "Group selection", style = "success",
 		content = "You may now view the clinical data and select your groups to continue by first selecting the column with the data of interest."
@@ -77,6 +80,13 @@ observeEvent(input$selectGenes, {
 	}
    }
 )
+
+observeEvent(input$Group1Values, {
+	cat("input$selectdGroups = ", input$Group1Values, "\n")
+     if (input$Group1Values!="") {
+	closeAlert(session, alertId = "SelectGroups")	
+     }
+})
 
 observeEvent(input$platform, {
   cat("observe platform\n")

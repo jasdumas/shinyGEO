@@ -5,7 +5,9 @@ stripchart2 <- function(x,y, Group1Values, group.names = NULL, jitter = 0.3, lin
                         lwd = 5, col = NULL, main = "", mark = "mean", ...) {
 
   s = split(x,y)
-  #print(s)
+  if (length(s) == 0) {
+	return(NULL)
+  }
 
   if (is.null(group.names)) group.names = Group1Values 
   
@@ -14,24 +16,34 @@ stripchart2 <- function(x,y, Group1Values, group.names = NULL, jitter = 0.3, lin
   if (length(s) == 2) {
     m = lapply(s,mean, na.rm=TRUE)
     fc = round(2**(m[[2]] - m[[1]]), 2)
-    t = t.test(s[[1]], s[[2]])
-    p = round(t$p.value, 3)   
-    if (p < 0.001) {
-	p = "(P < 0.001)"
-    } else {
+
+    count.na <-function(x) sum(!is.na(x))
+    n = sapply(s, count.na)
+   
+    if (min(n) > 1) {  
+      t = t.test(s[[1]], s[[2]])
+      p = round(t$p.value, 3)   
+      if (p < 0.001) {
+  	p = "(P < 0.001)"
+      } else {
 	p = paste0("(P = ", p, ")")
     }
     add = paste("\nFC = ", fc, p, collapse = "")
+   }
    } else if (length(s) > 2) {
 	#cat("fittin lm...\n")
    	l = lm(x~y); l = summary(l)
-   	p = 1-pf(l$fstatistic[1], l$fstatistic[2], l$fstatistic[3])
-   	p = round(p, 3)
-   	if (p < 0.001) {
-		add = "\nP < 0.001"
-   	} else {
-		add = paste0("\nP = ", p)
-   	}
+	if (any(l$df == 0)) {
+		add = "\nP = NA"
+	} else {
+   	  	p = 1-pf(l$fstatistic[1], l$fstatistic[2], l$fstatistic[3])
+   		p = round(p, 3)
+   		if (p < 0.001) {
+			add = "\nP < 0.001"
+  	 	} else {
+			add = paste0("\nP = ", p)
+   		}
+	}
    } 
 
     if (is.null(main)) {

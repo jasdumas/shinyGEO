@@ -89,8 +89,8 @@ analyses.common = conditionalPanel(condition = "input.tabs == 'DifferentialExpre
           		bsButton("autoAnalysis","Select Time/Outcome", style="success",disabled = TRUE),
             		genBSModal("autogenModal","Survival Analyses","",size="large")
         	)
-	),
-            hr()
+	)#,
+            #hr()
 )
 
 body = dashboardBody(
@@ -149,12 +149,19 @@ body = dashboardBody(
   # please wait conditional panel
 
   ## originally shiny-busy
-  conditionalPanel(condition="$('html').hasClass('shiny-busy')",
-        div(style = "position:center; width:100%; height:100; text-align:center",
+#  conditionalPanel(condition="$('html').hasClass('shiny-busy')",
+
+#        div(style = "position:center; width:100%; height:100; text-align:center",
 #            img(src="PleaseWait.gif", style = "width:50%")
-		"Please wait..."
-       )
-    ),
+#		"Please wait..."
+ #      )
+
+#	div(style = "position:fixed; bottom: 50%; right: 80%;
+#		    border: 3px solid;",
+#            	    img(src="PleaseWait.gif", style = "width:50%")
+#        )
+#    ),
+
 
    analyses.common, 
 

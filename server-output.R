@@ -296,7 +296,7 @@ output$selectedGroups <- renderUI({
   selectInput('Group1Values','Select Groups for Comparison', 
               choices = groupsForSelectedColumn(), multiple=TRUE,
               selected = defaultGroupsForSelectedColumn(),
-              width='80%',
+              width='100%',
               selectize = TRUE
               
   )
