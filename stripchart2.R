@@ -52,7 +52,9 @@ stripchart2 <- function(x,y, Group1Values, group.names = NULL, jitter = 0.3, lin
     } else {
       main = paste(main, add)
     }
+ 
   
+ 
   m = melt(s, na.rm=FALSE)
 
   # re-order levels based on input order according to Group1Values 
@@ -64,16 +66,23 @@ stripchart2 <- function(x,y, Group1Values, group.names = NULL, jitter = 0.3, lin
   } 
   m$L1 = reorder(m$L1, sapply(m$L1,f,Group1Values))
 
-  #View(m)
+  s2 = split(m$value, m$L1)
+  n.groups = sapply(s2, function(x)sum(!is.na(x))) 
+  n.groups = paste0("(n=", n.groups, ")")
+  group.names = paste0(group.names, "\n", n.groups) 
+
+  mean.no.na <<- function(x) mean(x,na.rm=TRUE)
+
   stripchart3 <- ggplot(m, aes(x = as.factor(L1), y = value, color=L1)) 
   return(stripchart3 + 
            labs(title = main, y = "log2 expression", x="") +
 	   theme(legend.position="none", 
                axis.text.x = element_text(face = "bold", color = "black")) +
            scale_x_discrete(labels=group.names) +
-           geom_point(position = "jitter", aes(colour = L1), na.rm = TRUE) + 
+           geom_point(position = position_jitter(h=0,w=NULL), aes(colour = L1), na.rm = TRUE) + 
            scale_colour_manual(values = col) +
-           geom_errorbar(stat = "hline", yintercept = "mean", width=0.8,aes(ymax=..y..,ymin=..y..))
+           geom_errorbar(stat = "hline", yintercept = "mean.no.na", width=0.8,
+		aes(ymax=..y..,ymin=..y..))
    )
-  
+   
 }
