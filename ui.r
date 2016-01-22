@@ -67,7 +67,7 @@ sidebar = dashboardSidebar(width = 350,
 )
 
 analyses.common = conditionalPanel(condition = "input.tabs == 'DifferentialExpressionAnalysis' | input.tabs == 'SurvivalAnalysis'",
-
+        bsAlert("alert2"),
         div(style = "display:inline-block; width: 40%",
          	selectizeInput('selectGenes', "Select Gene/Probe", choices = NULL)
 	),
@@ -96,7 +96,6 @@ analyses.common = conditionalPanel(condition = "input.tabs == 'DifferentialExpre
 body = dashboardBody(
   conditionalPanel(condition = "input.tabs != 'About' & input.tabs != 'Code'",
                    bsAlert("alert1"),
-                   bsAlert("alert2"),
                    uiOutput("test"),
                    uiOutput("busy")
                    ),
