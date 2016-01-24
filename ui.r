@@ -67,7 +67,7 @@ sidebar = dashboardSidebar(width = 350,
 )
 
 analyses.common = conditionalPanel(condition = "input.tabs == 'DifferentialExpressionAnalysis' | input.tabs == 'SurvivalAnalysis'",
-
+        bsAlert("alert2"),
         div(style = "display:inline-block; width: 40%",
          	selectizeInput('selectGenes', "Select Gene/Probe", choices = NULL)
 	),
@@ -89,14 +89,13 @@ analyses.common = conditionalPanel(condition = "input.tabs == 'DifferentialExpre
           		bsButton("autoAnalysis","Select Time/Outcome", style="success",disabled = TRUE),
             		genBSModal("autogenModal","Survival Analyses","",size="large")
         	)
-	),
-            hr()
+	)#,
+            #hr()
 )
 
 body = dashboardBody(
   conditionalPanel(condition = "input.tabs != 'About' & input.tabs != 'Code'",
                    bsAlert("alert1"),
-                   bsAlert("alert2"),
                    uiOutput("test"),
                    uiOutput("busy")
                    ),
@@ -149,12 +148,20 @@ body = dashboardBody(
   # please wait conditional panel
 
   ## originally shiny-busy
-  conditionalPanel(condition="$('html').hasClass('shiny-busy')",
-        div(style = "position:center; width:100%; height:100; text-align:center",
+  conditionalPanel(
+	condition="$('html').hasClass('shiny-busy') & input.tabs == 'Home'",
+
+#        div(style = "position:center; width:100%; height:100; text-align:center",
 #            img(src="PleaseWait.gif", style = "width:50%")
-		"Please wait..."
-       )
+#		"Please wait..."
+ #      )
+
+	div(style = "position:fixed; bottom: 40%; right: 10%;
+		    border: 3px solid; text-align: center; background-color: white;",
+            	    img(src="PleaseWait.gif", style = "width:50%")
+        )
     ),
+
 
    analyses.common, 
 

@@ -57,6 +57,16 @@ clinicalDataSummary <- reactive({
   vars = colnames(t)
   cat("got ncols = ", length(vars), "\n")
   a = apply(t, 2, function(x)levels(as.factor(x)))
+
+  ## if there are no duplicates in each row, the above returns the original table
+  ## therefore, make duplicates if necessary
+  if (!is.null(nrow(a))) {
+    tmp = rep(1,nrow(t))
+    tmp[1] = 2
+    t$DELETE=tmp
+    a = apply(t, 2, function(x)levels(as.factor(x)))
+    a$DELETE = NULL
+  } 
   
   ## format function to truncate row contents with a place holder " ..."
   format.it <-function(x, max) {

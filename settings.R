@@ -3,7 +3,7 @@
 ##############################################################
 
 STD.ERR = FALSE 
-TEST.DATA = TRUE
+TEST.DATA = FALSE
 if (TEST.DATA) {
   cat("loading test data...\n")
   #load RData/GSE13.RData or RData/GSE19915.RData here
@@ -15,7 +15,7 @@ TRACE = TRUE
 
 EXPRESSION.PLOT =  TRUE
 DE.PLOT = TRUE 
-AUTOSELECT.SURVIVAL = TRUE
+AUTOSELECT.SURVIVAL = TRUE 
 
 
 cat("in settings.R")

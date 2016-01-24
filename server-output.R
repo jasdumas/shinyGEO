@@ -128,9 +128,11 @@ observe({
       )
     )
 
+ cat("get label\n")
 
   label =  paste0("Select Probe (You May Search By  ", values.edit$platformGeneColumn, ")")
 
+cat("label = ", label, "\n")
   updateSelectizeInput(session, "selectGenes", 
 	label = label, server = TRUE, 
  	choices = geneNames(), options = options 
@@ -140,7 +142,14 @@ observe({
 
 })
 
+
+
+
+
+
+
 observe({
+ cat("update geneColumn selectizeInput\n")
  updateSelectizeInput(session, "geneColumn", server = TRUE, 
 	choices = colnames(platInfo()), selected = values.edit$platformGeneColumn) 
 }) 
@@ -270,7 +279,7 @@ observe({
       # show possible choices (column names)
       selectInput('selectedColumn', 'Selected Column', 
             choices = ColumnNames(), #width='20%',
-            selected = val, multiple = F, selectize = FALSE
+            selected = val, multiple = FALSE, selectize = FALSE
     )
   })
 
@@ -296,7 +305,7 @@ output$selectedGroups <- renderUI({
   selectInput('Group1Values','Select Groups for Comparison', 
               choices = groupsForSelectedColumn(), multiple=TRUE,
               selected = defaultGroupsForSelectedColumn(),
-              width='80%',
+              width='100%',
               selectize = TRUE
               
   )

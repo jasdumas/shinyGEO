@@ -148,7 +148,7 @@ conditionalPanel(condition = "input.selectGenes!=''",
 #                        size = "default", type = "action", block = FALSE, disabled = FALSE,
 #                        value = FALSE),
    uiOutput("selectedColumn", container = div, style = "display:inline-block; width: 15%"),
-    uiOutput("selectedGroups", container = div, style = "display:inline-block; width: 50%"),
+    uiOutput("selectedGroups", container = div, style = "display:inline-block; width: 70%"),
     br(),                                                
                                                    
     actionButton("mergeGroupsButton", "Merge Groups"), 
