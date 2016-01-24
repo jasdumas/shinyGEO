@@ -151,7 +151,7 @@ main.gen <- function(this,columns.data){
   updateSelectizeInput(session,"autoColumn.outcome",choices=colnames(this),selected=columns.data[2])
   updateSelectizeInput(session,"columnEvent1",choices=columnItems,selected=outcome.yes,server=TRUE)
   updateSelectizeInput(session,"columnEvent0",choices=columnItems,selected=outcome.no,server=TRUE)
-  output$timetable <- DT::renderDataTable({time_both})
+  output$timetable <- DT::renderDataTable(time_both)
   outcome.analysis <<- outcome.new
 }
 

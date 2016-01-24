@@ -73,7 +73,7 @@ analyses.common = conditionalPanel(condition = "input.tabs == 'DifferentialExpre
 	),
 
     div(style = "display:inline-block; width: 25%",
-    		a(id = "platLink", "(View platform data)",
+    		a(id = "platLink", "Change Search Parameter",
 			style="cursor:pointer")
     ),
        bsModal("platformModal", "Platform annotation", 
