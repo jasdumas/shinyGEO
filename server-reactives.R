@@ -113,12 +113,9 @@ observeEvent(reproducible$code, {
 
 
 
-observeEvent(input$submitButton, {
+observeEvent(input$hiButton, {
   cat("observe submitButton\n") 
-  closeAlert(session, "geneSymbolAlert")
-  values.edit$table <- NULL  
-  values.edit$platformGeneColumn <- NULL
-  KM$outcome = NULL
+  updateTabItems(session, "tabs", "Home") 
 })
 
 
@@ -127,8 +124,16 @@ observeEvent(input$submitButton, {
 ####################################
 
 dataInput <- reactive({
-  add.tab()
   input$submitButton
+  add.tab()
+  updateTabItems(session, "tabs", "Home") 
+  # reset variables 
+  values.edit$table <- NULL  
+  values.edit$platformGeneColumn <- NULL
+  KM$outcome = NULL
+
+
+
   # Runs the intial input once the button is pressed from within the 
   # reactive statement
   if (TRACE) cat("In dataInput reactive...\n")  

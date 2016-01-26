@@ -10,6 +10,7 @@ clinicalDataProcessed <- reactive({
 
   p = values.edit$table
   if (is.null(p)) {
+ 	subtract.tab()
 	return(NULL)
   } 
   #####################################################################
@@ -18,26 +19,45 @@ clinicalDataProcessed <- reactive({
   #   columns specified by RM.COLS will be removed
   #####################################################################
   
+  
+  # show columns that have unique values; or display all if none 
+  num.levels = apply(p, 2, function(x) nlevels(as.factor(x)))
+  i = num.levels > 1
+  if (sum(i) <= 1) {
+	i = 1:ncol(p)	
+  }
+  p = p[,i, drop = FALSE]
+
+  cat("removed dups\n")
+ 
+  ## remove non-informative columns; but keep all if all columns would 
+  ## be removed  
   RM.COLS = c("status", "last_update_date", "submission_date", 
 	"supplementary_file", "geo_accession")
-  num.levels = apply(p, 2, function(x) nlevels(as.factor(x)))
-  
-  p = p[,num.levels > 1]
-  
   m = match(RM.COLS, colnames(p))
-  
   m=m[!is.na(m)]
+  if (length(m) == ncol(p)) {
+	subtract.tab()
+	return(p)
+  } 
   
+   
   if (length(m) > 0) p=p[,-m, drop = FALSE]
-  
+
+  cat("RM.COLS removed\n")  
+
   m = match(colnames(exprInput()), rownames(p))
   m = m[!is.na(m)]
- 
-  p = p[m,]
+
+  if (sum(m) == 0) {
+	values.edit$table = p
+	return (p)
+  }
+  p = p[m,,drop = FALSE]
   
   values.edit$table = p
+  if (TRACE) cat("END clinicalDataProcessed reactive...\n")
   subtract.tab()	
-
   return(p)
 
 })

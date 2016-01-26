@@ -55,6 +55,7 @@ $('#formatDEButton2').removeAttr("disabled");
 
 
 var $holder = $('#platLink').detach();
-$('#summaryBSModal').next().next().children().first().children().children().first().after($holder);
+
+$('#summaryBSModal').next().next().children().children().children().first().after($holder);
 
 });

@@ -82,7 +82,6 @@ analyses.common = conditionalPanel(condition = "input.tabs == 'DifferentialExpre
                        DT::dataTableOutput("platformData")
         ), 
 
-	
  
        	div(style = "display:inline-block; width: 35%",
 		conditionalPanel(condition = "input.tabs =='SurvivalAnalysis'",
