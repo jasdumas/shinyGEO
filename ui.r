@@ -157,7 +157,7 @@ body = dashboardBody(
  #      )
 
 	div(style = "position:fixed; bottom: 40%; right: 10%;
-		    border: 3px solid; text-align: center; background-color: white;",
+		    border: 3px solid; text-align: center; background-color: white; z-index:100;",
             	    img(src="PleaseWait.gif", style = "width:50%")
         )
     ),
