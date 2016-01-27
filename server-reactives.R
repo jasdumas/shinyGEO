@@ -38,7 +38,7 @@ add.line <-function(line) {
 ################################
 observeEvent(input$tabs, {
   cat("tab change...\n")
-
+  
 
   if (input$tabs == "FullDataTable") {
 	toggleModal(session, "summaryBSModal", "toggle")
@@ -70,7 +70,11 @@ observeEvent(input$tabs, {
 
   if (input$tabs != "Home") {
 	closeAlert(session, alertId = "Analysis-alert")
+  shinyjs::disable('GSE')
+  shinyjs::disable('platform')
   } else {
+    shinyjs::enable('GSE')
+    shinyjs::enable('platform')  
 	closeAlert(session, alertId = "SelectGene-alert")
 	closeAlert(session, alertId = "SelectGroups")
   } 
