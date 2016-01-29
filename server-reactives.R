@@ -7,6 +7,7 @@ shinyjs::onclick("sidebarToggle",
 #  cat("refreshing display...\n")
 )
 
+
 LAST.TAB = "Home"
 
 createAlert(session, "alert0", alertId = "Welcome-alert", title = "shinyGEO", style = "danger",
@@ -37,7 +38,7 @@ add.line <-function(line) {
 ################################
 observeEvent(input$tabs, {
   cat("tab change...\n")
-
+  
 
   if (input$tabs == "FullDataTable") {
 	toggleModal(session, "summaryBSModal", "toggle")
@@ -50,7 +51,15 @@ observeEvent(input$tabs, {
   	if (input$selectGenes == "") {
 	  createAlert(session, "alert1", alertId = "SelectGene-alert", title = "Current Status", style = "success",
               content = "Please select a gene/probe to continue", append = FALSE, dismiss = TRUE) 
-        } 
+        }
+
+	if(values.edit$platformGeneColumn=="ID") {
+		content = paste0("A gene symbol for this platform could not be found. ",
+		"You may view the platform data below to select a feature column if desired") 
+		createAlert(session, "alert2", alertId = "geneSymbolAlert", 
+			title = "Gene symbol not found", style = "danger",
+	  		content = content, append = FALSE, dismiss = TRUE)
+	}
   } else if (input$tabs == "SurvivalAnalysis") {
 	closeAlert(session, alertId = "SelectGroups")
   	if (input$selectGenes == "") {
@@ -61,6 +70,13 @@ observeEvent(input$tabs, {
 
   if (input$tabs != "Home") {
 	closeAlert(session, alertId = "Analysis-alert")
+  shinyjs::disable('GSE')
+  shinyjs::disable('platform')
+  } else {
+    shinyjs::enable('GSE')
+    shinyjs::enable('platform')  
+	closeAlert(session, alertId = "SelectGene-alert")
+	closeAlert(session, alertId = "SelectGroups")
   } 
 
 })
@@ -69,7 +85,7 @@ observeEvent(input$tabs, {
 observeEvent(input$selectGenes, {
   cat("observing selectGenes...\n")
 
-  if (input$tabs == "DifferentialExpressionAnalysis" & is.null(input$selectedGroups)) {
+  if (input$tabs == "DifferentialExpressionAnalysis" & is.null(input$Group1Values)) {
           closeAlert(session, alertId = "SelectGene-alert")
   	  createAlert(session, "alert1", alertId = "SelectGroups", title = "Group selection", style = "success",
 		content = "You may now view the clinical data and select your groups to continue by first selecting the column with the data of interest."
@@ -77,6 +93,13 @@ observeEvent(input$selectGenes, {
 	}
    }
 )
+
+observeEvent(input$Group1Values, {
+	cat("input$selectdGroups = ", input$Group1Values, "\n")
+     if (input$Group1Values!="") {
+	closeAlert(session, alertId = "SelectGroups")	
+     }
+})
 
 observeEvent(input$platform, {
   cat("observe platform\n")
@@ -94,12 +117,9 @@ observeEvent(reproducible$code, {
 
 
 
-observeEvent(input$submitButton, {
+observeEvent(input$hiButton, {
   cat("observe submitButton\n") 
-  closeAlert(session, "geneSymbolAlert")
-  values.edit$table <- NULL  
-  values.edit$platformGeneColumn <- NULL
-  KM$outcome = NULL
+  updateTabItems(session, "tabs", "Home") 
 })
 
 
@@ -108,8 +128,16 @@ observeEvent(input$submitButton, {
 ####################################
 
 dataInput <- reactive({
-  add.tab()
   input$submitButton
+  add.tab()
+  updateTabItems(session, "tabs", "Home") 
+  # reset variables 
+  values.edit$table <- NULL  
+  values.edit$platformGeneColumn <- NULL
+  KM$outcome = NULL
+
+
+
   # Runs the intial input once the button is pressed from within the 
   # reactive statement
   if (TRACE) cat("In dataInput reactive...\n")  
@@ -250,20 +278,17 @@ geneNames <- reactive ({
 
   gene.column = values.edit$platformGeneColumn
   if (is.null(gene.column)) {
-    check.names = c("Gene Symbol", "GeneSymbol", "Symbol",
-                 "GENE_SYMBOL")
-    m = check.names%in%colnames(plat.info) 
+    check.names = toupper(c("Gene Symbol", "GeneSymbol", 
+				"Gene_Symbol","Gene", "Symbol"))
+    m = check.names%in%toupper(colnames(plat.info)) 
     w = which(m)
     if (length(w) == 0) {
-      createAlert(session, "alert2", alertId = "geneSymbolAlert", title = "Could not find gene symbol", style = "danger",
-                  content = "A gene symbol for this platform could not be found. Please select another platform or analyze another dataset.", 
-                  append = FALSE, dismiss = TRUE)
-      values.edit$platformGeneColumn = NULL
-      gene.column = NULL
+      gene.column = colnames(platInfo())[1]  # use 1st col if not found
     } else { 
-      gene.column = check.names[w[1]]
-      values.edit$platformGeneColumn = gene.column
+      i = match(toupper(check.names[w[1]]), toupper(colnames(plat.info)))
+      gene.column = colnames(plat.info)[i] 
     }
+    values.edit$platformGeneColumn = gene.column
   }
   cat("gene column is  ", gene.column, "\n")
   probes = as.character(plat.info$ID)
@@ -280,27 +305,16 @@ geneNames <- reactive ({
 
   # create data.frame for use with selectizeInput #
 
-  cat("probes1 = ", probes[1], "\n")
-  cat("label1 = ", label[1], "\n")
-  cat("gene1 = ", genes[1], "\n")
-
-  cat("length probes = ", length(probes), "\n")
-  cat("length label = ", length(label), "\n")
-  cat("length genes = ", length(genes), "\n")
-
   cat("creating geneName data.frame...\n")
-#  save(probes, label, genes, file = "look.RData")
   
-  tmp = 1:length(probes)
-
-#  dd = data.frame(value = tmp, label = tmp, genes = tmp, probes = tmp)
   dd = data.frame(value = probes, label = label, genes = genes, probes = probes)
-#  save(probes, label, genes, dd, file = "look.RData")
   cat("data.frame created\n")
   subtract.tab()
+  genes[genes==""] = NA
   o = order(genes, probes)
   return(dd[o,])
 })
+
 
 
 ##############################################################
@@ -409,58 +423,8 @@ defaultGroupsForSelectedColumn <- reactive({
       selectInput("drop2", "Column Names", choices = ColumnNames(), selected = "")
     })
 
-## reactives for textboxes/drop-downs in modal window
-find.str <- reactive({input$find})       
-replace.str <- reactive({input$replace})
-column.num <- reactive({as.character(input$drop2)}) 
 
-editClinicalTable <- reactive({
-  input$Enter  
-  add.tab()  
-  if (TRACE) cat("In editClinicalTable reactive...\n")
-  find.str = isolate(find.str())
-  column.num = isolate(column.num())
-  replace.str = isolate(replace.str())
-  
-  if (find.str == "" & replace.str == "") {   # if there is nothing entered it returns the original table
-    cat("\t return current table\n")
-    subtract.tab()
-    return(values.edit$table)
-  }
-  exactMatch = isolate(input$checkbox) # exact match condition
-  
-  if (exactMatch) {    # while default is false
-    find.str = paste("^", find.str, "$", sep = "")
-  }
-  
-  newClinical <- values.edit$table
-  
-  cat("\t set newClinical\n")
-  ### if factor, change to character.  Otherwise we can't replace it. ##
-  if (is.factor(newClinical[,column.num])) {
-    newClinical[,column.num] = as.character(newClinical[,column.num])
-  }
-  
-  partialReplace = isolate(input$survCheckbox)
-  
-  if (partialReplace) {                 
-    newClinical[[column.num]] = gsub(find.str, replace.str, newClinical[[column.num]])  ## fixed = T for symbols
-    g.total = grep(find.str, newClinical[,column.num])  
-    newClinical[g.total,column.num] = replace.str 
-    cat("replacing ", find.str, " with ", replace.str)
-  } else {
-    g.total = grep(find.str, newClinical[,column.num])  
-    cat("g.total = ", g.total, " \n")
-    newClinical[g.total,column.num] = replace.str 
-    cat("replacing ", find.str, " with ", replace.str)
-  }
 
-  cat("replacing table..\n")    
-  values.edit$table = newClinical
-  subtract.tab()
-  return (values.edit$table)
-  
-}) # end of editClinicalTable() reactive
 
 ###########################################
 # Expression profiles - data transformation
@@ -632,6 +596,11 @@ editSelectedCols <- reactive({
 
 
 
+shinyjs::onclick("noGenePlatLink", {
+	cat("link link\n")
+	toggleModal(session, "platformModal", toggle = "open")
+  }
+)
 
 
 

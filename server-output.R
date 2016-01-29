@@ -128,9 +128,11 @@ observe({
       )
     )
 
+ cat("get label\n")
 
   label =  paste0("Select Probe (You May Search By  ", values.edit$platformGeneColumn, ")")
 
+cat("label = ", label, "\n")
   updateSelectizeInput(session, "selectGenes", 
 	label = label, server = TRUE, 
  	choices = geneNames(), options = options 
@@ -139,6 +141,25 @@ observe({
   subtract.tab()
 
 })
+
+
+
+
+
+
+
+observe({
+ cat("update geneColumn selectizeInput\n")
+ updateSelectizeInput(session, "geneColumn", server = TRUE, 
+	choices = colnames(platInfo()), selected = values.edit$platformGeneColumn) 
+}) 
+
+observeEvent(input$geneColumn, {
+	if (is.null(input$geneColumn) | input$geneColumn == "") return(NULL)
+        cat("COLUMN = ", input$geneColumn, "\n") 
+	values.edit$platformGeneColumn = input$geneColumn
+})
+
 
 PlatformLinks <- reactive({
   pl = Platforms()
@@ -258,7 +279,7 @@ observe({
       # show possible choices (column names)
       selectInput('selectedColumn', 'Selected Column', 
             choices = ColumnNames(), #width='20%',
-            selected = val, multiple = F, selectize = FALSE
+            selected = val, multiple = FALSE, selectize = FALSE
     )
   })
 
@@ -284,7 +305,7 @@ output$selectedGroups <- renderUI({
   selectInput('Group1Values','Select Groups for Comparison', 
               choices = groupsForSelectedColumn(), multiple=TRUE,
               selected = defaultGroupsForSelectedColumn(),
-              width='80%',
+              width='100%',
               selectize = TRUE
               
   )

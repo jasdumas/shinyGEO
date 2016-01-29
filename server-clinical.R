@@ -10,6 +10,7 @@ clinicalDataProcessed <- reactive({
 
   p = values.edit$table
   if (is.null(p)) {
+ 	subtract.tab()
 	return(NULL)
   } 
   #####################################################################
@@ -18,26 +19,45 @@ clinicalDataProcessed <- reactive({
   #   columns specified by RM.COLS will be removed
   #####################################################################
   
+  
+  # show columns that have unique values; or display all if none 
+  num.levels = apply(p, 2, function(x) nlevels(as.factor(x)))
+  i = num.levels > 1
+  if (sum(i) <= 1) {
+	i = 1:ncol(p)	
+  }
+  p = p[,i, drop = FALSE]
+
+  cat("removed dups\n")
+ 
+  ## remove non-informative columns; but keep all if all columns would 
+  ## be removed  
   RM.COLS = c("status", "last_update_date", "submission_date", 
 	"supplementary_file", "geo_accession")
-  num.levels = apply(p, 2, function(x) nlevels(as.factor(x)))
-  
-  p = p[,num.levels > 1]
-  
   m = match(RM.COLS, colnames(p))
-  
   m=m[!is.na(m)]
+  if (length(m) == ncol(p)) {
+	subtract.tab()
+	return(p)
+  } 
   
+   
   if (length(m) > 0) p=p[,-m, drop = FALSE]
-  
+
+  cat("RM.COLS removed\n")  
+
   m = match(colnames(exprInput()), rownames(p))
   m = m[!is.na(m)]
- 
-  p = p[m,]
+
+  if (sum(m) == 0) {
+	values.edit$table = p
+	return (p)
+  }
+  p = p[m,,drop = FALSE]
   
   values.edit$table = p
+  if (TRACE) cat("END clinicalDataProcessed reactive...\n")
   subtract.tab()	
-
   return(p)
 
 })
@@ -57,6 +77,16 @@ clinicalDataSummary <- reactive({
   vars = colnames(t)
   cat("got ncols = ", length(vars), "\n")
   a = apply(t, 2, function(x)levels(as.factor(x)))
+
+  ## if there are no duplicates in each row, the above returns the original table
+  ## therefore, make duplicates if necessary
+  if (!is.null(nrow(a))) {
+    tmp = rep(1,nrow(t))
+    tmp[1] = 2
+    t$DELETE=tmp
+    a = apply(t, 2, function(x)levels(as.factor(x)))
+    a$DELETE = NULL
+  } 
   
   ## format function to truncate row contents with a place holder " ..."
   format.it <-function(x, max) {
@@ -91,7 +121,7 @@ ColumnNames <- reactive({
 
 
 observe({
-  output$platformData <- DT::renderDataTable({ datatable(as.data.frame(platInfo()[1:100,]), rownames = FALSE,  
+  output$platformData <- DT::renderDataTable({ datatable(as.data.frame(platInfo()), rownames = FALSE,  
                                  # extensions = 'ColReorder',
    				  options = list(dom = 'Rlfrtip', 
                                  	paging = TRUE, scrollY = "400px", autoWidth = TRUE,

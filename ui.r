@@ -8,7 +8,6 @@ library(shinydashboard)
 source("ui.navbar.R")
 source("ui.tab.expression.R")
 source("ui.tab.analyses.R")
-source("ui.tab.clinical.R")
 source("ui.tab.reproducible.R")
 source("ui.tab.about.R")
 source("html.R")
@@ -18,6 +17,7 @@ header = dashboardHeader(
   title = uiOutput("shinyTitle"), titleWidth = 350, disable = FALSE 
 )
 
+# add id to sidebar toggle link so that we can refresh when clicked
 tmp = header$children[[3]]$children[[2]]
 tmp = gsub("\"#\"", "\"#\" id = \"sidebarToggle\"", tmp)
 header$children[[3]]$children[[2]] = tmp
@@ -67,35 +67,34 @@ sidebar = dashboardSidebar(width = 350,
 )
 
 analyses.common = conditionalPanel(condition = "input.tabs == 'DifferentialExpressionAnalysis' | input.tabs == 'SurvivalAnalysis'",
-
+        bsAlert("alert2"),
         div(style = "display:inline-block; width: 40%",
          	selectizeInput('selectGenes', "Select Gene/Probe", choices = NULL)
 	),
 
     div(style = "display:inline-block; width: 25%",
-    		a(id = "platLink", "(View platform data)",
+    		a(id = "platLink", "Change Search Parameter",
 			style="cursor:pointer")
     ),
        bsModal("platformModal", "Platform annotation", 
                        "platLink", size = "large",
+			selectizeInput('geneColumn', 'Selected Feature', choices = NULL),	
                        DT::dataTableOutput("platformData")
         ), 
 
-	
  
        	div(style = "display:inline-block; width: 35%",
 		conditionalPanel(condition = "input.tabs =='SurvivalAnalysis'",
           		bsButton("autoAnalysis","Select Time/Outcome", style="success",disabled = TRUE),
             		genBSModal("autogenModal","Survival Analyses","",size="large")
         	)
-	),
-            hr()
+	)#,
+            #hr()
 )
 
 body = dashboardBody(
   conditionalPanel(condition = "input.tabs != 'About' & input.tabs != 'Code'",
                    bsAlert("alert1"),
-                   bsAlert("alert2"),
                    uiOutput("test"),
                    uiOutput("busy")
                    ),
@@ -107,16 +106,9 @@ body = dashboardBody(
   tabsetPanel(
 	tabPanel("Summary", DT::dataTableOutput("summaryModalTable")),
 	tabPanel("Full Clinical Table",   
-    actionButton("tabBut", "Edit Data Table"),
-        DT::dataTableOutput("clinicalData"),
-        shinyBS::bsModal("modalExample", "Edit Data Table", "tabBut", size = "small",
-            uiOutput("dropModal"),
-            textInput("find", label = "Find", value = ""),
-            checkboxInput("checkbox", label = "Exact Match", value = FALSE),
-            textInput("replace", label = "Replace", value = ""),
-            checkboxInput("survCheckbox", label = "Partial Replace", value = FALSE),  ### for survival analysis
-             actionButton("Enter", label = "Submit"))
+        DT::dataTableOutput("clinicalData")
 	),
+
 	tabPanel("Data I/O",
 	      fluidRow(
 	        column(12,
@@ -155,12 +147,20 @@ body = dashboardBody(
   # please wait conditional panel
 
   ## originally shiny-busy
-  conditionalPanel(condition="$('html').hasClass('shiny-busy')",
-        div(style = "position:center; width:100%; height:100; text-align:center",
+  conditionalPanel(
+	condition="$('html').hasClass('shiny-busy') & input.tabs == 'Home'",
+
+#        div(style = "position:center; width:100%; height:100; text-align:center",
 #            img(src="PleaseWait.gif", style = "width:50%")
-		"Please wait..."
-       )
+#		"Please wait..."
+ #      )
+
+	div(style = "position:fixed; bottom: 40%; right: 10%;
+		    border: 3px solid; text-align: center; background-color: white; z-index:100;",
+            	    img(src="PleaseWait.gif", style = "width:50%")
+        )
     ),
+
 
    analyses.common, 
 
@@ -169,7 +169,6 @@ body = dashboardBody(
       tab.expression,
       tab.DE.analysis,
       tab.survival.analysis,
-      tab.data.summary,
       tab.code,
       tab.about
     )
