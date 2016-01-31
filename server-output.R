@@ -297,6 +297,7 @@ observe({
 
 
 #output$test2 <- renderText(paste0("row = ", input$clinicalData_rows_selected))
+output$test <- renderPrint(sessionInfo())
 
 ####################################################################
 ## renders drop-down menus (server-side) for clinical group selection

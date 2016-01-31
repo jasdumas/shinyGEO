@@ -95,7 +95,7 @@ analyses.common = conditionalPanel(condition = "input.tabs == 'DifferentialExpre
 body = dashboardBody(
   conditionalPanel(condition = "input.tabs != 'About' & input.tabs != 'Code'",
                    bsAlert("alert1"),
-                   uiOutput("test"),
+                   verbatimTextOutput("test"),
                    uiOutput("busy")
                    ),
 
