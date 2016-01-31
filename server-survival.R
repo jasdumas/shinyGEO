@@ -177,7 +177,7 @@ if (AUTOSELECT.SURVIVAL) {
     time.analysis <<- new$time
     time_both <- data.frame(this[[input$autoColumn.time]],new$time)
     #  output$timetable <- renderDataTable(time_both)
-    output$timetable <- DT::renderDataTable({time_both})
+    output$timetable <- DT::renderDataTable(time_both)
   }))
   
   

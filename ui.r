@@ -56,6 +56,7 @@ sidebar = dashboardSidebar(width = 350,
 	sidebarMenu(id = "tabs",
 		hr(),
     menuItem("Home", tabName = "Home", icon = icon("home")),
+		menuItem("sessionInfo", tabName = "sessionInfo"),
 		menuItem("Differential Expression Analysis", tabName = "DifferentialExpressionAnalysis", icon = icon("flask")),
 		menuItem("Survival Analysis", tabName = "SurvivalAnalysis", icon = icon("life-ring")),
 		menuItem("View Clinical Data Table", tabName = "FullDataTable", icon = icon("table")),
@@ -95,7 +96,6 @@ analyses.common = conditionalPanel(condition = "input.tabs == 'DifferentialExpre
 body = dashboardBody(
   conditionalPanel(condition = "input.tabs != 'About' & input.tabs != 'Code'",
                    bsAlert("alert1"),
-                   verbatimTextOutput("test"),
                    uiOutput("busy")
                    ),
 
@@ -166,6 +166,7 @@ body = dashboardBody(
 
    tabItems(
       # First tab content
+      tabItem("sessionInfo", verbatimTextOutput("test")),
       tab.expression,
       tab.DE.analysis,
       tab.survival.analysis,
