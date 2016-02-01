@@ -98,6 +98,7 @@ calc.columns <- function(this){
   return (ans) 
 }
 
+# remove *:
 reduce <- function(column){
   gsub(".*: ","",column)
 }
@@ -132,6 +133,7 @@ reduce.columns <- function(time,outcome,this){
 }
 
 #main function
+
 main.gen <- function(this,columns.data){
   print("Generating automatic column selection and formatting...")
   #Reduce and analyze
@@ -144,7 +146,6 @@ main.gen <- function(this,columns.data){
   # Create data frame for time output
   time_both <- data.frame(this[[columns.data[1]]],new$time)
   #Render UI
-  toggleModal(session,"autogenModal",toggle="toggle")
   columnItems = as.character(unique(this[[columns.data[2]]]))
   columnItems = setdiff(columnItems,c(""," "))
   updateSelectizeInput(session,"autoColumn.time",choices=colnames(this),selected=columns.data[1])
@@ -156,27 +157,53 @@ main.gen <- function(this,columns.data){
 }
 
 if (AUTOSELECT.SURVIVAL) {
-  
-  observeEvent(input$autoAnalysis,({
-    print("Column selection and formatting for survival analysis started..")
+ 
+  # on button click, toggle modal and autogen only when autogen is TRUE (i.e., on first time only) 
+  observeEvent(input$autoAnalysis,{
+
+    if (!values.edit$autogen) {
+        toggleModal(session,"autogenModal",toggle="open")
+	return(NULL)
+    }
+
+
+    values.edit$autogen <- FALSE
+    cat("Column selection and formatting for survival analysis started...\n")
     if (is.null(values.edit$table)) return(NULL)
     this = values.edit$table
     columns.data = calc.columns(this)
     main.gen(this,columns.data)  
+    toggleModal(session,"autogenModal",toggle="open")
     
-    
-    print("Column selection and formatting for survival analysis finished..")
-  }))
-  
+    cat("Column selection and formatting for survival analysis finished...\n")
+  })
+ 
+
+  # display time table when time column is updated 
   observeEvent(input$autoColumn.time,({
     print("observe autoColumn.time")
     this = values.edit$table
-    if (is.null(values.edit$table)) return(NULL)
+    if (is.null(this)) return(NULL)
     new = reduce.columns(input$autoColumn.time,NA,this)
+    if (length(new$time) == 0) return(NULL)
+
+    new$time = as.double(new$time)
     cat("selected = ", input$autoColumn.time, "\n")
     time.analysis <<- new$time
-    time_both <- data.frame(this[[input$autoColumn.time]],new$time)
-    #  output$timetable <- renderDataTable(time_both)
+    time_both <- data.frame("TimeColumnOriginal" = this[[input$autoColumn.time]],"TimeColumnFormatted" = new$time)
+
+    print("times_both: ")
+    print(length(rownames(time_both)))
+    print("this: ")
+    print(length(rownames(this)))
+
+    #save(time_both, this, new, file = "tmp.RData")
+    rownames(time_both) <- rownames(this)
+
+
+    # remove columns with no data
+    keep = !is.na(time_both[,1]) & time_both[,1] != ""
+    time_both = subset(time_both, keep)
     output$timetable <- DT::renderDataTable(time_both)
   }))
   

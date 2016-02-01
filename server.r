@@ -1,11 +1,12 @@
-STD.ERR = FALSE 
+STD.ERR = TRUE
+#cat("", file = "log.txt") 
 if (STD.ERR) {
    cat <-function(...) {
      l = list(...)
      lapply(l, write, stderr())
+    #lapply(l, write, file = "log.txt", append = TRUE)
    }
 }
-
 
 cat("begin source server.r\n")
 source("settings.R")

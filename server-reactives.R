@@ -23,7 +23,8 @@ createAlert(session, "alert1", alertId = "GSE-begin-alert",
 ###################################################
 # Edit table reactiveValues()
 ###################################################
-values.edit <- reactiveValues(table = NULL, platformGeneColumn = NULL, original = NULL, log2 = FALSE, profilesPlot = FALSE)
+values.edit <- reactiveValues(table = NULL, platformGeneColumn = NULL, original = NULL, log2 = FALSE, profilesPlot = FALSE, autogen = TRUE)
+
 reproducible <-reactiveValues(code = NULL, report = NULL)
 KM <-reactiveValues(eventNames = NULL, outcome = NULL)
 
@@ -106,6 +107,7 @@ observeEvent(input$platform, {
   closeAlert(session, "geneSymbolAlert")
   values.edit$table <- NULL  
   values.edit$platformGeneColumn <- NULL
+  values.edit$autogen = TRUE
 })
 
 
