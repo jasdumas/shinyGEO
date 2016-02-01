@@ -96,7 +96,7 @@ shiny::tags$div(class = "modal-body",
                         tags$h4(class="col-time-head","Time Column Selection"),
                         selectizeInput('autoColumn.time','Column Time',choices=NULL),
                         tags$br(),
-                        dataTableOutput("timetable")
+                        DT::dataTableOutput("timetable")
                  ),
                  column(1,""),
                  column(3,
