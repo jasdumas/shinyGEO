@@ -239,7 +239,7 @@ if (AUTOSELECT.SURVIVAL) {
                    return(plot.shiny.km(time = as.double(time.analysis), 
                                         #death = as.integer(parse.modal()[,2]), 
                                         death = as.integer(outcome.analysis), 
-                                        x = x(), 
+                                        x = profiles()[input$selectGenes,], 
                                         col = colorsDE3(), title = main))
                    
                  })
