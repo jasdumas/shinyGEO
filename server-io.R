@@ -87,34 +87,34 @@ observe({
    # generate R code for row removal  ##
    if (length(rows.removed) > 0) {
 	comment = "## Analyze only a subset of rows ##"
-        isolate(add.graph(comment))
+        isolate(add.code(comment))
         v1 = paste0("keep = ", vector.it(rownames(data)))
 	v2 = "m = match(keep, rownames(data.p))"
         v3 = "data.p = data.p[m, , drop = FALSE]" 
-  	isolate(add.graph(v1))
-  	isolate(add.graph(v2))
-  	isolate(add.graph(v3))
+  	isolate(add.code(v1))
+  	isolate(add.code(v2))
+  	isolate(add.code(v3))
    }
 
    # generate R code for new columns ## 
    if (length(cols.added) > 0) {
        comment = "## Add column to clinical data table ##"
-       isolate(add.graph(comment))
+       isolate(add.code(comment))
        for (col in cols.added) {
  	  v = vector.it(data[[col]])
           v = paste0("data.p[[\"", col, "\"]] = ", v)
-	  isolate(add.graph(v))
+	  isolate(add.code(v))
        } 
    } 
 
    # generate R code to modify columns #
    if (length(cols.added) > 0) {
 	comment = "## Modify column in clinical data table ##"
-       isolate(add.graph(comment))
+       isolate(add.code(comment))
        for (col in cols.mod) {
  	  v = vector.it(data[[col]])
           v = paste0("data.p[[\"", col, "\"]] = ", v)
-	  isolate(add.graph(v))
+	  isolate(add.code(v))
        } 
    } 
 

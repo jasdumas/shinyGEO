@@ -1,4 +1,4 @@
-add.graph <-function(line) {  ## add graphic info to ace editor for the report
+add.code <-function(line) {  ## add code to ace editor for the report 
    if (is.null(reproducible$report)) {
 	reproducible$report = line
    } else {
@@ -19,13 +19,13 @@ observeEvent(input$reportBtn, {
       createAlert(session, "reportAlert", alertId = "report-alert", title = "Generating Report...", 
 	style = "info", content = "Your report is being generated (this may take 1-2 minutes)", 
 	dismiss = FALSE) 
-      cat(reproducible$report, file = test.file)
+      write(reproducible$report, file = test.file)
       rmarkdown::render(test.file)
       createAlert(session, "reportAlert", alertId = "report-alert2", title = "Generating Report...", 
 	style = "success", content = "Your report has been generated", append = FALSE, 
 	dismiss = FALSE)
       toggleModal(session, "reportModal", "close")
-        system("open reports/test.html")
+      system("open reports/test.html")
  
 })
 
@@ -57,13 +57,13 @@ data.p = pData(data.series[[data.index]])
 data.expr = exprs(data.series[[data.index]])
 ") # end of paste of intial code download
   
-  add.graph(initialCode)
+  add.code(initialCode)
 
   if (values.edit$log2) {
 	add1  = "data.expr[which(data.expr <= 0)] <- NaN"
 	add2 = "data.expr = log2(data.expr)"
-	add.graph(add1)
-	add.graph(add2)
+	add.code(add1)
+	add.code(add2)
   }
   
   exp = paste0("
@@ -90,7 +90,7 @@ exp.prof.plot <- ggplot(x1, aes(variable, value)) +
 print(exp.prof.plot)
 ")
 
-  add.graph(exp)
+  add.code(exp)
   
  cat("END Initial\n") 
 })
@@ -105,9 +105,6 @@ observeEvent(input$exprAdd, {
   
 }) # end of observeEvent for expression profiles plot 
 
-
-
-
 ##################################
 ## Diff. Expression Append to report 
 #################################
@@ -118,7 +115,7 @@ observeEvent(input$DEadd, {
   if (TRACE) cat("In report append DE...\n")
 
 s2function = scan(file = "stripchart2.R", what = character(), sep = "\n")
-sapply(s2function, add.graph)
+sapply(s2function, add.code)
  
 vector.it <-function(x) {
   x = paste0("\"", x, "\"", collapse = ",")
@@ -132,9 +129,9 @@ add.probe = paste0("probe = \"", input$selectGenes, "\"")
 add.column = paste0("column = \"", input$selectedColumn, "\"")
 add.groups = paste0("groups = ", vector.it(input$Group1Values)) 
 
-add.graph(add.probe)
-add.graph(add.column)
-add.graph(add.groups)
+add.code(add.probe)
+add.code(add.column)
+add.code(add.groups)
 
  s3plot <- paste0("
 x = data.expr[probe,]
@@ -149,7 +146,7 @@ main = paste(GSE, \"", geneLabel(), "\", sep = \": \")
 col = ", vector.it(colorsDE()), "
 print(stripchart2(x,y, groups, group.names = group.names, main = main, col=col))
 ")
-add.graph(s3plot)
+add.code(s3plot)
 
 }) # end of observeEvent for DE
 
@@ -221,7 +218,7 @@ title(title)
 }
 
 ")
-add.graph(survfunction) 
+add.code(survfunction) 
 survComment <- paste0(
 "match.h = match(as.character(\"",input$selectProbes, "\"),rownames(data.expr))
 x = data.expr[match.h,]
@@ -230,10 +227,10 @@ print(plot.shiny.km(time = as.double(\"",parse.modal(), "\" [,1]),
               x = x(), 
               col = as.character(\"", colorsDE3(), "\") ))
 ")
-add.graph(survComment)
+add.code(survComment)
 
 if (identical(survComment, survComment)) { 
-  add.graph("")
+  add.code("")
 }
 }) # end of observeEvent
 
@@ -279,7 +276,7 @@ observeEvent(input$Enter, {
                         
                         ")
   
-  add.graph(find.replace)
+  add.code(find.replace)
   
 })
 

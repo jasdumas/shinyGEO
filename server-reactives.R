@@ -19,12 +19,9 @@ createAlert(session, "alert1", alertId = "GSE-begin-alert",
 ###################################################
 values.edit <- reactiveValues(table = NULL, platformGeneColumn = NULL, original = NULL, log2 = FALSE, profilesPlot = FALSE, autogen = TRUE)
 
-reproducible <-reactiveValues(code = NULL, report = NULL)
+reproducible <-reactiveValues(report = NULL)
 
 ### functions to append/aggregate a new line to the aceEditor
-add.line <-function(line) {
-    reproducible$code = paste(isolate(reproducible$code), line, sep = "\n")
-}
     
 observeEvent(input$GSE, {
   if (input$GSE!= "") {
@@ -113,13 +110,6 @@ observeEvent(input$platform, {
 })
 
 
-observeEvent(reproducible$code, {
-     cat("updateAceEditor for code\n")
-     updateAceEditor(session, "myEditor", reproducible$code,
-                         mode="r", theme="chrome")
- })
-
-
 ####################################
 ### dataInput: the GEO object ######
 ####################################
@@ -159,7 +149,6 @@ dataInput <- reactive({
    createAlert(session, "alert1", alertId = "GSE-progress-alert", title = "Current Status", style = "success",
               content = content , append = TRUE, dismiss = FALSE) 
   code = paste0("data.series = getGEO(GEO = \"", GSE, "\", AnnotGPL = FALSE, getGPL = FALSE)")
-  add.line(code)
 
     geo = getGEO(GEO = isolate(GSE), AnnotGPL=FALSE, getGPL = FALSE) 
     subtract.tab()
@@ -215,7 +204,6 @@ platInfo <- reactive({
 
   code = paste0("data.platform = getGEO(\"", Platforms()[platformIndex()],  "\")
 ")
-  add.line(code)
   closeAlert(session, "GPL-alert")
   if (!TEST.DATA) {
     createAlert(session, "alert1", alertId = "GPL-alert", title = "Current Status", style = "info",
@@ -325,7 +313,6 @@ observe({
   # only update table if values.edit$table is null
   if (is.null(values.edit$table)) {
     code = paste0("data.p = pData(data.series[[data.index]])")
-    add.line(code)
     if (TEST.DATA) {
         cat("set table to CLINICAL.test\n")
         values.edit$table = CLINICAL.test
@@ -351,9 +338,7 @@ exprInput <- reactive({
   }
   pl=Platforms()[platformIndex()]
   code = paste0("data.index = match(\"", pl, "\", sapply(data.series, annotation))")
-  add.line(code)
   code = paste0("data.expr = exprs(data.series[[data.index]])")
-  add.line(code)
   ans = exprs(dataInput()[[pi]])
   subtract.tab()
   return(ans)
