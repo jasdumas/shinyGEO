@@ -7,13 +7,7 @@ shinyjs::onclick("sidebarToggle",
 #  cat("refreshing display...\n")
 )
 
-
 LAST.TAB = "Home"
-
-createAlert(session, "alert0", alertId = "Welcome-alert", title = "shinyGEO", style = "danger",
-  	content = "shinyGEO is a tool for downloading and analyzing gene expression data from the
-                Gene Expression Omnibus (GEO), in order to evaluate whether or not a gene of interest is (1) associated with survival in datasets with this information and (2) differentially expressed across two or more groups.", dismiss = TRUE)
-
        content = HTML("To find a dataset, search the <a href = 'http://www.ncbi.nlm.nih.gov/geo/\'>Gene Expression Omnibus</a> and filter by 'Expression profiling by array'.")
 
 createAlert(session, "alert1", alertId = "GSE-begin-alert", 
@@ -33,6 +27,14 @@ KM <-reactiveValues(eventNames = NULL, outcome = NULL)
 add.line <-function(line) {
     reproducible$code = paste(isolate(reproducible$code), line, sep = "\n")
 }
+    
+observeEvent(input$GSE, {
+  if (input$GSE!= "") {
+     shinyjs::enable('submitButton')
+  } else {
+     shinyjs::disable('submitButton')
+  }
+})
 
 ################################
 # Tab Observers 
@@ -71,11 +73,13 @@ observeEvent(input$tabs, {
 
   if (input$tabs != "Home") {
 	closeAlert(session, alertId = "Analysis-alert")
-  shinyjs::disable('GSE')
-  shinyjs::disable('platform')
+  	shinyjs::disable('GSE')
+  	shinyjs::disable('platform')
+  	shinyjs::disable('submitButton')
   } else {
-    shinyjs::enable('GSE')
-    shinyjs::enable('platform')  
+    	shinyjs::enable('GSE')
+    	shinyjs::enable('platform')  
+    	if (input$GSE!="") shinyjs::enable('submitButton')  
 	closeAlert(session, alertId = "SelectGene-alert")
 	closeAlert(session, alertId = "SelectGroups")
   } 
