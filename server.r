@@ -8,7 +8,7 @@ if (STD.ERR) {
    }
 }
 
-cat("begin source server.r\n")
+cat("begin source server.R\n")
 source("settings.R")
 
 library(DT)  ## tested on development version 0.1.32
@@ -47,4 +47,4 @@ shinyServer(function(input, output, session){
 #  output$test <-renderText(paste0("hi there: ", input$tabs))
 
 })
-cat("end source server.r\n")
+cat("end source server.R\n")
