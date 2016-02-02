@@ -139,7 +139,6 @@ dataInput <- reactive({
   KM$outcome = NULL
 
 
-
   # Runs the intial input once the button is pressed from within the 
   # reactive statement
   if (TRACE) cat("In dataInput reactive...\n")  

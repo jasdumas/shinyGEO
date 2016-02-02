@@ -81,7 +81,7 @@ stripchart2 <- function(x,y, Group1Values, group.names = NULL, jitter = 0.3, lin
            scale_x_discrete(labels=group.names) +
            geom_point(position = position_jitter(h=0,w=NULL), aes(colour = L1), na.rm = TRUE) + 
            scale_colour_manual(values = col) +
-           geom_errorbar(stat = "hline", yintercept = "mean.no.na", width=0.8,
+           geom_errorbar(stat = "summary", fun.y = "mean.no.na", width=0.8,
 		aes(ymax=..y..,ymin=..y..))
    )
    
