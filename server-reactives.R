@@ -389,28 +389,34 @@ profiles <- reactive({
   # Edgar R, Domrachev M, Lash AE.
   # Gene Expression Omnibus: NCBI gene expression and hybridization array data repository
   # Nucleic Acids Res. 2002 Jan 1;30(1):207-10
-  
+ 
   ex <- exprInput()
-  if (is.null(ex)) return(NULL)
+  if (is.null(ex) | is.null(values.edit$table)) return(NULL)
   qx <- as.numeric(quantile(ex, c(0., 0.25, 0.5, 0.75, 0.99, 1.0), na.rm=T))
   LogC <- (qx[5] > 100) ||
     (qx[6]-qx[1] > 50 && qx[2] > 0) ||
     (qx[2] > 0 && qx[2] < 1 && qx[4] > 1 && qx[4] < 2)
-  if (LogC & input$radio == 1) { 
-    ex[which(ex <= 0)] <- NaN
-    values.edit$log2 = TRUE
-  subtract.tab()
-  return (ex <- log2(ex)) 
-  }    
-  
-  if (input$radio == 2) {
-    values.edit$log2 = TRUE
-    subtract.tab()
-    return (ex <- log2(exprInput()))   # forced Yes
+  if (LogC & input$radio == 1 | input$radio == 2) { 
+    	ex[which(ex <= 0)] <- NaN
+    	values.edit$log2 = TRUE
+  	subtract.tab()
+    	ex <- log2(ex)
+  } else {
+  	values.edit$log2 = FALSE
   }
-  values.edit$log2 = FALSE
+
   subtract.tab()
-  return (ex <- exprInput())  # No
+  return (ex)  
+})
+
+probe.expr <-reactive({
+	if (is.null(values.edit$table)) return(NULL)
+	if (input$selectGenes=="") return (NULL)
+        x = profiles()[input$selectGenes,] # effected
+        if (is.null(x)) return(NULL)
+        m = match(names(x), rownames(values.edit$table)) 
+        m = m[!is.na(m)] 
+        x[m]	
 })
 
 cat("end server-reactives.R\n")

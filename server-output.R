@@ -432,7 +432,6 @@ if (DE.PLOT) {
               output$plot <-renderPlot({NULL})
       } else  {
           output$plot <- renderPlot({
-              x = profiles()[input$selectGenes,] # effected by data transformation
               iv = input$selectedColumn
               m = match(as.character(iv), colnames(clinicalDataProcessed()))  # GD: change grep to match
               clinical = as.character(clinicalDataProcessed()[,m]) 
@@ -446,7 +445,7 @@ if (DE.PLOT) {
               y = factor(y)
 
               main = paste(input$GSE, geneLabel() , sep = ": ")
-              print(stripchart2(x,y, input$Group1Values, group.names = labelsDE(), main = main, col=colorsDE()))
+              print(stripchart2(probe.expr(),y, input$Group1Values, group.names = labelsDE(), main = main, col=colorsDE()))
              
               }) # end of plot reactive
           

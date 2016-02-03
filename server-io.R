@@ -127,7 +127,7 @@ observe({
         paste0("<p>", label, x, "</p>")
     } 
  
-    save(cols.added, cols.mod, cols.removed, rows.removed, data, values.edit, file = "hi.RData")
+#    save(cols.added, cols.mod, cols.removed, rows.removed, data, values.edit, file = "hi.RData")
     cols.added = format.it(cols.added, "Columns added: ")
     cols.mod = format.it(cols.mod, "Columns modified: ")
     cols.removed = format.it(cols.removed, "Columns removed: ") 
@@ -147,6 +147,8 @@ observe({
 
     createAlert(session,"ioAlert3",content = content, style="success",dismiss=TRUE, append = FALSE)
     cat("initial data = ", isolate(nrow(values.edit$table)), ", ", isolate(ncol(values.edit$table)), "\n")
+
+  
 
     isolate(values.edit$table <- data) 
 
