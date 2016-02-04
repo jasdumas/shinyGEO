@@ -207,10 +207,11 @@ tab.survival.analysis = tabItem("SurvivalAnalysis",
     #tags$div(HTML("<hr style = \"background-color: red; height:4px\">")), 
     #uiOutput("SurvMessage"),
         summaryBSModal("summaryBSModal","Clinical Data Summary",""),
+        bsButton("autoAnalysis","Select Time/Outcome", style="success",disabled = TRUE),
         actionButton("formatDEButton2", "Format Graph",disabled=TRUE), # add on
-        formatBSModal("Format2", "Format", "formatDEButton2", applyID = "applyFormatDE2", size = "large", htmlOutput("formatDE2")),
         HTML("<button id='Survadd' type='button' class='btn btn-info action-button'>Save R Code</button>"),                                   
-        bsModal("addCodeSurvModal", "R Code Added", "Survadd", size = "small",
+    formatBSModal("Format2", "Format", "formatDEButton2", applyID = "applyFormatDE2", size = "large", htmlOutput("formatDE2")),    
+    bsModal("addCodeSurvModal", "R Code Added", "Survadd", size = "small",
 		bsAlert("addCodeSurvAlert")
         ),
        # shinyBS::bsModal("parseModal", "Selected Survival Analysis Parameters", "parseButton", size = "large",
