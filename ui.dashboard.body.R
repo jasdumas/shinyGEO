@@ -1,11 +1,7 @@
-cat("begin source ui.R\n")
+#####################################
+# dashboard body 
+#####################################
 
-library(shinyAce)
-library(RCurl)
-library(shinyBS)
-library(shinydashboard)
-
-source("ui.navbar.R")
 source("ui.tab.expression.R")
 source("ui.tab.analyses.R")
 source("ui.tab.reproducible.R")
@@ -30,7 +26,7 @@ gse.input = div(style = "display:inline-block; width: 75%",
           )
 
 gse.button = div(style = "display:inline-block; width: 11%",
-                actionButton("submitButton", "Go! <span></span>")
+                actionButton("submitButton", "Go!")
           )
 
 gse.platform=  conditionalPanel(condition = "output.sidebarDisplay=='PLATFORM'|output.sidebarDisplay=='ALL'",
@@ -56,7 +52,6 @@ sidebar = dashboardSidebar(width = 350,
 	sidebarMenu(id = "tabs",
 		hr(),
     menuItem("Home", tabName = "Home", icon = icon("home")),
-		menuItem("sessionInfo", tabName = "sessionInfo"),
 		menuItem("Differential Expression Analysis", tabName = "DifferentialExpressionAnalysis", icon = icon("flask")),
 		menuItem("Survival Analysis", tabName = "SurvivalAnalysis", icon = icon("life-ring")),
 		menuItem("View Clinical Data Table", tabName = "FullDataTable", icon = icon("table")),
@@ -67,6 +62,10 @@ sidebar = dashboardSidebar(width = 350,
       )
 )
 
+
+####################################
+# DE and survival analyses
+####################################
 analyses.common = conditionalPanel(condition = "input.tabs == 'DifferentialExpressionAnalysis' | input.tabs == 'SurvivalAnalysis'",
         bsAlert("alert2"),
         div(style = "display:inline-block; width: 40%",
@@ -88,8 +87,7 @@ analyses.common = conditionalPanel(condition = "input.tabs == 'DifferentialExpre
 		conditionalPanel(condition = "input.tabs =='SurvivalAnalysis'",
             		genBSModal("autogenModal","Survival Analyses","",size="large")
         	)
-	)#,
-            #hr()
+	)
 )
 
 body = dashboardBody(
@@ -102,7 +100,7 @@ body = dashboardBody(
   shinyjs::useShinyjs(),
   summaryBSModal("summaryBSModal","Clinical Data","ClinicalDataBtn", size = "large",  
 
-  tabsetPanel(
+    tabsetPanel(
 	tabPanel("Summary", DT::dataTableOutput("summaryModalTable")),
 	tabPanel("Full Clinical Table",   
         DT::dataTableOutput("clinicalData")
@@ -165,7 +163,6 @@ body = dashboardBody(
 
    tabItems(
       # First tab content
-      tabItem("sessionInfo", verbatimTextOutput("test")),
       tab.expression,
       tab.DE.analysis,
       tab.survival.analysis,
@@ -174,13 +171,4 @@ body = dashboardBody(
     )
 )
 
-shinyUI(
 
-dashboardPage(
-  header,
-  sidebar,
-  body
-))
-
-
-cat("end source ui.R\n")

@@ -1,43 +1,4 @@
-
-####################
-observe({
-  add.tab()
-  cat("observe for survTime and outcome\n")
-  
-  val1 = input$survTimeUI
-  val2 = input$survOutcomeUI
-  
-  #colNames = colnames(editClinicalTable())
-  colNames = colnames(clinicalDataProcessed())
-  
-  if (!is.null(colNames) & !is.null(val1) & !is.null(val2)) {
-    vals = colNames[input$clinicalDataForSurvival_columns_selected]
-    cat("vals = ", vals, "\n")
-    if (length(vals) == 1) {
-      val1 = vals[1]
-      val2 = NULL
-    } else if (length(vals) == 2) {
-      val1 = vals[1]
-      val2 = vals[2]
-    }
-  }
-  
-  output$survTime <- renderUI({
-    selectInput("survTimeUI", "Time", choice = ColumnNames(), selected = val1, multiple = F)
-  })
-  
-  output$survOutcome <- renderUI({
-    selectInput("survOutcomeUI", "Outcome", choice = ColumnNames(), val2, multiple = F)
-  })
-  
-  # this prevents the resetting of the drop-down columns after the action is pressed on the surv modal
-  #updateSelectInput(session, "survTimeUI", label = "Time", choice = ColumnNames(), selected = input$survTimeUI )
-  #updateSelectInput(session, "survOutcomeUI", label = "Outcome", choice = ColumnNames(), selected = input$survOutcomeUI )
-  cat("end observe survTime and survOutcome\n")
-  subtract.tab()
-  
-}) # end of observe for time/outcome
-
+library(stringr)
 
 #Auto-Generation of columns
 ## Functions for autogen
@@ -98,6 +59,43 @@ calc.columns <- function(this){
   return (ans) 
 }
 
+
+##########################################################
+# returns the current and formatted time vector  
+###########################################################
+time.analysis <-reactive({
+	this = values.edit$table
+        if(is.null(this)) return(NULL)
+
+	code1 = paste0("time.column = \"", input$autoColumn.time, "\"")
+ 	code2 = paste0("time = as.double(gsub(\".*: \",\"\",data.p[[time.column]]))")
+
+	code = paste(code1, code2, sep = "\n")	
+	time = as.double(reduce(this[[input$autoColumn.time]]))	
+
+	list(code = code, time = time)
+
+})
+
+
+##########################################################
+# returns the current and outcome converted to 0/1 format
+# this is used to autoselct eventYes and eventNo groups 
+###########################################################
+outcome.01 <-function(outcome, this) {
+	if (is.na(outcome)) return(NA)
+
+	reduced.outcome = reduce(this[[outcome]])
+        reduced.outcome = str_to_upper(reduced.outcome) 
+
+        NO = c("NO", "CENSORED", "SURVIVAL")
+        YES = c("YES", "UNCENSORED", "DEATH")
+
+    	reduced.outcome = replace(reduced.outcome, reduced.outcome %in% NO ,0)
+        reduced.outcome = replace(reduced.outcome, reduced.outcome %in% YES, 1)
+        reduced.outcome
+}
+
 # remove *:
 reduce <- function(column){
   gsub(".*: ","",column)
@@ -132,13 +130,13 @@ reduce.columns <- function(time,outcome,this){
   }
 }
 
+
 #main function
 
 main.gen <- function(this,columns.data){
   print("Generating automatic column selection and formatting...")
   #Reduce and analyze
   new = reduce.columns(columns.data[1],columns.data[2],this)
-  time.analysis <<- new$time
   outcome.orig = as.character(this[[columns.data[2]]])
   outcome.new = new$outcome
   outcome.no = unique(outcome.orig[outcome.new == 0])
@@ -153,7 +151,6 @@ main.gen <- function(this,columns.data){
   updateSelectizeInput(session,"columnEvent1",choices=columnItems,selected=outcome.yes,server=TRUE)
   updateSelectizeInput(session,"columnEvent0",choices=columnItems,selected=outcome.no,server=TRUE)
   output$timetable <- DT::renderDataTable(time_both)
-  outcome.analysis <<- outcome.new
 }
 
 if (AUTOSELECT.SURVIVAL) {
@@ -165,7 +162,6 @@ if (AUTOSELECT.SURVIVAL) {
         toggleModal(session,"autogenModal",toggle="open")
 	return(NULL)
     }
-
 
     values.edit$autogen <- FALSE
     cat("Column selection and formatting for survival analysis started...\n")
@@ -184,13 +180,14 @@ if (AUTOSELECT.SURVIVAL) {
     print("observe autoColumn.time")
     this = values.edit$table
     if (is.null(this)) return(NULL)
-    new = reduce.columns(input$autoColumn.time,NA,this)
-    if (length(new$time) == 0) return(NULL)
+    if (input$autoColumn.time == "") return(NULL)
 
-    new$time = as.double(new$time)
-    cat("selected = ", input$autoColumn.time, "\n")
-    time.analysis <<- new$time
-    time_both <- data.frame("TimeColumnOriginal" = this[[input$autoColumn.time]],"TimeColumnFormatted" = new$time)
+    cat("selected time column = ", input$autoColumn.time, "\n")
+    #new = reduce.columns(input$autoColumn.time,NA,this)
+    #if (length(new$time) == 0) return(NULL)
+
+
+    time_both <- data.frame("TimeColumnOriginal" = this[[input$autoColumn.time]],"TimeColumnFormatted" = time.analysis()$time)
 
     print("times_both: ")
     print(length(rownames(time_both)))
@@ -199,7 +196,6 @@ if (AUTOSELECT.SURVIVAL) {
 
     #save(time_both, this, new, file = "tmp.RData")
     rownames(time_both) <- rownames(this)
-
 
     # remove columns with no data
     keep = !is.na(time_both[,1]) & time_both[,1] != ""
@@ -216,13 +212,13 @@ if (AUTOSELECT.SURVIVAL) {
     cat("selected = ", selected, "\n")
     if (selected == "") return(NULL)
     selected = setdiff(selected, c("", " "))
-    new = reduce.columns(NA,input$autoColumn.outcome,this)
     outcome.orig = as.character(this[[input$autoColumn.outcome]])
-    outcome.new = new$outcome
+    outcome.new = outcome.01(input$autoColumn.outcome, this) 
     outcome.no = unique(outcome.orig[outcome.new == 0])
     outcome.yes = unique(outcome.orig[outcome.new == 1])
     columnItems = as.character(unique(this[[selected]]))
-    outcome.analysis <<- outcome.new
+
+    cat("outcome yes = ", outcome.yes, "\n")
     updateSelectizeInput(session,"columnEvent1",choices=columnItems,selected=outcome.yes,server=TRUE)
     updateSelectizeInput(session,"columnEvent0",choices=columnItems,selected=outcome.no,server=TRUE)
     
@@ -236,10 +232,19 @@ if (AUTOSELECT.SURVIVAL) {
                  output$kmSurvival <- renderPlot({
                    main = paste(input$GSE, geneLabel() , sep = ": ")
                    cat("main = ", main, "\n")
-                   return(plot.shiny.km(time = as.double(time.analysis), 
-                                        #death = as.integer(parse.modal()[,2]), 
+
+                   t = values.edit$table
+
+                   if (input$autoColumn.outcome == "") return(NULL)
+
+                   outcome.orig = values.edit$table[[input$autoColumn.outcome]]
+                   outcome.analysis = rep(NA, length(outcome.orig))
+                   outcome.analysis[outcome.orig%in%input$columnEvent0] = 0
+		   outcome.analysis[outcome.orig%in%input$columnEvent1] = 1  
+
+                   return(plot.shiny.km(time = time.analysis()$time, 
                                         death = as.integer(outcome.analysis), 
-                                        x = x(), 
+                                        x = probe.expr(), 
                                         col = colorsDE3(), title = main))
                    
                  })

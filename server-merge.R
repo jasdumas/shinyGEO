@@ -103,7 +103,7 @@ observeEvent(input$applyMergeGroups, ({
   data[[col]] = Y
 
   add1 = paste0(add1, "data.p[[\"", col, "\"]] = Y")
-  isolate(add.graph(add1))
+  isolate(add.code(add1))
 
   isolate(values.edit$table <- data)
   toggleModal(session, "MergeGroupsModal", "close")
