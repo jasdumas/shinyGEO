@@ -6,6 +6,62 @@ source("ui.tab.expression.R")
 source("ui.tab.analyses.R")
 source("ui.tab.reproducible.R")
 source("ui.tab.about.R")
+source("html.R")
+
+
+header = dashboardHeader(
+  title = uiOutput("shinyTitle"), titleWidth = 350, disable = FALSE 
+)
+
+# add id to sidebar toggle link so that we can refresh when clicked
+tmp = header$children[[3]]$children[[2]]
+tmp = gsub("\"#\"", "\"#\" id = \"sidebarToggle\"", tmp)
+header$children[[3]]$children[[2]] = tmp
+
+gse.input = div(style = "display:inline-block; width: 75%",
+            selectizeInput('GSE', label = "Accession Number", choices = NULL, width = 275,
+              options = list(placeholder = "Please enter a GSE #",
+                          maxOptions = 100)
+            )
+          )
+
+gse.button = div(style = "display:inline-block; width: 11%",
+                actionButton("submitButton", "Go!")
+          )
+
+gse.platform=  conditionalPanel(condition = "output.sidebarDisplay=='PLATFORM'|output.sidebarDisplay=='ALL'",
+
+                  div(style = "display:inline-block; width: 75%",
+                        selectizeInput('platform', label = "Platform", choices = NULL, width = 275,
+                                options = list(placeholder = "Please select a platform",
+                                maxOptions = 10)
+                        )
+                  )
+
+# Button was needed to trigger server-busy for please wait message based on server-busy
+#                  div(style = "display:inline-block; width: 11%",
+#                        actionButton("submitPlatform", "Go!")
+#                  )
+                )
+
+sidebar = dashboardSidebar(width = 350,
+  includeCSS('www/ecsu.css'),
+  includeScript('www/ecsu.js'),
+	gse.input, gse.button, gse.platform,
+	conditionalPanel(condition = "output.sidebarDisplay=='ALL'",
+	sidebarMenu(id = "tabs",
+		hr(),
+    menuItem("Home", tabName = "Home", icon = icon("home")),
+		menuItem("Differential Expression Analysis", tabName = "DifferentialExpressionAnalysis", icon = icon("flask")),
+		menuItem("Survival Analysis", tabName = "SurvivalAnalysis", icon = icon("life-ring")),
+		menuItem("View Clinical Data Table", tabName = "FullDataTable", icon = icon("table")),
+		#menuItem("Clinical Data Summary", tabName = "ClinicalDataSummary", icon = icon("table")),
+		menuItem("Code", tabName = "Code", icon = icon("code")),
+		menuItem("About", tabName = "About", icon = icon("info-circle"))
+	     )
+      )
+)
+
 
 ####################################
 # DE and survival analyses
@@ -17,8 +73,8 @@ analyses.common = conditionalPanel(condition = "input.tabs == 'DifferentialExpre
 	),
 
     div(style = "display:inline-block; width: 25%",
-    		a(id = "platLink", "Change Search Parameter",
-			style="cursor:pointer")
+    		a(id = "platLink", "Change Search Feature",
+			style="cursor:pointer; display:block; margin-bottom:5px;")
     ),
        bsModal("platformModal", "Platform annotation", 
                        "platLink", size = "large",
@@ -29,7 +85,6 @@ analyses.common = conditionalPanel(condition = "input.tabs == 'DifferentialExpre
  
        	div(style = "display:inline-block; width: 35%",
 		conditionalPanel(condition = "input.tabs =='SurvivalAnalysis'",
-          		bsButton("autoAnalysis","Select Time/Outcome", style="success",disabled = TRUE),
             		genBSModal("autogenModal","Survival Analyses","",size="large")
         	)
 	)
@@ -108,7 +163,6 @@ body = dashboardBody(
 
    tabItems(
       # First tab content
-      tabItem("sessionInfo", verbatimTextOutput("test")),
       tab.expression,
       tab.DE.analysis,
       tab.survival.analysis,
