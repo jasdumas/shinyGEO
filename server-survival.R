@@ -100,6 +100,11 @@ outcome.01 <-function(outcome, this) {
 reduce <- function(column){
   gsub(".*: ","",column)
 }
+
+# reduces time and outcome columns
+# we need this function right now
+# because time and outcome may be autodetected 
+# (i.e., not selected in drop down)
 reduce.columns <- function(time,outcome,this){
   if(is.na(outcome)){
     reduced.time = reduce(this[[time]])
@@ -137,12 +142,14 @@ main.gen <- function(this,columns.data){
   print("Generating automatic column selection and formatting...")
   #Reduce and analyze
   new = reduce.columns(columns.data[1],columns.data[2],this)
+
   outcome.orig = as.character(this[[columns.data[2]]])
   outcome.new = new$outcome
   outcome.no = unique(outcome.orig[outcome.new == 0])
   outcome.yes = unique(outcome.orig[outcome.new == 1])
   # Create data frame for time output
-  time_both <- data.frame(this[[columns.data[1]]],new$time)
+  time_both <- data.frame("TimeColumnOriginal" = this[[columns.data[1]]],
+			  "TimeColumnFormatted" = new$time)
   #Render UI
   columnItems = as.character(unique(this[[columns.data[2]]]))
   columnItems = setdiff(columnItems,c(""," "))
@@ -150,7 +157,12 @@ main.gen <- function(this,columns.data){
   updateSelectizeInput(session,"autoColumn.outcome",choices=colnames(this),selected=columns.data[2])
   updateSelectizeInput(session,"columnEvent1",choices=columnItems,selected=outcome.yes,server=TRUE)
   updateSelectizeInput(session,"columnEvent0",choices=columnItems,selected=outcome.no,server=TRUE)
-  output$timetable <- DT::renderDataTable(time_both)
+
+    rownames(time_both) <- rownames(this)
+    # remove columns with no data
+    keep = !is.na(time_both[,1]) & time_both[,1] != ""
+    time_both = subset(time_both, keep)
+    output$timetable <- DT::renderDataTable(time_both)
 }
 
 if (AUTOSELECT.SURVIVAL) {
@@ -158,15 +170,27 @@ if (AUTOSELECT.SURVIVAL) {
   # on button click, toggle modal and autogen only when autogen is TRUE (i.e., on first time only) 
   observeEvent(input$autoAnalysis,{
 
+    this = values.edit$table
+    if (is.null(this)) return(NULL)
+
     if (!values.edit$autogen) {
+	# use last saved values
+  	updateSelectizeInput(session,"autoColumn.time",choices=colnames(this),
+		selected=KM$time.col)
+  	updateSelectizeInput(session,"autoColumn.outcome",choices=colnames(this),
+		selected=KM$outcome.col)
+
+	events = as.character(unique(this[[KM$outcome.col]]))
+  	updateSelectizeInput(session,"columnEvent1",choices=events,
+		selected=KM$eventYes,server=TRUE)
+  	updateSelectizeInput(session,"columnEvent0",choices=events,
+		selected=KM$eventNo,server=TRUE)
+	
         toggleModal(session,"autogenModal",toggle="open")
 	return(NULL)
     }
 
-    values.edit$autogen <- FALSE
     cat("Column selection and formatting for survival analysis started...\n")
-    if (is.null(values.edit$table)) return(NULL)
-    this = values.edit$table
     columns.data = calc.columns(this)
     main.gen(this,columns.data)  
     toggleModal(session,"autogenModal",toggle="open")
@@ -194,7 +218,6 @@ if (AUTOSELECT.SURVIVAL) {
     print("this: ")
     print(length(rownames(this)))
 
-    #save(time_both, this, new, file = "tmp.RData")
     rownames(time_both) <- rownames(this)
 
     # remove columns with no data
@@ -203,7 +226,7 @@ if (AUTOSELECT.SURVIVAL) {
     output$timetable <- DT::renderDataTable(time_both)
   }))
   
-  
+ 
   observeEvent(input$autoColumn.outcome,({
     print("observe autoColumn.outcome")
     if (is.null(values.edit$table)) return(NULL)
@@ -228,6 +251,12 @@ if (AUTOSELECT.SURVIVAL) {
   observeEvent(input$genBtn,
                ({
                  print("observe genBtn\n")
+    	         values.edit$autogen <- FALSE
+		 KM$time.col = isolate(input$autoColumn.time)
+		 KM$outcome.col = isolate(input$autoColumn.outcome)
+		 KM$eventNo = isolate(input$columnEvent0)
+		 KM$eventYes = isolate(input$columnEvent1)
+
                  if (is.null(values.edit$table)) return(NULL)
                  output$kmSurvival <- renderPlot({
                    main = paste(input$GSE, geneLabel() , sep = ": ")
@@ -237,12 +266,12 @@ if (AUTOSELECT.SURVIVAL) {
 
                    if (input$autoColumn.outcome == "") return(NULL)
 
-                   outcome.orig = values.edit$table[[input$autoColumn.outcome]]
+                   outcome.orig = values.edit$table[[KM$outcome.col]]
                    outcome.analysis = rep(NA, length(outcome.orig))
-                   outcome.analysis[outcome.orig%in%input$columnEvent0] = 0
-		   outcome.analysis[outcome.orig%in%input$columnEvent1] = 1  
+                   outcome.analysis[outcome.orig%in%KM$eventNo] = 0
+		   outcome.analysis[outcome.orig%in%KM$eventYes] = 1  
 
-                   return(plot.shiny.km(time = time.analysis()$time, 
+                   return(plot.shiny.km(time = isolate(time.analysis()$time), 
                                         death = as.integer(outcome.analysis), 
                                         x = probe.expr(), 
                                         col = colorsDE3(), title = main))

@@ -20,6 +20,8 @@ createAlert(session, "alert1", alertId = "GSE-begin-alert",
 values.edit <- reactiveValues(table = NULL, platformGeneColumn = NULL, original = NULL, log2 = FALSE, profilesPlot = FALSE, autogen = TRUE)
 
 reproducible <-reactiveValues(report = NULL)
+KM <- reactiveValues(time.col = NULL, outcome.col = NULL, 
+	eventYes = NULL, eventNo = NULL)
 
 ### functions to append/aggregate a new line to the aceEditor
     
