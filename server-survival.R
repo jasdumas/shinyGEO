@@ -106,6 +106,14 @@ reduce <- function(column){
 # because time and outcome may be autodetected 
 # (i.e., not selected in drop down)
 reduce.columns <- function(time,outcome,this){
+  
+   if(is.na(time) && is.na(outcome)){
+    createAlert(session, "warningAlert", alertId = "warn3", title = "Warning: No Columns were found",
+                content = c("<p>Oops! shinyGEO could not find columns for survival analysis in your data. Please try the following: <ol><li>View the table and select the columns relevant to time and outcome or..</li><li>Use manual selection and format your data accordingly.</li></ol></p>"), style= 'danger', dismiss = TRUE, append = TRUE)
+    ans = list(time = NA, outcome = NA)
+    return(ans)
+  }
+
   if(is.na(outcome)){
     reduced.time = reduce(this[[time]])
     ans = list(time = reduced.time)
@@ -118,14 +126,7 @@ reduce.columns <- function(time,outcome,this){
     ans = list(outcome = reduced.outcome)
     return (ans)
     
-  }
-  else if(is.na(time) && is.na(outcome)){
-    createAlert(session, "warningAlert", alertId = "warn3", title = "Warning: No Columns were found",
-                content = c("<p>Oops! shinyGEO could not find columns for survival analysis in your data. Please try the following: <ol><li>View the table and select the columns relevant to time and outcome or..</li><li>Use manual selection and format your data accordingly.</li></ol></p>"), style= 'danger', dismiss = TRUE, append = TRUE)
-    ans = list(time = NA, outcome = NA)
-    return(ans)
-  }
-  else{
+  } else{
     reduced.time = reduce(this[[time]])
     reduced.outcome = reduce(this[[outcome]])
     reduced.outcome = replace(reduced.outcome,(reduced.outcome == "NO" | reduced.outcome == "censored"),0)
@@ -135,34 +136,41 @@ reduce.columns <- function(time,outcome,this){
   }
 }
 
-
 #main function
 
 main.gen <- function(this,columns.data){
   print("Generating automatic column selection and formatting...")
   #Reduce and analyze
+  # update inputs for time and outcome columns
+  updateSelectizeInput(session,"autoColumn.time",choices=colnames(this),
+	selected=columns.data[1])
+  updateSelectizeInput(session,"autoColumn.outcome",choices=colnames(this),
+	selected=columns.data[2])
+
   new = reduce.columns(columns.data[1],columns.data[2],this)
+  if (!is.na(new$outcome)) {
+    outcome.orig = as.character(this[[columns.data[2]]])
+    outcome.new = new$outcome
+    outcome.no = unique(outcome.orig[outcome.new == 0])
+    outcome.yes = unique(outcome.orig[outcome.new == 1])
+    columnItems = as.character(unique(this[[columns.data[2]]]))
+    columnItems = setdiff(columnItems,c(""," "))
+    updateSelectizeInput(session,"columnEvent1",choices=columnItems,
+	selected=outcome.yes,server=TRUE)
+    updateSelectizeInput(session,"columnEvent0",choices=columnItems,
+	selected=outcome.no,server=TRUE)
+  }
 
-  outcome.orig = as.character(this[[columns.data[2]]])
-  outcome.new = new$outcome
-  outcome.no = unique(outcome.orig[outcome.new == 0])
-  outcome.yes = unique(outcome.orig[outcome.new == 1])
-  # Create data frame for time output
-  time_both <- data.frame("TimeColumnOriginal" = this[[columns.data[1]]],
+  if (!is.na(new$time)) {
+    time_both <- data.frame("TimeColumnOriginal" = this[[columns.data[1]]],
 			  "TimeColumnFormatted" = new$time)
-  #Render UI
-  columnItems = as.character(unique(this[[columns.data[2]]]))
-  columnItems = setdiff(columnItems,c(""," "))
-  updateSelectizeInput(session,"autoColumn.time",choices=colnames(this),selected=columns.data[1])
-  updateSelectizeInput(session,"autoColumn.outcome",choices=colnames(this),selected=columns.data[2])
-  updateSelectizeInput(session,"columnEvent1",choices=columnItems,selected=outcome.yes,server=TRUE)
-  updateSelectizeInput(session,"columnEvent0",choices=columnItems,selected=outcome.no,server=TRUE)
-
     rownames(time_both) <- rownames(this)
     # remove columns with no data
     keep = !is.na(time_both[,1]) & time_both[,1] != ""
     time_both = subset(time_both, keep)
     output$timetable <- DT::renderDataTable(time_both)
+  }
+  
 }
 
 if (AUTOSELECT.SURVIVAL) {
