@@ -1,14 +1,15 @@
-###############################################################################
-### stripchart2 function to dictate the graphical appearance of gene expression
-##############################################################################
-stripchart2 <- function(x,y, Group1Values, group.names = NULL, jitter = 0.3, line.off = 0.3, 
-                        lwd = 5, col = NULL, main = "",  ...) {
-
+################################################################################
+# generates dotplot evaluating differential expression for expression 
+# vector 'x' and group labels 'y'. The 'GroupNames' are levels of 'y' in 
+# in presentation order, and 'group.names' are optional names for these levels 
+################################################################################
+stripchart2 <- function(x,y, GroupNames, group.names = NULL, col = NULL, 
+			main = "",  ...) {
   s = split(x,y)
   num.groups = sum(sapply(s, function(x)!all(is.na(x)))) 
   stats = !(all(is.na(x) | length(s) == 0 | num.groups < 2))
 
-  if (is.null(group.names)) group.names = Group1Values 
+  if (is.null(group.names)) group.names = GroupNames 
   
   if (is.null(col)) col = 1:length(s)
   add = NULL
@@ -45,36 +46,34 @@ stripchart2 <- function(x,y, Group1Values, group.names = NULL, jitter = 0.3, lin
 			add = paste0("\nP = ", p)
    		}
 	}
-   } 
+ } 
 
-    if (is.null(main)) {
-      main = "" 
-    } else {
-      main = paste(main, add)
-    }
+ if (is.null(main)) {
+    main = "" 
+ } else {
+    main = paste(main, add)
+ }
  
-  
- 
-  m = melt(s, na.rm=FALSE)
+ m = melt(s, na.rm=FALSE)
 
-  # re-order levels based on input order according to Group1Values 
-  # this must be done here, as 'melt' reorders alphabetically	
-  f <-function(x,l) {
+ # re-order levels based on input order according to GroupNames 
+ # this must be done here, as 'melt' reorders alphabetically	
+ f <-function(x,l) {
 	w = which(l%in%x)
 	if (length(w) == 0) return(NA)
 	w
-  } 
-  m$L1 = reorder(m$L1, sapply(m$L1,f,Group1Values))
+ } 
+ m$L1 = reorder(m$L1, sapply(m$L1,f,GroupNames))
 
-  s2 = split(m$value, m$L1)
-  n.groups = sapply(s2, function(x)sum(!is.na(x))) 
-  n.groups = paste0("(n=", n.groups, ")")
-  group.names = paste0(group.names, "\n", n.groups) 
+ s2 = split(m$value, m$L1)
+ n.groups = sapply(s2, function(x)sum(!is.na(x))) 
+ n.groups = paste0("(n=", n.groups, ")")
+ group.names = paste0(group.names, "\n", n.groups) 
 
-  mean.no.na <<- function(x) mean(x,na.rm=TRUE)
+ mean.no.na <<- function(x) mean(x,na.rm=TRUE)
 
-  stripchart3 <- ggplot(m, aes(x = as.factor(L1), y = value, color=L1)) 
-  return(stripchart3 + 
+ stripchart3 <- ggplot(m, aes(x = as.factor(L1), y = value, color=L1)) 
+ return(stripchart3 + 
            labs(title = main, y = "log2 expression", x="") +
 	   theme(legend.position="none", 
                axis.text.x = element_text(face = "bold", color = "black")) +
@@ -84,5 +83,4 @@ stripchart2 <- function(x,y, Group1Values, group.names = NULL, jitter = 0.3, lin
            geom_errorbar(stat = "summary", fun.y = "mean.no.na", width=0.8,
 		aes(ymax=..y..,ymin=..y..))
    )
-   
 }

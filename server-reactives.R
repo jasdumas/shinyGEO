@@ -23,6 +23,8 @@ reproducible <-reactiveValues(report = NULL)
 KM <- reactiveValues(time.col = NULL, outcome.col = NULL, 
 	eventYes = NULL, eventNo = NULL)
 
+CODE <- reactiveValues(stripchart.loaded = FALSE, plot.km.loaded = FALSE)
+
 ### functions to append/aggregate a new line to the aceEditor
     
 observeEvent(input$GSE, {

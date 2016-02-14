@@ -116,9 +116,14 @@ quote.it <-function(x) paste0("\"", x, "\"")
 observeEvent(input$DEadd, {
   if (TRACE) cat("In report append DE...\n")
 
-s2function = scan(file = "stripchart2.R", what = character(), sep = "\n")
-sapply(s2function, add.code)
- 
+
+if (!CODE$stripchart.loaded) {
+  s2function = scan(file = "stripchart2.R", what = character(), sep = "\n")
+  sapply(s2function, add.code)
+  CODE$stripchart.loaded = TRUE
+  add.code("")
+} 
+
 vector.it <-function(x) {
   x = paste0("\"", x, "\"", collapse = ",")
   paste0("c(", x, ")")
@@ -127,10 +132,12 @@ vector.it <-function(x) {
 
  
 ## generate differential expression plot ##
+add.de.header = "## Differential Expression Analysis ##"
 add.probe = paste0("probe = \"", input$selectGenes, "\"") 
 add.column = paste0("column = \"", input$selectedColumn, "\"")
 add.groups = paste0("groups = ", vector.it(input$Group1Values)) 
 
+add.code(add.de.header)
 add.code(add.probe)
 add.code(add.column)
 add.code(add.groups)
@@ -156,13 +163,18 @@ add.code(s3plot)
 ## Survival Plot Append to report 
 #################################
 observeEvent(input$Survadd, {
-   kmfunction = scan(file = "plot.shiny.km.R", what = character(), sep = "\n")
-   sapply(kmfunction, add.code)
-   add.code(time.analysis()$code)
 
+   if (!CODE$plot.km.loaded) {
+     kmfunction = scan(file = "plot.shiny.km.R", what = character(), sep = "\n")
+     sapply(kmfunction, add.code)
+     add.code(time.analysis()$code)
+     add.code("")
+     CODE$plot.km.loaded = TRUE
+  }
+
+add.code("## Survival Analysis ##")
 add.probe = paste0("probe = \"", input$selectGenes, "\"") 
-kmplot <-paste0("
-probe = \"", input$selectGenes, "\" 
+kmplot <-paste0("probe = \"", input$selectGenes, "\" 
 x = data.expr[probe,]
 
 outcome.column = \"", input$autoColumn.outcome, "\"
