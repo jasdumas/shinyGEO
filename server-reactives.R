@@ -26,6 +26,28 @@ KM <- reactiveValues(time.col = NULL, outcome.col = NULL,
 # expression.code is -1 (do not add code), 0 (add all code), or 1 (update expression code)
 CODE <- reactiveValues(stripchart.loaded = FALSE, plot.km.loaded = FALSE, expression.code = 0)
 
+
+reactiveValues.reset <-function() {
+	values.edit$table = NULL
+	values.edit$platformGeneColumn = NULL
+	values.edit$original = NULL
+	values.edit$log2 = FALSE
+	values.edit$profilesPlot = FALSE
+	values.edit$autogen = TRUE
+	values.edit$norm = 1
+
+	reproducible$report = NULL
+
+	KM$time.col = NULL
+	KM$outcome.col = NULL
+	KM$eventYes = NULL
+	KM$eventNo = NULL
+
+        CODE$stripchart.loaded = FALSE
+	CODE$plot.km.loaded = FALSE
+	CODE$expression.code = 0
+}
+
 ### functions to append/aggregate a new line to the aceEditor
 
     
@@ -138,9 +160,9 @@ dataInput <- reactive({
   input$submitButton
   add.tab()
   updateTabItems(session, "tabs", "Home") 
+
   # reset variables 
-  values.edit$table <- NULL  
-  values.edit$platformGeneColumn <- NULL
+  reactiveValues.reset()
 
   # Runs the intial input once the button is pressed from within the 
   # reactive statement
@@ -160,8 +182,10 @@ dataInput <- reactive({
   if (GSE=="") return(NULL)
  
   closeAlert(session, "GSE-begin-alert")
+  closeAlert(session, "GSE-error-alert")
   closeAlert(session, "GSE-progress-alert")
   closeAlert(session, "GPL-alert")
+  closeAlert(session, "Analysis-alert")
   cat("creating alert...\n")
 
   content = "Downloading Series (GSE) data from GEO" 
@@ -171,7 +195,15 @@ dataInput <- reactive({
               content = content , append = TRUE, dismiss = FALSE) 
   code = paste0("data.series = getGEO(GEO = \"", GSE, "\", AnnotGPL = FALSE, getGPL = FALSE)")
 
-    geo = getGEO(GEO = isolate(GSE), AnnotGPL=FALSE, getGPL = FALSE) 
+    geo = try(getGEO(GEO = isolate(GSE), AnnotGPL=FALSE, getGPL = FALSE))
+
+    if (class(geo) == "try-error") {
+        content = "This is typically an indication that the GEO data is not in the correct format. Please select another dataset to continue. <p><p>The specific error appears below:<p>"
+	content = paste0(content,  gsub("\n", "<p>",geo[[1]]))
+	createAlert(session, "alert1", alertId = "GSE-error-alert", title = "Error downloading GEO dataset", style = "danger", content = content, append = FALSE, dismiss = TRUE)
+	return(NULL) 
+    }
+ 
     subtract.tab()
     geo
 })
