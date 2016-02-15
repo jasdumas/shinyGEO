@@ -338,17 +338,8 @@ expression22Plot <-reactive({
 })
 
 
-#observe({
-#   alert = ALERTS$analysisAlert
-#   if (alert) {
-#  	createAlert(session, "alert1", alertId = "Analysis-alert", title = "Please select an Analysis", style = "success",
-#	content = "Gene expression profiles have been downloaded successfully. Please select either a Differential Expression Analysis or a Survival Analysis from the sidebar to continue", append = FALSE)
-#    isolate(ALERTS$analysisAlert <- FALSE)
-#    }
-
-#})
-
-expressionPlot <-reactive({
+#expressionPlot <-reactive({
+observe ({
   cat("\n\nrendering profiles...\n")
 
   # Return max 30 exp. samples if there is alot of samples to make the determination easier = unclutterd graphics
@@ -375,14 +366,8 @@ expressionPlot <-reactive({
 
   cat("create expression alert\n")
 
-#  isolate(closeAlert(session, "GSE-begin-alert"))
-#  isolate(closeAlert(session, "GPL-alert"))
-
-  #par(mar=c(2+round(max(nchar(sampleNames(dataInput())))/2),4,2,1))
   title <- paste(isolate(input$GSE), '/', isolate(input$platform), title.detail, sep ='') # need 
  
-  #library(tidyr) # possible move from reshape2 to tidyr
-  #x1 = gather(data = x, na.rm =TRUE)
   fixed.df <- as.data.frame(x=x, stringsAsFactors = FALSE)
   
   x1 <- reshape2::melt(fixed.df, na.rm = TRUE, id.vars = NULL, 
@@ -394,8 +379,8 @@ expressionPlot <-reactive({
                 labs(title = title, y = y.label, x = "") + 
                 theme(axis.text.x = element_text(angle = 90, hjust = 1))
   isolate(values.edit$profilesPlot <- TRUE) 
-  #closeAlert(session, "Expression-alert")
-  return(exp.prof.plot)
+  output$exProfiles <- renderPlot({print(exp.prof.plot)})
+  #return(exp.prof.plot)
 })
 
 observe({
@@ -408,9 +393,6 @@ observe({
 if (EXPRESSION.PLOT) { 
   output$exProfiles <- renderPlot({print(expressionPlot())})
 } # end EXPRESSION.PLOT
-
-
-
 
 if (DE.PLOT) {
   observe({

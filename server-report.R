@@ -29,17 +29,23 @@ observeEvent(input$reportBtn, {
  
 })
 
-######################################
-# Initial Code Append to Report
-######################################
-observeEvent(profiles(),  {
+#########################################################
+# profiles() or CODE$expression.code will trigger report 
+#########################################################
+observe({
+
+  if (CODE$expression.code <0) return(NULL)
   if (is.null(profiles())) return(NULL)
+
   cat("observe profiles\n")
   if (TRACE) cat("In Initial...\n")
   GSE = input$GSE
   if (GSE == "") {
     GSE = strsplit(names(GEO.test),"-")[[1]][1]
   }
+
+
+if (CODE$expression.code == 0) {
   initialCode <- paste0(
 "## Load required packages ##
 library(GEOquery)
@@ -56,10 +62,17 @@ data.series = getGEO(GEO = GSE, AnnotGPL = FALSE, getGPL = FALSE)
 data.platform = getGEO(GPL)
 data.index = match(GPL, sapply(data.series, annotation))
 data.p = pData(data.series[[data.index]])
-data.expr = exprs(data.series[[data.index]])
 ") # end of paste of intial code download
   
   add.code(initialCode)
+}
+
+# if here, CODE$expression.code is not negative 1, so always add expression
+
+if (CODE$expression.code == 1) {
+  add.code("# change default expression normalization")
+}
+  add.code("data.expr = exprs(data.series[[data.index]])")
 
   if (values.edit$log2) {
 	add1  = "data.expr[which(data.expr <= 0)] <- NaN"
@@ -93,7 +106,8 @@ print(exp.prof.plot)
 ")
 
   add.code(exp)
-  
+  CODE$expression.code <- -1 
+ 
  cat("END Initial\n") 
 })
 

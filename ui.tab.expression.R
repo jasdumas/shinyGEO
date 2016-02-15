@@ -20,15 +20,15 @@ tab.expression = tabItem(tabName = "Home",
 		)
 
 ),
-		bsModal("normalalizationModal", "Expression Profiles", "normLink", size = "large",
-                       radioButtons("radio", label = "Select a method of log transformation to apply to the data", 
-                                    choices = list("Auto-Detect" = 1, "Yes" = 2, "No" = 3), 
-                                    selected = 1, inline = TRUE),
+                # possibly use formatBSModal with applyID = "saveExp"
+		bsModal("normalizationModal", "Expression Profiles", "normLink", size = "large",
+                      # radioButtons("radio", label = "Select a method of log transformation to apply to the data", 
+                       #             choices = list("Auto-Detect" = 1, "Yes" = 2, "No" = 3), 
+                        #            selected = 1, inline = TRUE),
 			bsAlert("expAlert"),
                        plotOutput("exProfiles") 
 		),
 
-#		p(), p(), HTML("<hr style = \"width:30px\">"),
 		DT::dataTableOutput("clinicalDataSummarySummary")
 )
 

@@ -17,15 +17,17 @@ createAlert(session, "alert1", alertId = "GSE-begin-alert",
 ###################################################
 # Edit table reactiveValues()
 ###################################################
-values.edit <- reactiveValues(table = NULL, platformGeneColumn = NULL, original = NULL, log2 = FALSE, profilesPlot = FALSE, autogen = TRUE)
+values.edit <- reactiveValues(table = NULL, platformGeneColumn = NULL, original = NULL, log2 = FALSE, profilesPlot = FALSE, autogen = TRUE, norm = 1, norm.open = FALSE)
 
 reproducible <-reactiveValues(report = NULL)
 KM <- reactiveValues(time.col = NULL, outcome.col = NULL, 
 	eventYes = NULL, eventNo = NULL)
 
-CODE <- reactiveValues(stripchart.loaded = FALSE, plot.km.loaded = FALSE)
+# expression.code is -1 (do not add code), 0 (add all code), or 1 (update expression code)
+CODE <- reactiveValues(stripchart.loaded = FALSE, plot.km.loaded = FALSE, expression.code = 0)
 
 ### functions to append/aggregate a new line to the aceEditor
+
     
 observeEvent(input$GSE, {
   if (input$GSE!= "") {
@@ -34,6 +36,21 @@ observeEvent(input$GSE, {
      shinyjs::disable('submitButton')
   }
 })
+
+# open/close normalizationModal
+#observeEvent(input$normalizationModal, {
+#  cat("normalizationModal...\n")
+#  updateRadioButtons(session, "radio", label = "Apply log normalization to expression data:",
+#                                    choices = list("Auto-Detect" = 1, "Yes" = 2, "No" = 3),
+#                                    selected = values.edit$norm, inline = TRUE)
+#})
+
+## when user saves changes to expression
+#observeEvent(input$saveExp, {
+#  CODE$expression.code <- 1
+#  values.edit$norm <- input$radio
+#  toggleModal(session, "normalizationModal", "close") 
+#})
 
 ################################
 # Tab Observers 
@@ -400,7 +417,12 @@ profiles <- reactive({
   LogC <- (qx[5] > 100) ||
     (qx[6]-qx[1] > 50 && qx[2] > 0) ||
     (qx[2] > 0 && qx[2] < 1 && qx[4] > 1 && qx[4] < 2)
-  if (LogC & input$radio == 1 | input$radio == 2) { 
+
+  # remove radio button, so always use autodetect (=1)
+  #radio <- input$radio 
+  radio = 1
+
+  if (LogC & radio == 1 | radio == 2) { 
     	ex[which(ex <= 0)] <- NaN
     	values.edit$log2 = TRUE
   	subtract.tab()
