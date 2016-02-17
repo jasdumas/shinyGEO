@@ -278,12 +278,20 @@ if (AUTOSELECT.SURVIVAL) {
                    outcome.analysis = rep(NA, length(outcome.orig))
                    outcome.analysis[outcome.orig%in%KM$eventNo] = 0
 		   outcome.analysis[outcome.orig%in%KM$eventYes] = 1  
+			
+                   hr.inverse = FALSE
+      		   if (!is.null(input$hr.format)) {
+			if(input$hr.format == "low/high") {
+				hr.inverse = TRUE
+			}
+		   }
 
                    return(plot.shiny.km(time = isolate(time.analysis()$time), 
                                         death = as.integer(outcome.analysis), 
                                         x = probe.expr(), 
-                                        col = colorsDE3(), title = main))
-                   
+                                        col = colorsDE3(), title = main,
+					xlab = input$km.xlab, ylab = input$km.ylab,
+					hr.inverse = hr.inverse))
                  })
                  closeAlert(session,"warn1")
                  closeAlert(session,"warn2")

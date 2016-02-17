@@ -186,6 +186,32 @@ observeEvent(input$Survadd, {
      CODE$plot.km.loaded = TRUE
   }
 
+
+xlab = input$km.xlab
+ylab = input$km.ylab
+
+if (is.null(xlab)) {
+	xlab = "NULL"
+} else {
+	xlab = paste0("\"",xlab, "\"")
+}
+if (is.null(ylab)) {
+	ylab = "NULL"
+} else {
+	ylab = paste0("\"",ylab, "\"")
+}
+
+hr.inverse = FALSE
+if (!is.null(input$hr.format)) {
+	if(input$hr.format == "low/high") {
+        	hr.inverse = TRUE
+        }
+}
+
+labels = paste0("\nxlab = ", xlab, "\nylab = ", ylab, "\nhr.inverse = ", hr.inverse) 
+
+
+
 add.code("## Survival Analysis ##")
 add.probe = paste0("probe = \"", input$selectGenes, "\"") 
 kmplot <-paste0("probe = \"", input$selectGenes, "\" 
@@ -199,9 +225,10 @@ eventNo = ", vector.it(input$columnEvent0), "
 eventYes = ", vector.it(input$columnEvent1), "
 outcome[outcome.orig %in% eventNo] = 0
 outcome[outcome.orig %in% eventYes] = 1
- 
-main = paste(GSE, \"", geneLabel(), "\", sep = \": \")
-plot.shiny.km(time = time, death = as.integer(outcome), x = x, col = ", vector.it(colorsDE3()), ", title = main)
+
+main = paste(GSE, \"", geneLabel(), "\", sep = \": \")\n", labels, "
+
+plot.shiny.km(time = time, death = as.integer(outcome), x = x, col = ", vector.it(colorsDE3()), ", title = main, xlab = xlab, ylab = ylab, hr.inverse = hr.inverse)
 ")
  
  add.code(kmplot)

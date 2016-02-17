@@ -4,8 +4,8 @@
 ###################################################################################
 plot.shiny.km <- function(time, death, x, title = "", 
                           subset = rep(TRUE, length(time)), 
-                          col = NULL,  ...) {
-  
+                          col = NULL,  xlab = NULL, ylab = NULL, hr.inverse = FALSE, ...) {
+
   ## filter out missing data ##
   subset = subset & !is.na(time) & !is.na(death) & !is.na(x) & !is.nan(x)
   x = x[subset]; time = time[subset]; death = death[subset]
@@ -22,11 +22,14 @@ plot.shiny.km <- function(time, death, x, title = "",
   x = as.factor(newX)
   
   n = length(levels(x))
-  km.group = coxph(Surv(time, death) ~ x)
+  expression = x  
+  km.group = coxph(Surv(time, death) ~ expression)
   p.km = 1 - pchisq(km.group$score,n-1)
   hr = exp(km.group$coefficients)
   n = km.group$n
-  
+ 
+  if (hr.inverse) hr = 1/hr 
+ 
   hr.str = paste("HR = ", round(hr,2), ", ")
   p.str = paste("P = ", round(p.km,4), sep = "")
  
@@ -35,14 +38,18 @@ plot.shiny.km <- function(time, death, x, title = "",
   } else {
 	  title = paste0(title, "\n",hr.str, p.str)
   }
-  
+ 
+  if (is.null(xlab)) xlab = "Time"
+  if (is.null(ylab)) ylab = "Survival"
+ 
   ## plot graph ### ggplot2/GGally form
-  km.group1 = survfit(Surv(time, death) ~ x)
+  km.group1 = survfit(Surv(time, death) ~ expression)
   km.group = ggsurv(km.group1, 
-                    main = title, xlab = "Time", ylab = "Survival",
-                    surv.col = col, cens.col = "black") +
-    theme(plot.title = element_text(vjust = 0.5, colour = "black"))
+                    main = title, 
+                    surv.col = col, cens.col = col, xlab = xlab, ylab = ylab,...) +
+		    ggplot2::coord_cartesian(ylim = c(0, 1))
+#    theme(plot.title = element_text(vjust = 0.5, colour = "black"))
   
-  plot(km.group, ...)
+  plot(km.group)
 }
  
