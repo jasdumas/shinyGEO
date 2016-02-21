@@ -39,6 +39,8 @@ tab.about = tabItem("About",
         Technology from Manchester Community College. <span class= \'label label-info\'>Contributor</span></p>
 
   </div>
-</div>")
+</div>"),
+    tags$h4("Session Information"),
+    verbatimTextOutput("test")
 )
 

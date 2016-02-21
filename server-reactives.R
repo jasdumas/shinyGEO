@@ -7,13 +7,7 @@ shinyjs::onclick("sidebarToggle",
 #  cat("refreshing display...\n")
 )
 
-
 LAST.TAB = "Home"
-
-createAlert(session, "alert0", alertId = "Welcome-alert", title = "shinyGEO", style = "danger",
-  	content = "shinyGEO is a tool for downloading and analyzing gene expression data from the
-                Gene Expression Omnibus (GEO), in order to evaluate whether or not a gene of interest is (1) associated with survival in datasets with this information and (2) differentially expressed across two or more groups.", dismiss = TRUE)
-
        content = HTML("To find a dataset, search the <a href = 'http://www.ncbi.nlm.nih.gov/geo/\'>Gene Expression Omnibus</a> and filter by 'Expression profiling by array'.")
 
 createAlert(session, "alert1", alertId = "GSE-begin-alert", 
@@ -23,15 +17,62 @@ createAlert(session, "alert1", alertId = "GSE-begin-alert",
 ###################################################
 # Edit table reactiveValues()
 ###################################################
-values.edit <- reactiveValues(table = NULL, platformGeneColumn = NULL, original = NULL, log2 = FALSE, profilesPlot = FALSE)
-reproducible <-reactiveValues(code = NULL, report = NULL)
-KM <-reactiveValues(eventNames = NULL, outcome = NULL)
+values.edit <- reactiveValues(table = NULL, platformGeneColumn = NULL, original = NULL, log2 = FALSE, profilesPlot = FALSE, autogen = TRUE, norm = 1, norm.open = FALSE)
 
+reproducible <-reactiveValues(report = NULL)
+KM <- reactiveValues(time.col = NULL, outcome.col = NULL, 
+	eventYes = NULL, eventNo = NULL)
+
+# expression.code is -1 (do not add code), 0 (add all code), or 1 (update expression code)
+CODE <- reactiveValues(stripchart.loaded = FALSE, plot.km.loaded = FALSE, expression.code = 0)
+
+
+reactiveValues.reset <-function() {
+	values.edit$table = NULL
+	values.edit$platformGeneColumn = NULL
+	values.edit$original = NULL
+	values.edit$log2 = FALSE
+	values.edit$profilesPlot = FALSE
+	values.edit$autogen = TRUE
+	values.edit$norm = 1
+
+	reproducible$report = NULL
+
+	KM$time.col = NULL
+	KM$outcome.col = NULL
+	KM$eventYes = NULL
+	KM$eventNo = NULL
+
+        CODE$stripchart.loaded = FALSE
+	CODE$plot.km.loaded = FALSE
+	CODE$expression.code = 0
+}
 
 ### functions to append/aggregate a new line to the aceEditor
-add.line <-function(line) {
-    reproducible$code = paste(isolate(reproducible$code), line, sep = "\n")
-}
+
+    
+observeEvent(input$GSE, {
+  if (input$GSE!= "") {
+     shinyjs::enable('submitButton')
+  } else {
+     shinyjs::disable('submitButton')
+  }
+})
+
+# open/close normalizationModal
+#observeEvent(input$normalizationModal, {
+#  cat("normalizationModal...\n")
+#  updateRadioButtons(session, "radio", label = "Apply log normalization to expression data:",
+#                                    choices = list("Auto-Detect" = 1, "Yes" = 2, "No" = 3),
+#                                    selected = values.edit$norm, inline = TRUE)
+#})
+
+## when user saves changes to expression
+#observeEvent(input$saveExp, {
+#  CODE$expression.code <- 1
+#  values.edit$norm <- input$radio
+#  toggleModal(session, "normalizationModal", "close") 
+#})
 
 ################################
 # Tab Observers 
@@ -70,11 +111,13 @@ observeEvent(input$tabs, {
 
   if (input$tabs != "Home") {
 	closeAlert(session, alertId = "Analysis-alert")
-  shinyjs::disable('GSE')
-  shinyjs::disable('platform')
+  	shinyjs::disable('GSE')
+  	shinyjs::disable('platform')
+  	shinyjs::disable('submitButton')
   } else {
-    shinyjs::enable('GSE')
-    shinyjs::enable('platform')  
+    	shinyjs::enable('GSE')
+    	shinyjs::enable('platform')  
+    	if (input$GSE!="") shinyjs::enable('submitButton')  
 	closeAlert(session, alertId = "SelectGene-alert")
 	closeAlert(session, alertId = "SelectGroups")
   } 
@@ -106,37 +149,20 @@ observeEvent(input$platform, {
   closeAlert(session, "geneSymbolAlert")
   values.edit$table <- NULL  
   values.edit$platformGeneColumn <- NULL
-})
-
-
-observeEvent(reproducible$code, {
-     cat("updateAceEditor for code\n")
-     updateAceEditor(session, "myEditor", reproducible$code,
-                         mode="r", theme="chrome")
- })
-
-
-
-observeEvent(input$hiButton, {
-  cat("observe submitButton\n") 
-  updateTabItems(session, "tabs", "Home") 
+  values.edit$autogen = TRUE
 })
 
 
 ####################################
 ### dataInput: the GEO object ######
 ####################################
-
 dataInput <- reactive({
   input$submitButton
   add.tab()
   updateTabItems(session, "tabs", "Home") 
+
   # reset variables 
-  values.edit$table <- NULL  
-  values.edit$platformGeneColumn <- NULL
-  KM$outcome = NULL
-
-
+  reactiveValues.reset()
 
   # Runs the intial input once the button is pressed from within the 
   # reactive statement
@@ -156,8 +182,10 @@ dataInput <- reactive({
   if (GSE=="") return(NULL)
  
   closeAlert(session, "GSE-begin-alert")
+  closeAlert(session, "GSE-error-alert")
   closeAlert(session, "GSE-progress-alert")
   closeAlert(session, "GPL-alert")
+  closeAlert(session, "Analysis-alert")
   cat("creating alert...\n")
 
   content = "Downloading Series (GSE) data from GEO" 
@@ -166,19 +194,18 @@ dataInput <- reactive({
    createAlert(session, "alert1", alertId = "GSE-progress-alert", title = "Current Status", style = "success",
               content = content , append = TRUE, dismiss = FALSE) 
   code = paste0("data.series = getGEO(GEO = \"", GSE, "\", AnnotGPL = FALSE, getGPL = FALSE)")
-  add.line(code)
 
-    geo = getGEO(GEO = isolate(GSE), AnnotGPL=FALSE, getGPL = FALSE) 
+    geo = try(getGEO(GEO = isolate(GSE), AnnotGPL=FALSE, getGPL = FALSE))
+
+    if (class(geo) == "try-error") {
+        content = "This is typically an indication that the GEO data is not in the correct format. Please select another dataset to continue. <p><p>The specific error appears below:<p>"
+	content = paste0(content,  gsub("\n", "<p>",geo[[1]]))
+	createAlert(session, "alert1", alertId = "GSE-error-alert", title = "Error downloading GEO dataset", style = "danger", content = content, append = FALSE, dismiss = TRUE)
+	return(NULL) 
+    }
+ 
     subtract.tab()
     geo
-})
-
-####################################
-### display Gene Series Info  ######
-####################################
-
-output$dataInputPrint <- renderPrint({
-  dataInput()
 })
 
 ################################################################
@@ -230,7 +257,6 @@ platInfo <- reactive({
 
   code = paste0("data.platform = getGEO(\"", Platforms()[platformIndex()],  "\")
 ")
-  add.line(code)
   closeAlert(session, "GPL-alert")
   if (!TEST.DATA) {
     createAlert(session, "alert1", alertId = "GPL-alert", title = "Current Status", style = "info",
@@ -249,8 +275,6 @@ platInfo <- reactive({
     t = Table(getGEO(Platforms()[platformIndex()]))
   }
   
-
- 
   k = t[,"ID"]
   common.probes = intersect(row.names(exprInput()), as.character(k))
   n = match(common.probes, k)
@@ -342,7 +366,6 @@ observe({
   # only update table if values.edit$table is null
   if (is.null(values.edit$table)) {
     code = paste0("data.p = pData(data.series[[data.index]])")
-    add.line(code)
     if (TEST.DATA) {
         cat("set table to CLINICAL.test\n")
         values.edit$table = CLINICAL.test
@@ -353,10 +376,6 @@ observe({
   }
   subtract.tab()
 })
-
-
-
-
 
 ######################################################
 # exprInput - expression data for selected platform
@@ -372,9 +391,7 @@ exprInput <- reactive({
   }
   pl=Platforms()[platformIndex()]
   code = paste0("data.index = match(\"", pl, "\", sapply(data.series, annotation))")
-  add.line(code)
   code = paste0("data.expr = exprs(data.series[[data.index]])")
-  add.line(code)
   ans = exprs(dataInput()[[pi]])
   subtract.tab()
   return(ans)
@@ -414,196 +431,50 @@ defaultGroupsForSelectedColumn <- reactive({
   g    
 })
 
-
-#######################################################
-## Find & Replace Method for editing tables 
-######################################################
-# drop-down of column names
- output$dropModal <- renderUI({
-      selectInput("drop2", "Column Names", choices = ColumnNames(), selected = "")
-    })
-
-
-
-
 ###########################################
 # Expression profiles - data transformation
 ###########################################
 profiles <- reactive({
-  cat("HHHH in profiles\n")
+  cat("In profiles\n")
   add.tab()
   if (TRACE) cat("In profiles reactive...\n")
   ### log2 transform (auto-detect) citation ###
   # Edgar R, Domrachev M, Lash AE.
   # Gene Expression Omnibus: NCBI gene expression and hybridization array data repository
   # Nucleic Acids Res. 2002 Jan 1;30(1):207-10
-  
+ 
   ex <- exprInput()
-  if (is.null(ex)) return(NULL)
+  if (is.null(ex) | is.null(values.edit$table)) return(NULL)
   qx <- as.numeric(quantile(ex, c(0., 0.25, 0.5, 0.75, 0.99, 1.0), na.rm=T))
   LogC <- (qx[5] > 100) ||
     (qx[6]-qx[1] > 50 && qx[2] > 0) ||
     (qx[2] > 0 && qx[2] < 1 && qx[4] > 1 && qx[4] < 2)
-  if (LogC & input$radio == 1) { 
-    ex[which(ex <= 0)] <- NaN
-    values.edit$log2 = TRUE
-  subtract.tab()
-  return (ex <- log2(ex)) 
-  }    
-  
-  if (input$radio == 2) {
-    values.edit$log2 = TRUE
-    subtract.tab()
-    return (ex <- log2(exprInput()))   # forced Yes
+
+  # remove radio button, so always use autodetect (=1)
+  #radio <- input$radio 
+  radio = 1
+
+  if (LogC & radio == 1 | radio == 2) { 
+    	ex[which(ex <= 0)] <- NaN
+    	values.edit$log2 = TRUE
+  	subtract.tab()
+    	ex <- log2(ex)
+  } else {
+  	values.edit$log2 = FALSE
   }
-  values.edit$log2 = FALSE
-  subtract.tab()
-  return (ex <- exprInput())  # No
-})
-
-###########################################
-# Survival Reactives (time, occurance, x)
-###########################################
-# Note: We should also include a bsAlert to inform 
-# the user to only select unique columns (which they would already do)
-time <- reactive({
-  if (TRACE) cat("In time reactive...\n")
-  input$survTimeUI
-})
-
-outcome <- reactive ({
-  if (TRACE) cat("In outcome reactive...\n")
- input$survOutcomeUI
-})
-
-x <- reactive ({ # not seen in sidebar - changed through the gene/probe drop-downs above plot area
-  add.tab()
-  if (TRACE) cat("In x reactive...\n")
-  subtract.tab()
-  x = profiles()[input$selectGenes,]
-  x
-})
-
-#### reactive column selection in summary form for edit bsModal for survival ####
-
-observeEvent(input$parseButton, {
-  cat("updating event names\n")
-  cat("outcome = ", outcome(), "\n")
-  values = unique(as.character(parse.modal()[,2]))
-  cat("valuess= ", values, "\n")
-  ans = setdiff(values, c("", " ", NA))
-  KM$eventNames = ans
-})
-
-parse.modal <- reactive ({ 
-  input$parseEnter
-  add.tab()
-  if (TRACE) cat("In parse.modal reactive...\n")
-  parse.modal <- data.frame(
-  editSelectedCols()[time()],
-  editSelectedCols()[outcome()])
-  ## removes any null strings present in the rows of the data.frame
-  #parse.modal <- parse.modal[!apply(parse.modal, 1, function(x) any(x=="")),]
-  subtract.tab() 
-  return(parse.modal)
-}) 
-
-#######################################################
-## SURVIVAL::: Find & Replace Method for editing tables 
-######################################################
-find.str.surv <- reactive({input$survfind})       
-replace.str.surv <- reactive({input$survreplace})
-
-
-###########################################################
-# Currently, clicking submit will format the time column,
-# overwriting the original table; while the outcome will
-# be changed to 0s and 1s based on the drop down selection.
-# The updated outcome is saved in KM$outcome, and the 
-# original outcomes are not overwritten. This is partly
-# because overwriting the originals causes some kind of
-# issue where the clinical data tables get stuck on 
-# 'processing' and are not displayed
-###########################################################
-editSelectedCols <- reactive({
-  input$parseEnter  # trigger actionButton
-  add.tab()
-  # make sure to isolate everything so we're not repeatedly calling this
-  time.col = isolate(time())
-  outcome.col = isolate(outcome())
- 
-  if (TRACE) cat("In editSelectedCols reactive...\n")
-  find.str.surv = isolate(find.str.surv())
-  replace.str.surv = isolate(replace.str.surv())
-   
-  newCols <- values.edit$table
-  
-#   try.this <- values.edit$original
-#   
-#   if (input$undo) { # if the revert button is pressed it returns the original data table
-#     return(try.this)
-#   }
-  
-  if (find.str.surv == "" & replace.str.surv == "") {   # if there is nothing entered it returns the selected columns
-    subtract.tab()
-    return(newCols)
-  }
-  
-  ### if factor for both columns, change to character.  Otherwise we can't replace it. ##
-  if (is.factor(newCols[,time.col]) || is.factor(newCols[,outcome.col])) {
-    newCols[,time.col] = as.character(newCols[,time.col])
-    newCols[,outcome.col] = as.character(newCols[,outcome.col])
-  }
-  
-  newCols[[time.col]] = gsub(find.str.surv, replace.str.surv, newCols[[time.col]], fixed = T)  ## fixed = T for symbols
-  g1 = grep(find.str.surv, newCols[,time.col])  
-  newCols[g1,time.col] = replace.str.surv 
-  cat("replacing time.col ", find.str.surv, " with ", replace.str.surv, "\n")
- 
- ##################################
- ## find and replace for outcome ##  
- ##################################
-  ## duplicate of time() partial replace block which applies over the entire selected columns
-#  newCols[[outcome()]] = gsub(find.str.surv, replace.str.surv, newCols[[outcome()]], fixed = T)
-#  g2 = grep(find.str.surv, newCols[,outcome()])  
-#  newCols[g2,outcome()] = replace.str.surv 
-#  cat("replacing outcome() ", find.str.surv, " with ", replace.str.surv, "\n")
-
-  eventYes = isolate(input$eventYes)
-  eventNo = isolate(input$eventNo)
-  tmp = rep(NA, nrow(newCols)) 
-  cat("event = ", isolate(eventYes), "\n")
-  cat("no = ", isolate(eventNo), "\n")
-  tmp[newCols[[outcome.col]] %in% eventYes ] = 1
-  tmp[newCols[[outcome.col]] %in% eventNo ] = 0
-
-  if (all(is.na(tmp))) return (values.edit$table)
-
-  cat("print tmp: ")
-  print(tmp)
-
-  KM$outcome = tmp
-
-
-  values.edit$table <- newCols
 
   subtract.tab()
-  return (values.edit$table)  
-  
-}) # end of editSelectedCols() reactive
+  return (ex)  
+})
 
-
-
-
-
-shinyjs::onclick("noGenePlatLink", {
-	cat("link link\n")
-	toggleModal(session, "platformModal", toggle = "open")
-  }
-)
-
-
-
-
+probe.expr <-reactive({
+	if (is.null(values.edit$table)) return(NULL)
+	if (input$selectGenes=="") return (NULL)
+        x = profiles()[input$selectGenes,] # effected
+        if (is.null(x)) return(NULL)
+        m = match(names(x), rownames(values.edit$table)) 
+        m = m[!is.na(m)] 
+        x[m]	
+})
 
 cat("end server-reactives.R\n")

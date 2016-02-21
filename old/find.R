@@ -1,6 +1,16 @@
+
+
 #######################################################
 # from server-reactives.R
 ########################################################
+
+#######################################################
+## Find & Replace Method for editing tables 
+######################################################
+# drop-down of column names
+ output$dropModal <- renderUI({
+      selectInput("drop2", "Column Names", choices = ColumnNames(), selected = "")
+    })
 
 ## reactives for textboxes/drop-downs in modal window
 find.str <- reactive({input$find})       
@@ -58,8 +68,7 @@ editClinicalTable <- reactive({
 #######################################################
 # from ui.R 
 ########################################################
-        actionButton("tabBut", "Edit Data Table"),
-
+        actionButton("tabBut", "Edit Data Table") #,
 
         shinyBS::bsModal("modalExample", "Edit Data Table", "tabBut", size = "small",
             uiOutput("dropModal"),

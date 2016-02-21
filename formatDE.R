@@ -120,10 +120,11 @@ observeEvent(input$applyFormatDE, {
 #############
 
 formatTableDE2 <-reactive({
-  time.surv = as.double(time.analysis)
-  event.surv = as.integer(outcome.analysis)
+
+ xlab = textInput("km.xlab", "x-axis label: ", "time")
+ ylab = textInput("km.ylab", "y-axis label: ", "survival")
+
   
-  if (length(time.surv) == 0 & length(event.surv) == 0) {return(NULL)} # the length is always 2 (Time & Outcome)
   df = c("High Expression", "Low Expression")
   aa.color = NULL
   aa.label = NULL
@@ -159,7 +160,12 @@ formatTableDE2 <-reactive({
   
   df_rows = c(header, df_rows)
   
-  p=paste0("<table border = 1>", paste0(df_rows, collapse = ""), "</table>")
+  hr = radioButtons("hr.format", label = "HR (expression)", 
+                    choices = list("high/low", "low/high"), 
+                    inline = TRUE)
+
+  p=paste0(hr,xlab, ylab, "<table border = 1>", 
+	paste0(df_rows, collapse = ""), "</table>")
   
   p=gsub("class=\"form-control\"", "", p)
   p=gsub("class=\"\"", "", p)  

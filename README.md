@@ -1,12 +1,10 @@
 # shinyGEO
-shinyGEO (Project Name: GEO-AWS / Gene Expression Omnibus Analysis with Shiny) is a web application to parse, transform, model, and visualize microarray gene expression data sets from the [Gene Expression Omnibus Repository](http://www.ncbi.nlm.nih.gov/geo/browse/) and performs differential expression and survival analyses. This project was partially developed as part of the [2015 Google Summer of Code program](http://www.google-melange.com/gsoc/homepage/google/gsoc2015). The submitted GSoC release development version as of 21 August 2015 19:00 UTC to the present can be found [here](https://github.com/jasdumas/shinyGEO/releases/tag/v0.1) as per the program code submission guidelines.
+shinyGEO (Project Name: GEO-AWS / Gene Expression Omnibus Analysis with Shiny) is a web application to parse, transform, model, and visualize microarray gene expression data sets from the [Gene Expression Omnibus Repository](http://www.ncbi.nlm.nih.gov/geo/browse/) and performs differential expression and survival analyses. This project was formally developed in part of the [2015 Google Summer of Code program](http://www.google-melange.com/gsoc/homepage/google/gsoc2015). The current (post-GSoC version) development version as of 21 August 2015 19:00 UTC to the present can be found [here](https://github.com/jasdumas/GEO-AWS) as per the program code submission guidlines.
 
-## Website(s)
+## Website
 Shinyapps.io: https://jasminedumas.shinyapps.io/shinyGEO
 
 GitHub Page: http://jasdumas.github.io/shinyGEO/
-
-Eastern CT Primary App Hosting: http://bioinformatics.easternct.edu/shinyGEO/
 
 ## Installation
 1. Fork a copy!
@@ -25,7 +23,7 @@ Eastern CT Primary App Hosting: http://bioinformatics.easternct.edu/shinyGEO/
 
 6. In the console `library(shiny)` then `runApp("shinyGEO")`
 
-7. Feel free to test out the tool functionality by entering the GEO Accession number: [GSE19915](http://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE19915) which includes survival characteristics to generate Kaplan-Meier curves under the Analyses tab menu.
+7. Feel free to test out the tool functionality by entering the GEO Accession number: [GSE19915](http://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE19915) which includes survival characterstics to generate Kaplan-Meier curves under the Analyses tab menu.
 
 8. `library(devtools)`
 
@@ -38,7 +36,7 @@ Eastern CT Primary App Hosting: http://bioinformatics.easternct.edu/shinyGEO/
 9. `runUrl('https://github.com/jasdumas/shinyGEO/archive/master.zip')`
 
 ## Find out more
-_Feel free to check out the project [wiki](https://github.com/jasdumas/GEO-AWS/wiki)_
+_Feel free to check out my project [wiki](https://github.com/jasdumas/GEO-AWS/wiki)_
 
 ## Updates
 * 11 SEPTEMBER 2015: This GitHub Repo and corresponding links have be updated to a 
@@ -46,12 +44,13 @@ new name to conform with CRAN naming conventions and for deployment guidelines
 
 * 2 OCTOBER 2015: The application has been deployed to shinyapps.io cloud service at https://jasminedumas.shinyapps.io/shinyGEO Report bugs, glitches, and general comments as this is the first release designated for testing and configuration. 
 
-* 7 JANUARY 2016: The application will also be deployed on the [Eastern CT State University](http://bioinformatics.easternct.edu/shinyGEO/)
-
 ## Contribute
-This project is in beta/demonstration only mode and is scheduled to be launched in early Fall 2015. A considerable amount of the features are functional but if you discover a bug or non-working application features with certain data sets, please feel free to submit an [issue](https://github.com/jasdumas/GEO-AWS/issues) or contact the package maintainer.
+This project is in beta/demonstration only mode and is scheduled to be launched in early Fall 2015. A considerable amount of the features are functional but if you discover a bug or non-working application features with certain data sets, please feel free to submit an [issue](https://github.com/jasdumas/GEO-AWS/issues) or contact the pacakge maintainer.
 
 ## Contact
 Jasmine Dumas [@jasdumas](https://twitter.com/jasdumas)
+
+## Status
+[![Build Status](https://travis-ci.org/jasdumas/GEO-AWS.svg)](https://travis-ci.org/jasdumas/GEO-AWS)
 
 
