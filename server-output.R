@@ -425,9 +425,17 @@ if (DE.PLOT) {
             
               ## make sure levels are in selected order for plot
               y = factor(y)
+	      x = probe.expr()
+
+	      common = intersect(names(x), rownames(values.edit$table))
+              m1 = match(common, names(x))
+              m2 = match(common, rownames(values.edit$table))
+
+	      x = x[m1]
+              y = y[m2]
 
               main = paste(input$GSE, geneLabel() , sep = ": ")
-              print(stripchart2(probe.expr(),y, input$Group1Values, group.names = labelsDE(), main = main, col=colorsDE()))
+              print(stripchart2(x,y, input$Group1Values, group.names = labelsDE(), main = main, col=colorsDE()))
              
               }) # end of plot reactive
           

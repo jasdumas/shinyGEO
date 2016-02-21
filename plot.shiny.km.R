@@ -17,8 +17,8 @@ plot.shiny.km <- function(time, death, x, title = "",
   ## use median to split into high and low groups ## 
   newX = x
   cut = median(x,na.rm=TRUE)
-  newX[x > cut] = "high"
-  newX[x <= cut] = "low"
+  newX[x > cut] = "upper 50%"
+  newX[x <= cut] = "lower 50%"
   x = as.factor(newX)
   
   n = length(levels(x))

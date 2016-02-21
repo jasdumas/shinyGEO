@@ -57,7 +57,14 @@ tab.survival.analysis = tabItem("SurvivalAnalysis",
         bsButton("autoAnalysis","Select Time/Outcome", style="success",disabled = TRUE),
         actionButton("formatDEButton2", "Format Graph",disabled=TRUE), # add on
         HTML("<button id='Survadd' type='button' class='btn btn-info action-button'>Save R Code</button>"),                                   
-    formatBSModal("Format2", "Format", "formatDEButton2", applyID = "applyFormatDE2", size = "large", htmlOutput("formatDE2")),    
+    formatBSModal("Format2", "Format", "formatDEButton2", applyID = "applyFormatDE2", size = "large", 
+	hr = radioButtons("hr.format", label = "HR (expression)",
+                    choices = list("high/low", "low/high"),
+                    inline = TRUE),
+        textInput("km.xlab", "x-axis label: ", "Time"),
+        textInput("km.ylab", "y-axis label: ", "Survival"),
+	htmlOutput("formatDE2")
+    ),    
     bsModal("addCodeSurvModal", "R Code Added", "Survadd", size = "small",
 		bsAlert("addCodeSurvAlert")
         ),

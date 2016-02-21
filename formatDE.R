@@ -21,8 +21,16 @@ output$formatDE <- renderUI({
   HTML(formatTableDE())
   
 })
+
+observeEvent(input$formatDEButton2, {
+  cat("open formatDE2 modal\n")
+  updateTextInput(session, "km.xlab", value = KM$xlab) 
+  updateTextInput(session, "km.ylab", value = KM$ylab)
+  updateRadioButtons(session, "hr.format", selected = KM$hr.format) 
+})
+
 # add for survival KM-format
-output$formatDE2 <- renderUI({ 
+output$formatDE2 <- renderUI({
   HTML(formatTableDE2())
   
 })
@@ -121,10 +129,6 @@ observeEvent(input$applyFormatDE, {
 
 formatTableDE2 <-reactive({
 
- xlab = textInput("km.xlab", "x-axis label: ", "time")
- ylab = textInput("km.ylab", "y-axis label: ", "survival")
-
-  
   df = c("High Expression", "Low Expression")
   aa.color = NULL
   aa.label = NULL
@@ -160,11 +164,7 @@ formatTableDE2 <-reactive({
   
   df_rows = c(header, df_rows)
   
-  hr = radioButtons("hr.format", label = "HR (expression)", 
-                    choices = list("high/low", "low/high"), 
-                    inline = TRUE)
-
-  p=paste0(hr,xlab, ylab, "<table border = 1>", 
+  p=paste0("<table border = 1>", 
 	paste0(df_rows, collapse = ""), "</table>")
   
   p=gsub("class=\"form-control\"", "", p)
@@ -176,6 +176,7 @@ formatTableDE2 <-reactive({
 
 ### store current colors and labels
 reactiveFormat3 = reactiveValues(colorsDE3 = current.color.km(1:2), labels = NULL)
+
 colorsDE3 <-reactive({reactiveFormat3$colorsDE3})
 labelsDE3 <-reactive({reactiveFormat3$labels})
 
@@ -216,6 +217,10 @@ observeEvent(input$submitButton, { # trigger is the GSE submit button so the gra
 observeEvent(input$applyFormatDE2, { # trigger on Save Changes button within bsModal
   reactiveFormat3$colorsDE3 = colorsDE4()
   reactiveFormat3$labels = labelsDE3()
+  KM$xlab <- input$km.xlab
+  KM$ylab <- input$km.ylab
+  KM$hr.format <- input$hr.format
+  cat("saving ", KM$xlab, " and ", KM$ylab, "\n")
 })
 
 

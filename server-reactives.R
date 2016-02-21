@@ -21,7 +21,7 @@ values.edit <- reactiveValues(table = NULL, platformGeneColumn = NULL, original 
 
 reproducible <-reactiveValues(report = NULL)
 KM <- reactiveValues(time.col = NULL, outcome.col = NULL, 
-	eventYes = NULL, eventNo = NULL)
+	eventYes = NULL, eventNo = NULL, xlab = "Time", ylab = "Survival", hr.format = "high/low")
 
 # expression.code is -1 (do not add code), 0 (add all code), or 1 (update expression code)
 CODE <- reactiveValues(stripchart.loaded = FALSE, plot.km.loaded = FALSE, expression.code = 0)
@@ -472,9 +472,11 @@ probe.expr <-reactive({
 	if (input$selectGenes=="") return (NULL)
         x = profiles()[input$selectGenes,] # effected
         if (is.null(x)) return(NULL)
-        m = match(names(x), rownames(values.edit$table)) 
-        m = m[!is.na(m)] 
-        x[m]	
+        #m = match(names(x), rownames(values.edit$table)) 
+        #m = m[!is.na(m)] 
+	#cat("=== data for ", length(m), " samples ====\n")
+        #x[m]	
+	x
 })
 
 cat("end server-reactives.R\n")
