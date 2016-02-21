@@ -282,9 +282,6 @@ if (AUTOSELECT.SURVIVAL) {
 				hr.inverse = TRUE
 	    	   }
 
-		   cat("colors = \n")
-  	           print (colorsDE3())
-
                    time = isolate(time.analysis()$time)
                    death = as.integer(outcome.analysis)
 		   x = probe.expr()
@@ -298,7 +295,7 @@ if (AUTOSELECT.SURVIVAL) {
                    death = death[m2]
 
                    return(plot.shiny.km(time = time, death = death, x = x, 
-                                        col = colorsDE3(), title = main,
+                                        col = KM$col, title = main,
 					xlab = KM$xlab, ylab = KM$ylab,
 					hr.inverse = hr.inverse))
                  })

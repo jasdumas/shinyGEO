@@ -21,7 +21,8 @@ values.edit <- reactiveValues(table = NULL, platformGeneColumn = NULL, original 
 
 reproducible <-reactiveValues(report = NULL)
 KM <- reactiveValues(time.col = NULL, outcome.col = NULL, 
-	eventYes = NULL, eventNo = NULL, xlab = "Time", ylab = "Survival", hr.format = "high/low")
+	eventYes = NULL, eventNo = NULL, xlab = "Time", ylab = "Survival", hr.format = "high/low", 
+	col = c("darkblue", "darkred"))
 
 # expression.code is -1 (do not add code), 0 (add all code), or 1 (update expression code)
 CODE <- reactiveValues(stripchart.loaded = FALSE, plot.km.loaded = FALSE, expression.code = 0)
