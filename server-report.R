@@ -73,6 +73,11 @@ if (CODE$expression.code == 1) {
   add.code("# change default expression normalization")
 }
   add.code("data.expr = exprs(data.series[[data.index]])")
+  add.code("common = intersect(colnames(data.expr), rownames(data.p))")  
+  add.code("m1 = match(common, colnames(data.expr))")
+  add.code("m2 = match(common, rownames(data.p))")
+  add.code("data.expr = data.expr[,m1]")
+  add.code("data.p = data.p[m2,]")
 
   if (values.edit$log2) {
 	add1  = "data.expr[which(data.expr <= 0)] <- NaN"
@@ -228,7 +233,7 @@ outcome[outcome.orig %in% eventYes] = 1
 
 main = paste(GSE, \"", geneLabel(), "\", sep = \": \")\n", labels, "
 
-plot.shiny.km(time = time, death = as.integer(outcome), x = x, col = ", vector.it(colorsDE3()), ", title = main, xlab = xlab, ylab = ylab, hr.inverse = hr.inverse)
+plot.shiny.km(time = time, death = as.integer(outcome), x = x, col = ", vector.it(KM$col), ", title = main, xlab = xlab, ylab = ylab, hr.inverse = hr.inverse)
 ")
  
  add.code(kmplot)
