@@ -20,7 +20,7 @@ createAlert(session, "alert1", alertId = "GSE-begin-alert",
 values.edit <- reactiveValues(table = NULL, platformGeneColumn = NULL, original = NULL, log2 = FALSE, profilesPlot = FALSE, autogen = TRUE, norm = 1, norm.open = FALSE)
 
 reproducible <-reactiveValues(report = NULL)
-KM <- reactiveValues(time.col = NULL, outcome.col = NULL, 
+KM <- reactiveValues(time.col = NULL, outcome.col = NULL, generated = FALSE, 
 	eventYes = NULL, eventNo = NULL, xlab = "Time", ylab = "Survival", hr.format = "high/low", 
 	col = c("darkblue", "darkred"))
 
@@ -43,6 +43,7 @@ reactiveValues.reset <-function() {
 	KM$outcome.col = NULL
 	KM$eventYes = NULL
 	KM$eventNo = NULL
+        KM$genrated = FALSE 
 
         CODE$stripchart.loaded = FALSE
 	CODE$plot.km.loaded = FALSE
@@ -81,7 +82,6 @@ observeEvent(input$GSE, {
 observeEvent(input$tabs, {
   cat("tab change...\n")
   
-
   if (input$tabs == "FullDataTable") {
 	toggleModal(session, "summaryBSModal", "toggle")
         updateTabItems(session, "tabs", LAST.TAB) 
@@ -91,8 +91,8 @@ observeEvent(input$tabs, {
 
   if (input$tabs == "DifferentialExpressionAnalysis") {
   	if (input$selectGenes == "") {
-	  createAlert(session, "alert1", alertId = "SelectGene-alert", title = "Current Status", style = "success",
-              content = "Please select a gene/probe to continue", append = FALSE, dismiss = TRUE) 
+	  createAlert(session, "alert1", alertId = "SelectGene-alert", title = "Please select a probe/gene to continue...", style = "success",
+              content = "To search by a different feature, click on the link below", append = FALSE, dismiss = TRUE) 
         }
 
 	if(values.edit$platformGeneColumn=="ID") {
@@ -105,9 +105,13 @@ observeEvent(input$tabs, {
   } else if (input$tabs == "SurvivalAnalysis") {
 	closeAlert(session, alertId = "SelectGroups")
   	if (input$selectGenes == "") {
-	  createAlert(session, "alert1", alertId = "SelectGene-alert", title = "Current Status", style = "success",
-              content = "Please select a gene/probe to continue", append = FALSE, dismiss = TRUE) 
-        } 
+	  createAlert(session, "alert1", alertId = "SelectGene-alert", title = "Please select a probe/gene to continue...", style = "success",
+              content = "To search by a different feature, click on the link below", 
+	      append = FALSE, dismiss = TRUE) 
+        }else if (!KM$generated) {
+	   createAlert(session, "alert1", alertId = "SelectKM", title = "Please select the time/outcome columns to continue...", style = "success",
+                content = "Select the time/outcome columns by clicking on the button below")
+        }   
   }
 
   if (input$tabs != "Home") {
@@ -128,15 +132,18 @@ observeEvent(input$tabs, {
 
 observeEvent(input$selectGenes, {
   cat("observing selectGenes...\n")
+  if (input$selectGenes == "") return(NULL)
+  closeAlert(session, alertId = "SelectGene-alert")
+
 
   if (input$tabs == "DifferentialExpressionAnalysis" & is.null(input$Group1Values)) {
-          closeAlert(session, alertId = "SelectGene-alert")
-  	  createAlert(session, "alert1", alertId = "SelectGroups", title = "Group selection", style = "success",
-		content = "You may now view the clinical data and select your groups to continue by first selecting the column with the data of interest."
-	  )
-	}
+  	  createAlert(session, "alert1", alertId = "SelectGroups", title = "Please select your groups for Differential Expression Analysis to continue...", style = "success",
+		content = "<p>You may now select the groups to compare by first selecting the appropriate column, and then the group labels of interest.</p><p> If you do not know which column to select, you may view the clinical data table by clicking the 'View Clinical Data Table' link in the sidebar.You may also merge two or more groups together by clicking the 'Merge Groups' button." )
+   } else if (input$tabs == "SurvivalAnalysis" & !KM$generated) {
+  	  createAlert(session, "alert1", alertId = "SelectKM", title = "Please select the time/outcome columns to continue...", style = "success",
+		content = "Select the time/outcome columns by clicking on the button below")
    }
-)
+})
 
 observeEvent(input$Group1Values, {
 	cat("input$selectdGroups = ", input$Group1Values, "\n")

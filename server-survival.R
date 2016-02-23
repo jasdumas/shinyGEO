@@ -258,6 +258,9 @@ if (AUTOSELECT.SURVIVAL) {
   
   observeEvent(input$genBtn,
                ({
+
+		 KM$generated <- TRUE
+ 	         closeAlert(session, alertId = "SelectKM")
                  print("observe genBtn\n")
     	         values.edit$autogen <- FALSE
 		 KM$time.col = isolate(input$autoColumn.time)
