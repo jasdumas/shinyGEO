@@ -41,7 +41,7 @@ output$summary <-renderUI({
 	return(NULL)
   }
   createAlert(session, "alert1", alertId = "Analysis-alert", title = "Please choose an analysis from the sidebar to continue...", style = "success",
-               content = "Your selected dataset has been downloaded successfully, and is summarized below. <p>Please select either Differential Expression Analysis or Survival Analysis from the sidebar to continue</p>", append = FALSE, dismiss = TRUE) 
+               content = "Your selected dataset has been downloaded successfully, and is summarized below. <p>Please select either <b>Differential Expression Analysis</b> or <b>Survival Analysis</b> from the sidebar to continue.</p>", append = FALSE, dismiss = TRUE) 
   
   p.tag <-function(x) {
 	for (i in 1:length(x)){ 

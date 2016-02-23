@@ -17,7 +17,13 @@ stripchart2 <- function(x,y, GroupNames, group.names = NULL, col = NULL,
    
   if (stats & length(s) == 2) {
     m = lapply(s,mean, na.rm=TRUE)
-    fc = round(2**(m[[2]] - m[[1]]), 2)
+
+    fc = 2**(m[[2]] - m[[1]])
+    if (group.names[1] > group.names[2]) {
+	fc = 1/fc
+    }
+
+    fc = round(fc, 2)
 
     count.na <-function(x) sum(!is.na(x))
     n = sapply(s, count.na)

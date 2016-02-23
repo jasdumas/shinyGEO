@@ -11,7 +11,7 @@ LAST.TAB = "Home"
        content = HTML("To find a dataset, search the <a href = 'http://www.ncbi.nlm.nih.gov/geo/\'>Gene Expression Omnibus</a> and filter by 'Expression profiling by array'.")
 
 createAlert(session, "alert1", alertId = "GSE-begin-alert", 
-            title = "Please select a GSE accession number to begin", style = "success",
+            title = "Please select a GSE accession number to begin...", style = "success",
             content = content, append = FALSE, dismiss = FALSE) 
 
 ###################################################
@@ -94,26 +94,25 @@ observeEvent(input$tabs, {
   }
   LAST.TAB <<-input$tabs
 
-  if (input$tabs == "DifferentialExpressionAnalysis") {
+  if (input$tabs == "DifferentialExpressionAnalysis" | input$tabs == "SurvivalAnalysis") {
   	if (input$selectGenes == "") {
-	  createAlert(session, "alert1", alertId = "SelectGene-alert", title = "Please select a probe/gene to continue...", style = "success",
-              content = "To search by a different feature, click on the link below", append = FALSE, dismiss = TRUE) 
-        }
-
-	if(values.edit$platformGeneColumn=="ID") {
+	  createAlert(session, "alert1", alertId = "SelectGene-alert", 
+		title = "Please select a probe/gene to continue...", 
+		style = "success",
+              	content = "To search by a different feature, click on the link below", 
+		append = FALSE, dismiss = TRUE) 
+	  if(values.edit$platformGeneColumn=="ID") {
 		content = paste0("A gene symbol for this platform could not be found. ",
 		"You may view the platform data below to select a feature column if desired") 
 		createAlert(session, "alert2", alertId = "geneSymbolAlert", 
 			title = "Gene symbol not found", style = "danger",
 	  		content = content, append = FALSE, dismiss = TRUE)
-	}
-  } else if (input$tabs == "SurvivalAnalysis") {
+	   }
+        }
+  } 
+  if (input$tabs == "SurvivalAnalysis") {
 	closeAlert(session, alertId = "SelectGroups")
-  	if (input$selectGenes == "") {
-	  createAlert(session, "alert1", alertId = "SelectGene-alert", title = "Please select a probe/gene to continue...", style = "success",
-              content = "To search by a different feature, click on the link below", 
-	      append = FALSE, dismiss = TRUE) 
-        }else if (!KM$generated) {
+	if (input$selectGenes!="" & !KM$generated) {
 	   createAlert(session, "alert1", alertId = "SelectKM", title = "Please select the time/outcome columns to continue...", style = "success",
                 content = "Select the time/outcome columns by clicking on the button below")
         }   
@@ -137,12 +136,14 @@ observeEvent(input$tabs, {
 
 observeEvent(input$selectGenes, {
   cat("observing selectGenes...\n")
-  if (input$selectGenes == "") {
-	  createAlert(session, "alert1", alertId = "SelectGene-alert", title = "Please select a probe/gene to continue...", style = "success",
-              content = "To search by a different feature, click on the link below", append = FALSE, dismiss = TRUE) 
-	return(NULL)
-        }
-
+  if (input$selectGenes=="") {
+	if (input$tabs == "DifferentialExpressionAnalysis") {
+		closeAlert(session, alertId = "SelectGroups")
+	} else if (input$tabs == "SurvivalAnalysis") {
+		closeAlert(session, alertId = "SelectKM")
+	}
+	return (NULL)
+  } 
   closeAlert(session, alertId = "SelectGene-alert")
 
   if (input$tabs == "DifferentialExpressionAnalysis" & is.null(input$Group1Values)) {
