@@ -1,10 +1,10 @@
 #~/bin/bash
 # This script will update data from GEO
 
-
+DIR=~
 {
 	now=`date +"%m_%d_%Y"`
-	mv ~/platform.csv ~/backup-platform.csv &&
+	mv $DIR/platform.csv $DIR/backup-platform.csv &&
 	echo "Backup created.."
 
 } || {
@@ -23,9 +23,9 @@ for ((i=1; i <= count; i++)); do
 
 if [ "$i != 1" ]
 then
-	wget --content-disposition "http://www.ncbi.nlm.nih.gov/geo/browse/?view=platforms&zsort=date&mode=csv&page=$i&display=5000" -q -O ->> ~/platform.csv
+	wget --content-disposition "http://www.ncbi.nlm.nih.gov/geo/browse/?view=platforms&zsort=date&mode=csv&page=$i&display=5000" -q -O ->> $DIR/platform.csv
 else
-	wget --content-disposition "http://www.ncbi.nlm.nih.gov/geo/browse/?view=platforms&zsort=date&mode=csv&page=$i&display=5000" -q -a  ->> ~/platform.csv	
+	wget --content-disposition "http://www.ncbi.nlm.nih.gov/geo/browse/?view=platforms&zsort=date&mode=csv&page=$i&display=5000" -q -a  ->> $DIR/platform.csv	
    	
 fi
 

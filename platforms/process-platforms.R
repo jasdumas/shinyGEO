@@ -4,12 +4,15 @@
 # and move platforms*.csv files into this directory
 #############################################################################
 
-files = Sys.glob("platform*.csv")
-platforms = NULL
-for (f in files) {
-  tmp = read.table(f, header = TRUE, sep = ",")
-  platforms = rbind(platforms, tmp)
-}
+#files = Sys.glob("platform*.csv")
+#platforms = NULL
+#for (f in files) {
+#  tmp = read.table(f, header = TRUE, sep = ",")
+#  platforms = rbind(platforms, tmp)
+#}
+
+
+platforms = read.table("platform.csv", header = TRUE, sep = ",")
 
 g1 = grep("oligonucleotide", platforms$Technology)
 g2 = grep("spotted DNA", platforms$Technology)
