@@ -55,7 +55,10 @@ reactiveValues.reset <-function() {
 	CODE$expression.code = 0
 }
 
-### functions to append/aggregate a new line to the aceEditor
+observeEvent(input$btnNew, {
+  cat("New\n")
+})
+
 
     
 observeEvent(input$GSE, {
@@ -86,7 +89,12 @@ observeEvent(input$GSE, {
 ################################
 observeEvent(input$tabs, {
   cat("tab change...\n")
-  
+ 
+  if (input$tabs == "NewAnalysis") {
+	cat("New Analysis")
+        runjs("location.reload()") 
+  }
+ 
   if (input$tabs == "FullDataTable") {
 	toggleModal(session, "summaryBSModal", "toggle")
         updateTabItems(session, "tabs", LAST.TAB) 
@@ -95,6 +103,11 @@ observeEvent(input$tabs, {
   LAST.TAB <<-input$tabs
 
   if (input$tabs == "DifferentialExpressionAnalysis" | input$tabs == "SurvivalAnalysis") {
+
+	if (input$tabs == "DifferentialExpressionAnalysis") {
+		closeAlert(session, alertId = "SelectKM")
+	}
+
   	if (input$selectGenes == "") {
 	  createAlert(session, "alert1", alertId = "SelectGene-alert", 
 		title = "Please select a probe/gene to continue...", 
@@ -124,9 +137,7 @@ observeEvent(input$tabs, {
   	shinyjs::disable('platform')
   	shinyjs::disable('submitButton')
   } else {
-    	shinyjs::enable('GSE')
     	shinyjs::enable('platform')  
-    	if (input$GSE!="") shinyjs::enable('submitButton')  
 	closeAlert(session, alertId = "SelectGene-alert")
 	closeAlert(session, alertId = "SelectGroups")
   } 
@@ -221,6 +232,9 @@ dataInput <- reactive({
 	createAlert(session, "alert1", alertId = "GSE-error-alert", title = "Error downloading GEO dataset", style = "danger", content = content, append = FALSE, dismiss = TRUE)
 	return(NULL) 
     }
+
+    shinyjs::disable('GSE')
+    shinyjs::disable('submitButton')
  
     subtract.tab()
     geo
