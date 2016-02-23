@@ -156,6 +156,10 @@ add.probe = paste0("probe = \"", input$selectGenes, "\"")
 add.column = paste0("column = \"", input$selectedColumn, "\"")
 add.groups = paste0("groups = ", vector.it(input$Group1Values)) 
 
+col = DE$col
+if (is.null(col)) {
+   col = current.color(1:length(input$Group1Values))
+}
 add.code(add.de.header)
 add.code(add.probe)
 add.code(add.column)
@@ -169,9 +173,9 @@ k = y%in% groups
 y[!k] = NA
 y = factor(y)
 
-group.names = ", vector.it(labelsDE())," 
+group.names = ", vector.it(DE$labels)," 
 main = paste(GSE, \"", geneLabel(), "\", sep = \": \")
-col = ", vector.it(colorsDE()), "
+col = ", vector.it(col), "
 print(stripchart2(x,y, groups, group.names = group.names, main = main, col=col))
 ")
 add.code(s3plot)

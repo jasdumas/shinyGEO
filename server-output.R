@@ -435,7 +435,8 @@ if (DE.PLOT) {
               y = y[m2]
 
               main = paste(input$GSE, geneLabel() , sep = ": ")
-              print(stripchart2(x,y, input$Group1Values, group.names = labelsDE(), main = main, col=colorsDE()))
+              print(stripchart2(x,y, input$Group1Values, group.names = DE$labels,
+		 main = main, col=DE$col))
              
               }) # end of plot reactive
           

@@ -3,17 +3,13 @@ colors <-function() {
   c(palette(), "darkred", "darkgreen", "darkblue", "orange")
 }
 
-# remove new palette() function calls. This is not necessary
-# and creates a graphics window, which can cause the shiny server to crash
+# get current color from colors() palette; recycle if necessary
 current.color <-function(i) {
-  #i = (i-1)%%length(palette("default"))+1
-  palette()[i]
+  col = colors()
+  i = (i-1) %% length(col) + 1  
+  col[i]
 }
 
-output$formatDE <- renderUI({ 
-  HTML(formatTableDE())
-  
-})
 
 observeEvent(input$formatDEButton2, {
   cat("open formatDE2 modal\n")
@@ -66,17 +62,26 @@ observeEvent(input$formatDEButton2, {
   })
 })
 
-
-formatTableDE <-reactive({  
+observeEvent(input$formatDEButton, {
   if (length(input$Group1Values) == 0) {return(NULL)} 
   df = input$Group1Values
   aa.color = NULL
   aa.label = NULL
+
+  n = length(input$Group1Values)
+  col = DE$col
+  if (is.null(col)) {
+	col = current.color(1:n)
+  }
+
+  labels = DE$labels
+  if (is.null(labels)) {
+	labels = input$Group1Values
+  }
   
   for (i in 1:length(input$Group1Values)) {
-
-    col = current.color(i)
-    s=selectizeInput(paste0("colorDE",i), "",choices = colors(), width = '200px', selected = col) 
+    s=selectizeInput(paste0("colorDE",i), "",choices = colors(), width = '200px', 
+	selected = col[i]) 
     s[[2]]$class = ""  # remove class
     s[[3]][[1]] = NULL # remove label
     s = gsub("<div>", "", s)
@@ -84,7 +89,7 @@ formatTableDE <-reactive({
     s = paste(s,"</div>")
     s = gsub("\n", "", s)
     
-    t = textInput(paste0("labelDE",i), "", input$Group1Values[i])
+    t = textInput(paste0("labelDE",i), "", labels[i])
     t[[2]]$class = "" # remove class
     t[[3]][[1]] = ""  # remove label
     t = gsub("<input id", "<input size = \"50\" id", t)
@@ -107,14 +112,14 @@ formatTableDE <-reactive({
   
   p=gsub("class=\"form-control\"", "", p)
   p=gsub("class=\"\"", "", p)  
-  #print(p)
-  p
+
+  output$formatDE <- renderUI({ 
+    HTML(p)
+  })
+
 })
 
 ### store current colors and labels
-reactiveFormat = reactiveValues(colorsDE = NULL, labels = NULL)
-colorsDE <-reactive({reactiveFormat$colorsDE})
-labelsDE <-reactive({reactiveFormat$labels})
 
 ## get current colors ##
 colorsDE2 <-reactive({
@@ -145,14 +150,12 @@ observeEvent(input$Group1Values, {
   # Note: The statement below does not work because colorsDE2() searches colors
   # before the selectInput boxes are created. Therefore, the
   # default colors are returned
-  #reactiveColors$DE = colorsDE2()  
-  reactiveFormat$colorsDE = current.color(1:length(input$Group1Values))
-  reactiveFormat$labels = input$Group1Values
+  DE$labels = input$Group1Values
 })
 
 observeEvent(input$applyFormatDE, {
-  reactiveFormat$colorsDE = colorsDE2()
-  reactiveFormat$labels = labelsDE2()
+  DE$col = colorsDE2()
+  DE$labels = labelsDE2() 
 })
 
 #############

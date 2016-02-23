@@ -24,6 +24,8 @@ KM <- reactiveValues(time.col = NULL, outcome.col = NULL, generated = FALSE,
 	eventYes = NULL, eventNo = NULL, xlab = "Time", ylab = "Survival", hr.format = "high/low", 
 	col = c("darkblue", "darkred"))
 
+DE <- reactiveValues(labels = NULL, col = NULL)
+
 # expression.code is -1 (do not add code), 0 (add all code), or 1 (update expression code)
 CODE <- reactiveValues(stripchart.loaded = FALSE, plot.km.loaded = FALSE, expression.code = 0)
 
@@ -39,11 +41,14 @@ reactiveValues.reset <-function() {
 
 	reproducible$report = NULL
 
+	DE$labels = NULL
+   	DE$col = NULL
+
 	KM$time.col = NULL
 	KM$outcome.col = NULL
 	KM$eventYes = NULL
 	KM$eventNo = NULL
-        KM$genrated = FALSE 
+        KM$generated = FALSE 
 
         CODE$stripchart.loaded = FALSE
 	CODE$plot.km.loaded = FALSE
