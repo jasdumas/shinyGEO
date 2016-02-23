@@ -132,9 +132,13 @@ observeEvent(input$tabs, {
 
 observeEvent(input$selectGenes, {
   cat("observing selectGenes...\n")
-  if (input$selectGenes == "") return(NULL)
-  closeAlert(session, alertId = "SelectGene-alert")
+  if (input$selectGenes == "") {
+	  createAlert(session, "alert1", alertId = "SelectGene-alert", title = "Please select a probe/gene to continue...", style = "success",
+              content = "To search by a different feature, click on the link below", append = FALSE, dismiss = TRUE) 
+	return(NULL)
+        }
 
+  closeAlert(session, alertId = "SelectGene-alert")
 
   if (input$tabs == "DifferentialExpressionAnalysis" & is.null(input$Group1Values)) {
   	  createAlert(session, "alert1", alertId = "SelectGroups", title = "Please select your groups for Differential Expression Analysis to continue...", style = "success",
