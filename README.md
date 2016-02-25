@@ -13,12 +13,12 @@ http://bioinformatics.easternct.edu/shinyGEO/
 
 3. Type the following to install the Bioconductor Packages required by *shinyGEO*:
 
-	`source("http://bioconductor.org/biocLite.R")`\s\s	
+	`source("http://bioconductor.org/biocLite.R")`	
 	`biocLite(c("Biobase","GEOquery"))`
 
 4. Type the following to run *shinyGEO*:
 
-	`library(shiny)`\s\s	
+	`library(shiny)`
 	`runUrl("https://github.com/gdancik/shinyGEO/archive/master.zip")`
 
 ## Contributors
