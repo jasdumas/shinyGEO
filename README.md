@@ -23,7 +23,6 @@ http://bioinformatics.easternct.edu/shinyGEO/
 
 ## Contributors
 Main contributors: Jasmine Dumas, Michael Gargano, Garrett M. Dancik, PhD
-
 Additional contributors: Ken-Heng Liao, Gregory Harper, Brandon Spratt
 
 ## Acknowledgements
