@@ -22,8 +22,8 @@ http://bioinformatics.easternct.edu/shinyGEO/
 	`runUrl("https://github.com/gdancik/shinyGEO/archive/master.zip")`
 
 ## Contributors
-Main contributors: Jasmine Dumas, Michael Gargano, Garrett M. Dancik, PhD
-Additional contributors: Ken-Heng Liao, Gregory Harper, Brandon Spratt
+- Main contributors: Jasmine Dumas, Michael Gargano, Garrett M. Dancik, PhD
+- Additional contributors: Ken-Heng Liao, Gregory Harper, Brandon Spratt
 
 ## Acknowledgements
 This work was supported, in part, by Google Summer of Code funding to JD in 2015. MG, KHL, GH, and BS contributed as part of an independent study in Computer Science / Bioinformatics while undergraduate students at Eastern Connecticut State University, Willimantic, CT,  USA.
