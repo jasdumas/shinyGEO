@@ -35,24 +35,20 @@ calc.columns <- function(this){
   }
   if(length(y.outcome) > 1)
   {
-    createAlert(session, "warningAlert", alertId = "warn2", title = "Warning: Multiple Outcome Columns Found",
+    createAlert(session, "warningAlert", alertId = "warn1", title = "Warning: Multiple Outcome Columns Found",
                 content = paste(c("<strong>Columns Found</strong>: ", paste(y.outcome,collapse=", "),"<br><br> shinyGEO has chosen best fit.")), style= 'danger', dismiss = TRUE, append = TRUE)
     y.outcome = y.outcome[1]
   }
   else if(length(y.outcome) == 0){
     y.outcome = NA
   }
-  if(is.na(y.outcome) & is.na(x.time)){
-    createAlert(session,"warningAlert",alertId = "warn3",title = "Warning: No survival information was found!", content = "<p>If you believe this is incorrect, you can review the clinical data and select the appropriate columns. </p>",style= 'danger', dismiss = TRUE, append = TRUE)
-    
-    
-  }
-  else if(is.na(y.outcome) & !is.na(x.time)){
-    createAlert(session,"warningAlert",alertId = "warn3",title = "Warning: No survival outcome columns were found!", content = "<p>If you believe this is incorrect, you can review the clinical data and select the appropriate columns. </p>",style= 'danger', dismiss = TRUE, append = TRUE)
+ 
+ if(is.na(y.outcome) & !is.na(x.time)){
+    createAlert(session,"warningAlert",alertId = "warn1",title = "Warning: No survival outcome columns were found!", content = "<p>If you believe this is incorrect, you can review the clinical data and select the appropriate columns. </p>",style= 'danger', dismiss = TRUE, append = TRUE)
     
   }
   else if(is.na(x.time) & !is.na(y.outcome)){
-    createAlert(session,"warningAlert",alertId = "warn3",title = "Warning: No survival time columns were found!", content = "<p>If you believe this is incorrect, you can review the clinical data and select the appropriate columns. </p>",style= 'danger', dismiss = TRUE, append = TRUE)
+    createAlert(session,"warningAlert",alertId = "warn1",title = "Warning: No survival time columns were found!", content = "<p>If you believe this is incorrect, you can review the clinical data and select the appropriate columns. </p>",style= 'danger', dismiss = TRUE, append = TRUE)
   }
   
   ans = c(x.time,y.outcome)
