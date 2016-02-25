@@ -9,7 +9,7 @@ http://bioinformatics.easternct.edu/shinyGEO/
 
 2. Open *R*. Then type the following (you may copy and paste) into the *R* console in order to install the CRAN packages required by *shinyGEO*:
 
-	`install.packages(c("shiny","survial","DT","shinyBS","ggally","ggplot2","shinyAce","knitr","rmarkdown","RCurl","shinyjs","shinyDashboard"))` 
+	`install.packages(c("shiny","survival","DT","shinyBS","GGally","ggplot2","shinyAce","knitr","rmarkdown","RCurl","shinyjs","shinydashboard"))` 
 
 3. Type the following to install the Bioconductor Packages required by *shinyGEO*:
 
