@@ -1,11 +1,17 @@
 #bar-text{
-font-size: 16px;
-font-family:adobe caslon;
+font-size: 19px;
+font-family:Verdana;
 font-weight:bold;
+position:relative;
+top: 3ppx;
+opacity:0.9;
 
 }
 
+#shinyTitle{
 
+color:#FFF;
+}
 
 
 logo{
