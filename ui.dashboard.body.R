@@ -157,6 +157,7 @@ body = dashboardBody(
 
             	    HTML("<div class=\"progress\" style=\"height:25px !important\"><div class=\"progress-bar progress-bar-striped active\" role=\"progressbar\" aria-valuenow=\"40\" aria-valuemin=\"0\" aria-valuemax=\"100\" style=\"width:100%\">
         <span id=\"bar-text\">Loading...</span></div></div>") ),
+  HTML("<link href='https://fonts.googleapis.com/css?family=Courgette' rel='stylesheet' type='text/css'>"),
 
 
    analyses.common, 
