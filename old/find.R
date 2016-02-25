@@ -68,7 +68,8 @@ editClinicalTable <- reactive({
 #######################################################
 # from ui.R 
 ########################################################
-        actionButton("tabBut", "Edit Data Table") #,
+        actionButton("tabBut", "Edit Data Table"),
+
 
         shinyBS::bsModal("modalExample", "Edit Data Table", "tabBut", size = "small",
             uiOutput("dropModal"),

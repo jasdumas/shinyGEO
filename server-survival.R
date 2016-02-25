@@ -258,6 +258,9 @@ if (AUTOSELECT.SURVIVAL) {
   
   observeEvent(input$genBtn,
                ({
+
+		 KM$generated <- TRUE
+ 	         closeAlert(session, alertId = "SelectKM")
                  print("observe genBtn\n")
     	         values.edit$autogen <- FALSE
 		 KM$time.col = isolate(input$autoColumn.time)
@@ -270,8 +273,6 @@ if (AUTOSELECT.SURVIVAL) {
                    main = paste(input$GSE, geneLabel() , sep = ": ")
                    cat("main = ", main, "\n")
 
-                   t = values.edit$table
-
                    if (input$autoColumn.outcome == "") return(NULL)
 
                    outcome.orig = values.edit$table[[KM$outcome.col]]
@@ -280,17 +281,25 @@ if (AUTOSELECT.SURVIVAL) {
 		   outcome.analysis[outcome.orig%in%KM$eventYes] = 1  
 			
                    hr.inverse = FALSE
-      		   if (!is.null(input$hr.format)) {
-			if(input$hr.format == "low/high") {
+		   if(KM$hr.format == "low/high") {
 				hr.inverse = TRUE
-			}
-		   }
+	    	   }
 
-                   return(plot.shiny.km(time = isolate(time.analysis()$time), 
-                                        death = as.integer(outcome.analysis), 
-                                        x = probe.expr(), 
-                                        col = colorsDE3(), title = main,
-					xlab = input$km.xlab, ylab = input$km.ylab,
+                   time = isolate(time.analysis()$time)
+                   death = as.integer(outcome.analysis)
+		   x = probe.expr()
+
+		   common = intersect(names(x), rownames(values.edit$table))		 
+		   m1 = match(common, names(x))
+                   m2 = match(common, rownames(values.edit$table))
+		
+		   x = x[m1]
+                   time = time[m2]
+                   death = death[m2]
+
+                   return(plot.shiny.km(time = time, death = death, x = x, 
+                                        col = KM$col, title = main,
+					xlab = KM$xlab, ylab = KM$ylab,
 					hr.inverse = hr.inverse))
                  })
                  closeAlert(session,"warn1")

@@ -40,8 +40,8 @@ output$summary <-renderUI({
   if (is.null(x)) {
 	return(NULL)
   }
-  createAlert(session, "alert1", alertId = "Analysis-alert", title = "Choose an analysis from the sidebar to continue", style = "success",
-               content = "Your selected dataset has been downloaded successfully, and is summarized below. <p>Please select either Differential Expression Analysis or Survival Analysis from the sidebar to continue</p>", append = FALSE, dismiss = TRUE) 
+  createAlert(session, "alert1", alertId = "Analysis-alert", title = "Please choose an analysis from the sidebar to continue...", style = "success",
+               content = "Your selected dataset has been downloaded successfully, and is summarized below. <p>Please select either <b>Differential Expression Analysis</b> or <b>Survival Analysis</b> from the sidebar to continue.</p>", append = FALSE, dismiss = TRUE) 
   
   p.tag <-function(x) {
 	for (i in 1:length(x)){ 
@@ -425,9 +425,18 @@ if (DE.PLOT) {
             
               ## make sure levels are in selected order for plot
               y = factor(y)
+	      x = probe.expr()
+
+	      common = intersect(names(x), rownames(values.edit$table))
+              m1 = match(common, names(x))
+              m2 = match(common, rownames(values.edit$table))
+
+	      x = x[m1]
+              y = y[m2]
 
               main = paste(input$GSE, geneLabel() , sep = ": ")
-              print(stripchart2(probe.expr(),y, input$Group1Values, group.names = labelsDE(), main = main, col=colorsDE()))
+              print(stripchart2(x,y, input$Group1Values, group.names = DE$labels,
+		 main = main, col=DE$col))
              
               }) # end of plot reactive
           

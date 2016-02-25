@@ -73,6 +73,11 @@ if (CODE$expression.code == 1) {
   add.code("# change default expression normalization")
 }
   add.code("data.expr = exprs(data.series[[data.index]])")
+  add.code("common = intersect(colnames(data.expr), rownames(data.p))")  
+  add.code("m1 = match(common, colnames(data.expr))")
+  add.code("m2 = match(common, rownames(data.p))")
+  add.code("data.expr = data.expr[,m1]")
+  add.code("data.p = data.p[m2,]")
 
   if (values.edit$log2) {
 	add1  = "data.expr[which(data.expr <= 0)] <- NaN"
@@ -151,6 +156,10 @@ add.probe = paste0("probe = \"", input$selectGenes, "\"")
 add.column = paste0("column = \"", input$selectedColumn, "\"")
 add.groups = paste0("groups = ", vector.it(input$Group1Values)) 
 
+col = DE$col
+if (is.null(col)) {
+   col = current.color(1:length(input$Group1Values))
+}
 add.code(add.de.header)
 add.code(add.probe)
 add.code(add.column)
@@ -164,9 +173,9 @@ k = y%in% groups
 y[!k] = NA
 y = factor(y)
 
-group.names = ", vector.it(labelsDE())," 
+group.names = ", vector.it(DE$labels)," 
 main = paste(GSE, \"", geneLabel(), "\", sep = \": \")
-col = ", vector.it(colorsDE()), "
+col = ", vector.it(col), "
 print(stripchart2(x,y, groups, group.names = group.names, main = main, col=col))
 ")
 add.code(s3plot)
@@ -228,7 +237,7 @@ outcome[outcome.orig %in% eventYes] = 1
 
 main = paste(GSE, \"", geneLabel(), "\", sep = \": \")\n", labels, "
 
-plot.shiny.km(time = time, death = as.integer(outcome), x = x, col = ", vector.it(colorsDE3()), ", title = main, xlab = xlab, ylab = ylab, hr.inverse = hr.inverse)
+plot.shiny.km(time = time, death = as.integer(outcome), x = x, col = ", vector.it(KM$col), ", title = main, xlab = xlab, ylab = ylab, hr.inverse = hr.inverse)
 ")
  
  add.code(kmplot)

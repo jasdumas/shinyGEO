@@ -4,12 +4,14 @@
 # and move series*.csv files into this directory
 #############################################################################
 
-files = Sys.glob("series*.csv")
-series = NULL
-for (f in files) {
-  tmp = read.table(f, header = TRUE, sep = ",")
-  series = rbind(series, tmp)
-}
+#files = Sys.glob("series*.csv")
+#series = NULL
+#for (f in files) {
+#  tmp = read.table(f, header = TRUE, sep = ",")
+#  series = rbind(series, tmp)
+#}
+
+series = read.table("series.csv", header = TRUE, sep = ",")
 
 g = grep("Expression profiling by array", series$Series.Type)
 series = series[g,]

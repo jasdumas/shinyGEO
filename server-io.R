@@ -30,11 +30,13 @@ vector.it <-function(x) {
   paste0("c(", x, ")")
 }
 
-observe({
+observeEvent(input$fileUpload, {
   add.tab()
   cat("in file upload observe...\n")  
   infile <- input$fileUpload
   if (!is.null(infile)){
+    createAlert(session,"ioAlert3",content = "Processing file upload, please wait...", style="info",dismiss=FALSE, append = FALSE)
+
     data = try(read.table(infile$datapath, header = TRUE, row.names=1, sep = ","), silent = TRUE)
     if (class(data) %in% "try-error") {
        createAlert(session,"ioAlert3",content = "Error: file could not be uploaded. This is most likely because the file is not in the correct format (e.g., is not a csv file)" , style="danger",dismiss=TRUE, append = FALSE)
@@ -94,6 +96,8 @@ observe({
   	isolate(add.code(v1))
   	isolate(add.code(v2))
   	isolate(add.code(v3))
+  	add.code("m = match(keep, colnames(data.expr))")
+  	add.code("data.expr = data.expr[,m]")
    }
 
    # generate R code for new columns ## 
@@ -127,7 +131,6 @@ observe({
         paste0("<p>", label, x, "</p>")
     } 
  
-#    save(cols.added, cols.mod, cols.removed, rows.removed, data, values.edit, file = "hi.RData")
     cols.added = format.it(cols.added, "Columns added: ")
     cols.mod = format.it(cols.mod, "Columns modified: ")
     cols.removed = format.it(cols.removed, "Columns removed: ") 

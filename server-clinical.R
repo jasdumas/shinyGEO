@@ -18,11 +18,17 @@ clinicalDataProcessed <- reactive({
   #   removes many columns such as contact info. In addition all 
   #   columns specified by RM.COLS will be removed
   #####################################################################
-  
-  
   # show columns that have unique values; or display all if none 
   num.levels = apply(p, 2, function(x) nlevels(as.factor(x)))
   i = num.levels > 1
+
+  # keep source_name_ch1 
+  
+  keep = colnames(p) %in% "source_name_ch1"
+  if (sum(keep) > 0) {
+	i[keep] = TRUE
+  }
+
   if (sum(i) <= 1) {
 	i = 1:ncol(p)	
   }
