@@ -42,5 +42,5 @@ Feel free to check out the project [wiki](https://github.com/jasdumas/shinyGEO/w
 ...
 
 ## Contact
-Jasmine Dumas [@jasdumas](https://twitter.com/jasdumas) / [@shinyGEO](https://twitter.com/shiny_geo)
+Jasmine Dumas [@jasdumas](https://twitter.com/jasdumas) / [@shiny_GEO](https://twitter.com/shiny_geo)
 
