@@ -18,7 +18,7 @@ http://bioinformatics.easternct.edu/shinyGEO/
 
 4. Type the following to run *shinyGEO*:
 
-	`library(shiny)`
+	`library(shiny)` 
 	`runUrl("https://github.com/gdancik/shinyGEO/archive/master.zip")`
 
 ## Contributors
