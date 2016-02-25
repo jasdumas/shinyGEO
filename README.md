@@ -4,7 +4,7 @@ shinyGEO is a web-based tool that allows a user to download the expression and s
 ## Webpages
 Shinyapps.io: https://jasminedumas.shinyapps.io/shinyGEO
 
-GitHub Repo Page: http://jasdumas.github.io/shinyGEO/
+GitHub Repo Page: http://github.com/jasdumas/shinyGEO/
 
 Github Homepage: http://jasdumas.github.io/shinyGEO/
 
