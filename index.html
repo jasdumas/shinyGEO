@@ -20,70 +20,66 @@
 
     <section class="main-content">
       <h1>
-<a id="shinygeo" class="anchor" href="#shinygeo" aria-hidden="true"><span class="octicon octicon-link"></span></a>shinyGEO</h1>
+<a id="shinygeo" class="anchor" href="#shinygeo" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>shinyGEO</h1>
 
-<p>shinyGEO (Project Name: GEO-AWS / Gene Expression Omnibus Analysis with Shiny) is a web application to parse, transform, model, and visualize microarray gene expression data sets from the <a href="http://www.ncbi.nlm.nih.gov/geo/browse/">Gene Expression Omnibus Repository</a> and performs differential expression and survival analyses. This project was partially developed as part of the <a href="http://www.google-melange.com/gsoc/homepage/google/gsoc2015">2015 Google Summer of Code program</a>. The current (post-GSoC version) development version as of 21 August 2015 19:00 UTC to the present can be found <a href="https://github.com/jasdumas/shinyGEO">here</a> as per the program code submission guidelines and the submitted GSoC release can be found <a href="https://github.com/jasdumas/shinyGEO/releases/tag/v0.1">here</a>.</p>
-
-<h2>
-<a id="websites" class="anchor" href="#websites" aria-hidden="true"><span class="octicon octicon-link"></span></a>Website(s)</h2>
-
-<p><em>Shinyapps.io</em>: <a href="https://jasminedumas.shinyapps.io/shinyGEO">https://jasminedumas.shinyapps.io/shinyGEO</a></p>
-
-<p><em>GitHub Repo Page</em>: <a href="http://jasdumas.github.io/shinyGEO/">http://jasdumas.github.io/shinyGEO/</a></p>
-
-<p><em>Eastern CT Primary App Hosting</em>: <a href="http://bioinformatics.easternct.edu/shinyGEO/">http://bioinformatics.easternct.edu/shinyGEO/</a></p>
+<p>shinyGEO is a web-based tool that allows a user to download the expression and sample data from a <a href="http://www.ncbi.nlm.nih.gov/geo/browse/">Gene Expression Omnibus</a> dataset, select a gene of interest, and perform a survival or differential expression analysis using the available data. For both analyses, shinyGEO produces publication-ready graphics and generates R code ensuring that all analyses are reproducible. The tool is developed using shiny, a web application framework for R, a language for statistical computing and graphics.</p>
 
 <h2>
-<a id="installation" class="anchor" href="#installation" aria-hidden="true"><span class="octicon octicon-link"></span></a>Installation</h2>
+<a id="webpages" class="anchor" href="#webpages" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Webpages</h2>
+
+<p>Shinyapps.io: <a href="https://jasminedumas.shinyapps.io/shinyGEO">https://jasminedumas.shinyapps.io/shinyGEO</a></p>
+
+<p>GitHub Repo Page: <a href="http://jasdumas.github.io/shinyGEO/">http://jasdumas.github.io/shinyGEO/</a></p>
+
+<p>Github Homepage: <a href="http://jasdumas.github.io/shinyGEO/">http://jasdumas.github.io/shinyGEO/</a></p>
+
+<p>Eastern CT Primary App Hosting: <a href="http://bioinformatics.easternct.edu/shinyGEO/">http://bioinformatics.easternct.edu/shinyGEO/</a></p>
+
+<h2>
+<a id="running-shinygeo-locally" class="anchor" href="#running-shinygeo-locally" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Running shinyGEO locally</h2>
 
 <ol>
-<li><p>Fork a copy!</p></li>
-<li><p>Clone to your desktop</p></li>
-<li><p>if you don't have these packages already, put the following into your <a href="http://www.rstudio.com/">RStudio</a> console: 
-<code>install.packages(c("shiny", "reshape2", "survival", "shinyBS", "GGally", "ggplot2", "shinyAce", "knitr"))</code></p></li>
-<li><p>Bioconductor package are downloaded differently. Place the following into the console:
-<code>source("http://bioconductor.org/biocLite.R")</code><br>
-  <code>biocLite(c("GEOquery", "Biobase", "affy", "limma"))</code></p></li>
-<li><p>This project depends on some development versions of pacakge(s): 
-<code>devtools::install_github('rstudio/DT')</code></p></li>
-<li><p>In the console <code>library(shiny)</code> then <code>runApp("shinyGEO")</code></p></li>
-<li><p>Feel free to test out the tool functionality by entering the GEO Accession number: <a href="http://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE19915">GSE19915</a> which includes survival characteristics to generate Kaplan-Meier curves under the Analyses tab menu.</p></li>
-<li>
-<p><code>library(devtools)</code></p>
-
-<p><code>devtools::install_github("jasdumas/shinyGEO")</code></p>
-
-<p><code>library(shinyGEO)</code></p>
-
-<p><code>runGitHub("shinyGEO", "jasdumas")</code></p>
-</li>
-<li><p><code>runUrl('https://github.com/jasdumas/shinyGEO/archive/master.zip')</code></p></li>
+<li><p>Download R from <a href="https://cran.r-project.org">https://cran.r-project.org</a></p></li>
+<li><p>From within R, install 'shiny' by typing
+<code>install.packages("shiny")</code> </p></li>
+<li><p>Type the following from within R:
+<code>runGitHub("shinyGEO", "jasdumas")</code></p></li>
 </ol>
 
 <h2>
-<a id="find-out-more" class="anchor" href="#find-out-more" aria-hidden="true"><span class="octicon octicon-link"></span></a>Find out more</h2>
+<a id="contributors" class="anchor" href="#contributors" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Contributors</h2>
 
-<p><em>Feel free to check out the project <a href="https://github.com/jasdumas/shinyGEO/wiki">wiki</a></em></p>
+<p>Main contributors: Jasmine Dumas, Michael Gargano, Garrett M. Dancik, PhD</p>
 
-<h2>
-<a id="updates" class="anchor" href="#updates" aria-hidden="true"><span class="octicon octicon-link"></span></a>Updates</h2>
-
-<ul>
-<li><p>11 SEPTEMBER 2015: This GitHub Repo and corresponding links have be updated to a 
-new name to conform with CRAN naming conventions and for deployment guidelines</p></li>
-<li><p>2 OCTOBER 2015: The application has been deployed to shinyapps.io cloud service at <a href="https://jasminedumas.shinyapps.io/shinyGEO">https://jasminedumas.shinyapps.io/shinyGEO</a> Report bugs, glitches, and general comments as this is the first release designated for testing and configuration. </p></li>
-<li><p>7 JANUARY 2016: The application will also be deployed on the <a href="http://bioinformatics.easternct.edu/shinyGEO/">Eastern CT State University Shiny Server</a></p></li>
-</ul>
+<p>Additional contributors: Ken-Heng Liao, Gregory Harper, Brandon Spratt</p>
 
 <h2>
-<a id="contribute" class="anchor" href="#contribute" aria-hidden="true"><span class="octicon octicon-link"></span></a>Contribute</h2>
+<a id="acknowledgements" class="anchor" href="#acknowledgements" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Acknowledgements</h2>
 
-<p>This project is in beta/demonstration only mode and is scheduled to be launched in early Winter 2016. A considerable amount of the features are functional but if you discover a bug or non-working application features with certain data sets, please feel free to submit an <a href="https://github.com/jasdumas/shinyGEO/issues">issue</a> or contact the package maintainer.</p>
+<p>This work was supported, in part, by <a href="http://www.google-melange.com/gsoc/homepage/google/gsoc2015">Google Summer of Code</a> funding to JD in 2015. MG, KHL, GH, and BS contributed as part of an independent study in Computer Science / Bioinformatics while undergraduate students at Eastern Connecticut State University, Willimantic, CT,  USA.</p>
 
 <h2>
-<a id="contact" class="anchor" href="#contact" aria-hidden="true"><span class="octicon octicon-link"></span></a>Contact</h2>
+<a id="find-out-more" class="anchor" href="#find-out-more" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Find out more</h2>
 
-<p>Jasmine Dumas <a href="https://twitter.com/jasdumas">@jasdumas</a></p>
+<p>Feel free to check out the project <a href="https://github.com/jasdumas/shinyGEO/wiki">wiki</a></p>
+
+<h2>
+<a id="updates" class="anchor" href="#updates" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Updates</h2>
+
+<p>25 AUGUST 2015: The current (post-GSoC version) development version as of 21 August 2015 19:00 UTC to the present can be found <a href="https://github.com/jasdumas/shinyGEO">here</a> as per the program code submission guidelines and the submitted GSoC release can be found <a href="https://github.com/jasdumas/shinyGEO/releases/tag/v0.1">here</a>.</p>
+
+<p>11 SEPTEMBER 2015: This GitHub Repo and corresponding links have be updated to a new name to conform with CRAN naming conventions and for deployment guidelines</p>
+
+<p>2 OCTOBER 2015: The application has been deployed to shinyapps.io cloud service at <a href="https://jasminedumas.shinyapps.io/shinyGEO">https://jasminedumas.shinyapps.io/shinyGEO</a> Report bugs, glitches, and general comments as this is the first release designated for testing and configuration.</p>
+
+<p>7 JANUARY 2016: The application will also be deployed on the Eastern CT State University Shiny Server</p>
+
+<p>...</p>
+
+<h2>
+<a id="contact" class="anchor" href="#contact" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Contact</h2>
+
+<p>Jasmine Dumas <a href="https://twitter.com/jasdumas">@jasdumas</a> / <a href="https://twitter.com/shiny_geo">@shiny_GEO</a></p>
 
       <footer class="site-footer">
         <span class="site-footer-owner"><a href="https://github.com/jasdumas/shinyGEO">shinyGEO</a> is maintained by <a href="https://github.com/jasdumas">jasdumas</a>.</span>
