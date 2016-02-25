@@ -5,13 +5,21 @@ shinyGEO is a web-based tool that allows a user to download the expression and s
 http://bioinformatics.easternct.edu/shinyGEO/
 
 ## Running shinyGEO locally 
-1. Download R from https://cran.r-project.org
+1. Download and install *R* from https://cran.r-project.org
 
-2. From within R, install 'shiny' by typing
-`install.packages("shiny")` 
+2. Open *R*. Then type the following (you may copy and paste) into the *R* console in order to install the CRAN packages required by *shinyGEO*:
 
-3. Type the following from within R:
-  `runGitHub("shinyGEO", "gdancik")`
+	`install.packages(c("shiny","survial","DT","shinyBS","ggally","ggplot2","shinyAce","knitr","rmarkdown","RCurl","shinyjs","shinyDashboard"))` 
+
+3. Type the following to install the Bioconductor Packages required by *shinyGEO*:
+
+	`source("http://bioconductor.org/biocLite.R")`
+	`biocLite(c("Biobase","GEOquery"))`
+
+4. Type the following to run *shinyGEO*:
+
+	`library(shiny)`
+	`runUrl("https://github.com/gdancik/shinyGEO/archive/master.zip")`
 
 ## Contributors
 Main contributors: Jasmine Dumas, Michael Gargano, Garrett M. Dancik, PhD
