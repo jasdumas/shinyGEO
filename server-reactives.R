@@ -92,6 +92,7 @@ observeEvent(input$tabs, {
  
   if (input$tabs == "NewAnalysis") {
 	cat("New Analysis")
+	shinyjs::enable("GSE")
         runjs("location.reload()") 
   }
  
