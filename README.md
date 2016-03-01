@@ -5,7 +5,7 @@ shinyGEO is a web-based tool that allows a user to download the expression and s
 http://bioinformatics.easternct.edu/shinyGEO/
 
 ## Running shinyGEO locally 
-1. Download and install *R* from https://cran.r-project.org
+1. Download and install *R* from https://cran.r-project.org. (Note: *shinyGEO* requires *R*>=3.23)
 
 2. Open *R*. Then type the following (you may copy and paste) into the *R* console in order to install the CRAN packages required by *shinyGEO*:
 
