@@ -168,8 +168,6 @@ main.gen <- function(this,columns.data){
   
 }
 
-if (AUTOSELECT.SURVIVAL) {
- 
   # on button click, toggle modal and autogen only when autogen is TRUE (i.e., on first time only) 
   observeEvent(input$autoAnalysis,{
 
@@ -294,10 +292,4 @@ if (AUTOSELECT.SURVIVAL) {
                })
   )
   
-} # end autoselect.survival
-
-
-
-
-
 

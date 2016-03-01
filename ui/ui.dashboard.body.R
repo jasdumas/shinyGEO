@@ -2,11 +2,11 @@
 # dashboard body 
 #####################################
 
-source("ui.tab.expression.R")
-source("ui.tab.analyses.R")
-source("ui.tab.reproducible.R")
-source("ui.tab.about.R")
-source("html.R")
+source("ui/ui.tab.expression.R")
+source("ui/ui.tab.analyses.R")
+source("ui/ui.tab.reproducible.R")
+source("ui/ui.tab.about.R")
+source("misc/html.R")
 
 
 header = dashboardHeader(
