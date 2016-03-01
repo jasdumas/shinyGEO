@@ -12,7 +12,7 @@ current.color <-function(i) {
 
 
 observeEvent(input$formatDEButton2, {
-  cat("open formatDE2 modal\n")
+  shinycat("formatDE2 modal\n")
   updateTextInput(session, "km.xlab", value = KM$xlab) 
   updateTextInput(session, "km.ylab", value = KM$ylab)
   updateRadioButtons(session, "hr.format", selected = KM$hr.format)
@@ -124,24 +124,19 @@ observeEvent(input$formatDEButton, {
 ## get current colors ##
 colorsDE2 <-reactive({
   names = paste0("colorDE", 1:length(isolate(input$Group1Values)))
-#  cat("names = ", names, "\n")
   vals = NULL
   for (n in names) {
- #   cat("color = ", input[[n]], "\n")
     vals = c(vals, input[[n]])
   }
-#  cat("colors = ", vals, "\n")
   vals
 })
   
 labelsDE2 <-reactive({
   names = paste0("labelDE", 1:length(isolate(input$Group1Values)))
-  #cat("names = ", names, "\n")
   vals = NULL
   for (n in names) {
     vals = c(vals, input[[n]])
   }
- # cat("labels = ", vals, "\n")
   vals
 })
 

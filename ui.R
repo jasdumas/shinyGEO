@@ -1,4 +1,3 @@
-cat("begin source ui.R\n")
 
 library(shinyAce)
 library(RCurl)
@@ -20,4 +19,3 @@ shinyUI(
 )
 
 
-cat("end source ui.R\n")

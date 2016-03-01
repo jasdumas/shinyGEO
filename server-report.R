@@ -1,4 +1,5 @@
-add.code <-function(line) {  ## add code to ace editor for the report 
+## add R code to ace editor 
+add.code <-function(line) {  
    if (is.null(reproducible$report)) {
 	reproducible$report = line
    } else {
@@ -7,14 +8,14 @@ add.code <-function(line) {  ## add code to ace editor for the report
 }
 
 observeEvent(reproducible$report, {
-     cat("updateAceEditor for report\n")
+     shinycat("updateAceEditor for report...\n")
      updateAceEditor(session, "rmd", reproducible$report, 
                   mode = "markdown", theme = "chrome")
 })
 
 
 observeEvent(input$reportBtn, {
-      cat("generating report\n")
+      shinycat("generating report...\n")
       test.file = "reports/test.R"
       createAlert(session, "reportAlert", alertId = "report-alert", title = "Generating Report...", 
 	style = "info", content = "Your report is being generated (this may take 1-2 minutes)", 
@@ -33,12 +34,10 @@ observeEvent(input$reportBtn, {
 # profiles() or CODE$expression.code will trigger report 
 #########################################################
 observe({
-
+  shinycat("observe profiles or CODE$expression.code for report...\n")
   if (CODE$expression.code <0) return(NULL)
   if (is.null(profiles())) return(NULL)
 
-  cat("observe profiles\n")
-  if (TRACE) cat("In Initial...\n")
   GSE = input$GSE
   if (GSE == "") {
     GSE = strsplit(names(GEO.test),"-")[[1]][1]
@@ -113,18 +112,8 @@ print(exp.prof.plot)
   add.code(exp)
   CODE$expression.code <- -1 
  
- cat("END Initial\n") 
 })
 
-
-######################################
-# Expression Profiles Append to Report
-######################################
-observeEvent(input$exprAdd, {
-  if (TRACE) cat("In report Append for expression profiles...\n")
-
-  
-}) # end of observeEvent for expression profiles plot 
 
 ##################################
 ## Diff. Expression Append to report 
@@ -133,7 +122,7 @@ observeEvent(input$exprAdd, {
 quote.it <-function(x) paste0("\"", x, "\"")
 
 observeEvent(input$DEadd, {
-  if (TRACE) cat("In report append DE...\n")
+  shinycat("Add DE code to report...\n")
 
 
 if (!CODE$stripchart.loaded) {
@@ -186,7 +175,7 @@ add.code(s3plot)
 ## Survival Plot Append to report 
 #################################
 observeEvent(input$Survadd, {
-
+  shinycat("Add survival code to report...\n")
    if (!CODE$plot.km.loaded) {
      kmfunction = scan(file = "plot.shiny.km.R", what = character(), sep = "\n")
      sapply(kmfunction, add.code)
@@ -241,7 +230,6 @@ plot.shiny.km(time = time, death = as.integer(outcome), x = x, col = ", vector.i
 ")
  
  add.code(kmplot)
-  if (TRACE) cat("In report Append Observe for Survival...\n")
 
 }) # end of observeEvent
 

@@ -39,7 +39,6 @@ stripchart2 <- function(x,y, GroupNames, group.names = NULL, col = NULL,
     add = paste("\nFC = ", fc, p, collapse = "")
    }
  } else if (stats) {
-	#cat("fittin lm...\n")
    	l = lm(x~y); l = summary(l)
 	if (any(l$df == 0)) {
 		add = "\nP = NA"

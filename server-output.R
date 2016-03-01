@@ -2,11 +2,8 @@
 # display functions for conditional panels              ##
 ##########################################################
 
-cat("begin server-output.R\n")
-
 load("series/series.RData")
 load("platforms/platforms.RData")
-
 
 createAlert(session, "addCodeDEAlert", alertId = "DE-add-alert", title = "", style = "success",
             content = "R Code for Differential Expression Analysis Added", append = FALSE, dismiss = FALSE) 
@@ -90,18 +87,12 @@ sidebarDisplay <-reactive({
   return("ALL")
 })
 
-observe({
-cat("display = ", sidebarDisplay(), "\n")
-})
-
-
 output$sidebarDisplay <- renderText(sidebarDisplay())
 outputOptions(output, 'sidebarDisplay', suspendWhenHidden=FALSE)
 
 
 observe({
-  add.tab()
-  cat("observing for selectizeInput\n")
+  shinycat("observing for selectGenes drop down...\n")
   options=  list(
       render = I(
         "{
@@ -112,35 +103,23 @@ observe({
       )
     )
 
- cat("get label\n")
 
   label =  paste0("Select Probe (You May Search By  ", values.edit$platformGeneColumn, ")")
 
-cat("label = ", label, "\n")
   updateSelectizeInput(session, "selectGenes", 
 	label = label, server = TRUE, 
  	choices = geneNames(), options = options 
   )
-  cat("done observing for selectizeInput\n")
-  subtract.tab()
-
 })
 
-
-
-
-
-
-
 observe({
- cat("update geneColumn selectizeInput\n")
+ shinycat("update geneColumn selectizeInput...\n")
  updateSelectizeInput(session, "geneColumn", server = TRUE, 
 	choices = colnames(platInfo()), selected = values.edit$platformGeneColumn) 
 }) 
 
 observeEvent(input$geneColumn, {
 	if (is.null(input$geneColumn) | input$geneColumn == "") return(NULL)
-        cat("COLUMN = ", input$geneColumn, "\n") 
 	values.edit$platformGeneColumn = input$geneColumn
 })
 
@@ -164,13 +143,12 @@ output$PlatformLinks <-renderUI( {
 observe ({
   ## only show plaforms for selected series ##
   pl = Platforms()
-  cat("update for pl = ", pl, "\n")
+  shinycat("updating for platform = ", pl, "\n")
  
   pl.selected = NULL
   choices = NULL
   pl.options = NULL 
   if (!is.null(pl)) {
-    cat("updating pl...\n")
     keep = platforms.accession %in% pl
     pl.accession = platforms.accession[keep]
     pl.description = platforms.description[keep]
@@ -178,7 +156,6 @@ observe ({
       pl.selected = pl.accession 
       choices = pl.selected
     } else {
-      cat("multiple accessions..\n")
       pl.selected = NULL
       choices = data.frame(label = pl.accession, value = pl.accession, 
 		name = pl.description)
@@ -195,14 +172,13 @@ observe ({
     }
   }
  
-cat("update platform dropdown\n") 
-updateSelectizeInput(session, inputId='platform', label = "Platform", server = TRUE,
+  updateSelectizeInput(session, inputId='platform', label = "Platform", server = TRUE,
                choices = choices,
                selected = pl.selected,
 	       options = pl.options 
 )
 
-if (!is.null(pl)) {
+  if (!is.null(pl)) {
 	 d = dataInput()
 	 num.samples = sapply(d, function(x) length(sampleNames(x)))
         num.features = sapply(d, function(x) length(featureNames(x)))
@@ -210,15 +186,14 @@ if (!is.null(pl)) {
         x = paste("There are <b>", num.samples, "</b>samples and<b>", num.features, "</b>features on platform <b>", annot, "</b>")
 #        x = paste("<br>", p, "</br>", collapse = "")
 
-x = paste(x, collapse = "<br>")
-cat("create platform alert\n")
+  	x = paste(x, collapse = "<br>")
 
-if (!TEST.DATA) {
-  createAlert(session, "alert1", alertId = "GPL-alert", title = "Please select a platform to continue", style = "success",
-            content = x, append = TRUE, dismiss = FALSE) 
-}
-}
-cat("done create platform alert\n")
+	if (!TEST.DATA) {
+    	createAlert(session, "alert1", alertId = "GPL-alert", 
+		title = "Please select a platform to continue", 
+		style = "success", content = x, append = TRUE, dismiss = FALSE) 
+  	}
+  }
 })
 
 
@@ -249,8 +224,6 @@ updateSelectizeInput(session, inputId='GSE', label = "Accession Number", server 
 ### Renders drop-down menu for variables/columns 
 ################################################  
 observe({
-  #colNames = colnames(editClinicalTable())
-  #val = colNames[input$clinicalDataSummary_rows_selected]
 
   val = NULL
 
@@ -258,7 +231,6 @@ observe({
   val = input$summaryModalTable_row_last_clicked
   val = colNames[val]
  
-  cat("selected column  = ", val, "\n")
   output$selectedColumn <- renderUI({  
       # show possible choices (column names)
       selectInput('selectedColumn', 'Selected Column', 
@@ -307,46 +279,12 @@ output$selectedGroups <- renderUI({
 ## Expression Profiles plot 
 ##############################
 
-# Keep for testing for now
-expression22Plot <-reactive({
-	cat("in expression Plot...\n")
-	isolate(closeAlert(session, "GSE-begin-alert"))
-	isolate(closeAlert(session, "GPL-alert"))
-
-  	createAlert(session, "alert1", alertId = "Expression-alert", title = "Current Status", 
-	style = "info", content = "Generating boxplot of expression data", 
-		append = FALSE, dismiss = FALSE) 
-#  closeAlert(session, "Expression-alert")
-
-         df <- data.frame(gp = factor(rep(letters[1:3], each = 10)),
-                      y = rnorm(30))
-     # Compute sample mean and standard deviation in each group
-     library(plyr)
-     ds <- ddply(df, .(gp), summarise, mean = mean(y), sd = sd(y))
-     
-     # Declare the data frame and common aesthetics.
-     # The summary data frame ds is used to plot
-     # larger red points in a second geom_point() layer.
-     # If the data = argument is not specified, it uses the
-     # declared data frame from ggplot(); ditto for the aesthetics.
-     g = ggplot(df, aes(x = gp, y = y)) +
-        geom_point() +
-        geom_point(data = ds, aes(y = mean),
-                   colour = 'red', size = 3)
-	isolate(ALERTS$analysisAlert <- TRUE)
-        return(g)
-})
-
-
-#expressionPlot <-reactive({
 observe ({
-  cat("\n\nrendering profiles...\n")
+  shinycat("Rendering profiles plot...\n")
 
   # Return max 30 exp. samples if there is alot of samples to make the determination easier = unclutterd graphics
   x = profiles()
-  cat("profiles() done\n")
   if (is.null(x)) {
-	cat("no profiles\n")
 	return(NULL)
   }
   n = ncol(x)
@@ -364,8 +302,6 @@ observe ({
   
   y.label = "log2 expression"  
 
-  cat("create expression alert\n")
-
   title <- paste(isolate(input$GSE), '/', isolate(input$platform), title.detail, sep ='') # need 
  
   fixed.df <- as.data.frame(x=x, stringsAsFactors = FALSE)
@@ -380,7 +316,6 @@ observe ({
                 theme(axis.text.x = element_text(angle = 90, hjust = 1))
   isolate(values.edit$profilesPlot <- TRUE) 
   output$exProfiles <- renderPlot({print(exp.prof.plot)})
-  #return(exp.prof.plot)
 })
 
 observe({
@@ -390,32 +325,25 @@ observe({
   }
 })
 
-if (EXPRESSION.PLOT) { 
-  output$exProfiles <- renderPlot({print(expressionPlot())})
-} # end EXPRESSION.PLOT
-
-if (DE.PLOT) {
-  observe({
+observe({
     
-      PLOT = TRUE
+  PLOT = TRUE
       
-      if (input$selectGenes == "") {
-        cat("\n\n=====NO GENE=====\n\n")
+  if (input$selectGenes == "") {
         PLOT = FALSE
-      }    
-      else {
+  } else {
         closeAlert(session, "Gene-alert")
           if (length(input$Group1Values) == 0) {
             PLOT = FALSE
           }
-      }
+  }
       
-      if (!PLOT) {
-              output$plot <-renderPlot({NULL})
-      } else  {
-          output$plot <- renderPlot({
+  if (!PLOT) {
+        output$plot <-renderPlot({NULL})
+  } else  {
+        output$plot <- renderPlot({
               iv = input$selectedColumn
-              m = match(as.character(iv), colnames(clinicalDataProcessed()))  # GD: change grep to match
+              m = match(as.character(iv), colnames(clinicalDataProcessed()))  
               clinical = as.character(clinicalDataProcessed()[,m]) 
               selected = c(as.character(input$Group1Values))
               k = clinical%in% selected
@@ -437,11 +365,7 @@ if (DE.PLOT) {
               main = paste(input$GSE, geneLabel() , sep = ": ")
               print(stripchart2(x,y, input$Group1Values, group.names = DE$labels,
 		 main = main, col=DE$col))
-             
-              }) # end of plot reactive
-          
+              }) # end of renderPLot
     }
-  })  # end observe
-}
+})  # end observe
 
-cat("end server-output.R\n")
