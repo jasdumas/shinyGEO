@@ -126,7 +126,7 @@ observeEvent(input$DEadd, {
 
 
 if (!CODE$stripchart.loaded) {
-  s2function = scan(file = "stripchart2.R", what = character(), sep = "\n")
+  s2function = scan(file = "misc/stripchart2.R", what = character(), sep = "\n")
   sapply(s2function, add.code)
   CODE$stripchart.loaded = TRUE
   add.code("")
@@ -177,7 +177,7 @@ add.code(s3plot)
 observeEvent(input$Survadd, {
   shinycat("Add survival code to report...\n")
    if (!CODE$plot.km.loaded) {
-     kmfunction = scan(file = "plot.shiny.km.R", what = character(), sep = "\n")
+     kmfunction = scan(file = "misc/plot.shiny.km.R", what = character(), sep = "\n")
      sapply(kmfunction, add.code)
      add.code(time.analysis()$code)
      add.code("")
