@@ -10,11 +10,11 @@ Github Homepage: http://jasdumas.github.io/shinyGEO/
 
 Eastern CT Primary App Hosting: http://bioinformatics.easternct.edu/shinyGEO/
 
-## Running shinyGEO locally 
+## Running shinyGEO locally
 1. Download R from https://cran.r-project.org
 
 2. From within R, install 'shiny' by typing
-`install.packages("shiny")` 
+`install.packages("shiny")`
 
 3. Type the following from within R:
   `runGitHub("shinyGEO", "jasdumas")`
@@ -43,4 +43,3 @@ Feel free to check out the project [wiki](https://github.com/jasdumas/shinyGEO/w
 
 ## Contact
 Jasmine Dumas [@jasdumas](https://twitter.com/jasdumas) / [@shiny_GEO](https://twitter.com/shiny_geo)
-

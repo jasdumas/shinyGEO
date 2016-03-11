@@ -1,9 +1,9 @@
 #############################################################################
 ## Reactives
 #############################################################################
-cat("begin server-reactives.R\n")
+shinycat("begin server-reactives.R\n")
 
-shinyjs::onclick("sidebarToggle", 
+shinyjs::onclick("sidebarToggle",
 #  cat("refreshing display...\n")
 )
 
@@ -55,12 +55,6 @@ reactiveValues.reset <-function() {
 	CODE$expression.code = 0
 }
 
-observeEvent(input$btnNew, {
-  cat("New\n")
-})
-
-
-    
 observeEvent(input$GSE, {
   if (input$GSE!= "") {
      shinyjs::enable('submitButton')
@@ -69,29 +63,14 @@ observeEvent(input$GSE, {
   }
 })
 
-# open/close normalizationModal
-#observeEvent(input$normalizationModal, {
-#  cat("normalizationModal...\n")
-#  updateRadioButtons(session, "radio", label = "Apply log normalization to expression data:",
-#                                    choices = list("Auto-Detect" = 1, "Yes" = 2, "No" = 3),
-#                                    selected = values.edit$norm, inline = TRUE)
-#})
-
-## when user saves changes to expression
-#observeEvent(input$saveExp, {
-#  CODE$expression.code <- 1
-#  values.edit$norm <- input$radio
-#  toggleModal(session, "normalizationModal", "close") 
-#})
-
 ################################
 # Tab Observers 
 ################################
 observeEvent(input$tabs, {
-  cat("tab change...\n")
+  shinycat("tab change...\n")
  
   if (input$tabs == "NewAnalysis") {
-	cat("New Analysis")
+	shinycat("New Analysis")
 	shinyjs::enable("GSE")
         runjs("location.reload()") 
   }
@@ -147,7 +126,7 @@ observeEvent(input$tabs, {
 
 
 observeEvent(input$selectGenes, {
-  cat("observing selectGenes...\n")
+  shinycat("observing selectGenes...\n")
   if (input$selectGenes=="") {
 	if (input$tabs == "DifferentialExpressionAnalysis") {
 		closeAlert(session, alertId = "SelectGroups")
@@ -168,14 +147,14 @@ observeEvent(input$selectGenes, {
 })
 
 observeEvent(input$Group1Values, {
-	cat("input$selectdGroups = ", input$Group1Values, "\n")
+     shinycat("input$selectdGroups = ", input$Group1Values, "\n")
      if (input$Group1Values!="") {
 	closeAlert(session, alertId = "SelectGroups")	
      }
 })
 
 observeEvent(input$platform, {
-  cat("observe platform\n")
+  shinycat("observe platform\n")
   closeAlert(session, "geneSymbolAlert")
   values.edit$table <- NULL  
   values.edit$platformGeneColumn <- NULL
@@ -188,7 +167,7 @@ observeEvent(input$platform, {
 ####################################
 dataInput <- reactive({
   input$submitButton
-  add.tab()
+  shinycat("In dataInput reactive...\n")  
   updateTabItems(session, "tabs", "Home") 
 
   # reset variables 
@@ -196,16 +175,12 @@ dataInput <- reactive({
 
   # Runs the intial input once the button is pressed from within the 
   # reactive statement
-  if (TRACE) cat("In dataInput reactive...\n")  
 
   if (TEST.DATA) {
-	cat("return GEO.test data\n")
-	subtract.tab()
 	return (GEO.test)
   }
 
   if (is.null(isolate(input$GSE))) {
-	subtract.tab()
 	return(NULL)
   }
   GSE = isolate(input$GSE)   
@@ -216,7 +191,6 @@ dataInput <- reactive({
   closeAlert(session, "GSE-progress-alert")
   closeAlert(session, "GPL-alert")
   closeAlert(session, "Analysis-alert")
-  cat("creating alert...\n")
 
   content = "Downloading Series (GSE) data from GEO" 
 # content = HTML("<img src = 'PleaseWait.gif' width=50% height =50%>")
@@ -236,8 +210,6 @@ dataInput <- reactive({
 
     shinyjs::disable('GSE')
     shinyjs::disable('submitButton')
- 
-    subtract.tab()
     geo
 })
 
@@ -245,16 +217,12 @@ dataInput <- reactive({
 ### Platforms: returns the platform only if the GSE # is entered 
 ################################################################  
 Platforms <- reactive({
-  add.tab()
-  if (TRACE) cat("In Platforms reactive...\n")
+  shinycat("In Platforms reactive...\n")
   if (is.null(dataInput())) {
-    subtract.tab()
     return(NULL)
   }
   closeAlert(session, "GSE-progress-alert")  
   ans = as.character(sapply(dataInput(), annotation))   
-  print(ans)
-  subtract.tab()
   ans 
 })
 
@@ -263,19 +231,15 @@ Platforms <- reactive({
 #########################################  
 platformIndex <- reactive({
 #  input$submitPlatform
-  add.tab()
-  if (TRACE) cat("In platformIndex reactive...\n")
+  shinycat("In platformIndex reactive...\n")
   if (TEST.DATA) {
-	subtract.tab()
 	return(1)
   }
   if (is.null(dataInput()) | length(isolate(input$platform)) ==0) {
     return(NULL)
   }
   if (length(dataInput())==1) return (1)
-  cat("matching platform = ", isolate(input$platform), "\n")
   m = match((input$platform), as.character(sapply(dataInput(), annotation)))   
-  subtract.tab() 
   if (is.na(m)) return(NULL)
   return(m)
 })
@@ -284,8 +248,7 @@ platformIndex <- reactive({
 ### return selected platform info as a table
 ################################################  
 platInfo <- reactive({
-  add.tab()
-  if (TRACE) cat("In platInfo reactive...\n")
+  shinycat("In platInfo reactive...\n")
   if (is.null(Platforms()) | is.null(platformIndex())) return (NULL)
 
   code = paste0("data.platform = getGEO(\"", Platforms()[platformIndex()],  "\")
@@ -297,9 +260,6 @@ platInfo <- reactive({
   }
   a = isolate(Platforms())
   b = isolate(platformIndex())
-  cat("Platforms() = ", a, "\n")
-  cat("platformIndex = ", b, "\n")
-  cat("downloading platform now...\n")
 
   t = NULL
   if (TEST.DATA) {
@@ -312,7 +272,6 @@ platInfo <- reactive({
   common.probes = intersect(row.names(exprInput()), as.character(k))
   n = match(common.probes, k)
   r = t[n,]
-  subtract.tab()
   return(r)
 })
 
@@ -321,17 +280,13 @@ platInfo <- reactive({
 ### selectGenes selectizeInput 
 #########################################################
 geneNames <- reactive ({
-  add.tab()
-  if (TRACE) cat("In geneNames reactive...\n")
+  shinycat("In geneNames reactive...\n")
 
   plat.info = platInfo()
 
   if (is.null(plat.info)) {
-        subtract.tab()
-	cat("return NULL...\n")
 	return (NULL)
   }
-  cat("find column...\n")
 
   gene.column = values.edit$platformGeneColumn
   if (is.null(gene.column)) {
@@ -347,32 +302,21 @@ geneNames <- reactive ({
     }
     values.edit$platformGeneColumn = gene.column
   }
-  cat("gene column is  ", gene.column, "\n")
   probes = as.character(plat.info$ID)
-  cat("got probes...\n")
   genes = "Gene not specified"
   if (!is.null(gene.column)) { 
-  cat("finding column: ", gene.column, "\n")
     genes = as.character(plat.info[[gene.column]])
-    cat("gene[1] = ", genes[1], "\n")
     label = paste0(genes, " (",  probes, ")")
   } else {
     label = probes
   } 
 
   # create data.frame for use with selectizeInput #
-
-  cat("creating geneName data.frame...\n")
-  
   dd = data.frame(value = probes, label = label, genes = genes, probes = probes)
-  cat("data.frame created\n")
-  subtract.tab()
   genes[genes==""] = NA
   o = order(genes, probes)
   return(dd[o,])
 })
-
-
 
 ##############################################################
 ## gene label of the form gene (probe) for the selected probe
@@ -387,11 +331,8 @@ geneLabel <-reactive({
 
 ### when platform changes, update clinical table
 observe({
-  add.tab()
-  if (TRACE) cat("observe platform to update clinical table...\n")
+  shinycat("observe platform to update clinical table...\n")
   if (is.null(dataInput()) | is.null(platformIndex())) {
-    subtract.tab()
-    cat("update table to NULL\n")
     values.edit$table = NULL
     return(NULL)
   }
@@ -400,53 +341,42 @@ observe({
   if (is.null(values.edit$table)) {
     code = paste0("data.p = pData(data.series[[data.index]])")
     if (TEST.DATA) {
-        cat("set table to CLINICAL.test\n")
         values.edit$table = CLINICAL.test
     } else {
-	cat("set table pData(dataInput)\n")	
       values.edit$table = as.data.frame(pData(phenoData(object = dataInput()[[platformIndex()]])))
     }
   }
-  subtract.tab()
 })
 
 ######################################################
 # exprInput - expression data for selected platform
 ######################################################
 exprInput <- reactive({
-  add.tab()
-  if (TRACE) cat("In exprInput reactive...\n")
+  shinycat("In exprInput reactive...\n")
   pi = platformIndex()
-  cat("pi = ", pi, "\n")
   if (is.null(dataInput()) | is.null(pi)) {
-	subtract.tab()
 	return(NULL)
   }
   pl=Platforms()[platformIndex()]
   code = paste0("data.index = match(\"", pl, "\", sapply(data.series, annotation))")
   code = paste0("data.expr = exprs(data.series[[data.index]])")
   ans = exprs(dataInput()[[pi]])
-  subtract.tab()
   return(ans)
 })
-
 
 
 ###################################################
 # get possible values of the selected column names
 ###################################################
 groupsForSelectedColumn <- reactive({
-  add.tab()
-  if (TRACE) cat("In groupsForSelectedColumn reactive...\n")
+  shinycat("In groupsForSelectedColumn reactive...\n")
   vars = values.edit$table
   if (is.null(vars) | is.null(input$selectedColumn)) {
-	subtract.tab()
 	return(NULL)   
   }
   
   vars <- vars[, as.character(input$selectedColumn)] 
   vars = factor(vars)
-  subtract.tab()
   return(as.list(levels(vars)))
 })  
 
@@ -456,10 +386,8 @@ groupsForSelectedColumn <- reactive({
 # a cut-off 
 ###################################################
 defaultGroupsForSelectedColumn <- reactive({
-  add.tab()
-  if (TRACE) cat("In defaultGroupsForSelectedColumn reactive...\n")
+  shinycat("In defaultGroupsForSelectedColumn reactive...\n")
   g = groupsForSelectedColumn()
-  subtract.tab()
   if (length(g) > 5) return(NULL) 
   g    
 })
@@ -468,9 +396,7 @@ defaultGroupsForSelectedColumn <- reactive({
 # Expression profiles - data transformation
 ###########################################
 profiles <- reactive({
-  cat("In profiles\n")
-  add.tab()
-  if (TRACE) cat("In profiles reactive...\n")
+  shinycat("In profiles reactive...\n")
   ### log2 transform (auto-detect) citation ###
   # Edgar R, Domrachev M, Lash AE.
   # Gene Expression Omnibus: NCBI gene expression and hybridization array data repository
@@ -490,13 +416,11 @@ profiles <- reactive({
   if (LogC & radio == 1 | radio == 2) { 
     	ex[which(ex <= 0)] <- NaN
     	values.edit$log2 = TRUE
-  	subtract.tab()
     	ex <- log2(ex)
   } else {
   	values.edit$log2 = FALSE
   }
 
-  subtract.tab()
   return (ex)  
 })
 
@@ -505,11 +429,6 @@ probe.expr <-reactive({
 	if (input$selectGenes=="") return (NULL)
         x = profiles()[input$selectGenes,] # effected
         if (is.null(x)) return(NULL)
-        #m = match(names(x), rownames(values.edit$table)) 
-        #m = m[!is.na(m)] 
-	#cat("=== data for ", length(m), " samples ====\n")
-        #x[m]	
 	x
 })
 
-cat("end server-reactives.R\n")

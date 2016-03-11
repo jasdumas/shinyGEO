@@ -1,15 +1,14 @@
-cat("begin source ui.R\n")
 
 library(shinyAce)
 library(RCurl)
 library(shinyBS)
 library(shinydashboard)
 
-source("html.R")
-source("bsModal.R")
-source("ui.dashboard.header.R")
-source("ui.dashboard.sidebar.R")
-source("ui.dashboard.body.R")
+source("misc/html.R")
+source("misc/bsModal.R")
+source("ui/ui.dashboard.header.R")
+source("ui/ui.dashboard.sidebar.R")
+source("ui/ui.dashboard.body.R")
 
 shinyUI(
   dashboardPage(
@@ -20,4 +19,3 @@ shinyUI(
 )
 
 
-cat("end source ui.R\n")

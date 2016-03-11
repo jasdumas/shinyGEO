@@ -49,9 +49,8 @@ output$mergeGroup3 <- renderUI({
 ## respond when Save button is clicked on MergeGroups modal
 ####################################################################
 observeEvent(input$applyMergeGroups, ({
-
+  shinycat("Merging groups...\n")
   content = ""
-  cat("apply now!!\n")
   col = input$newColumnForMerge
   
   g1 = input$selectGroup1
@@ -69,7 +68,6 @@ observeEvent(input$applyMergeGroups, ({
 		"<p> Error: A value cannot appear in multiple groups <p>")
   }
 
-  cat("col = ", col, "\n")
   if (col%in%colnames(values.edit$table)) {
         content = paste0(content, 
 		"<p> Error: Column Name Exists. Please select a new column name <p>")

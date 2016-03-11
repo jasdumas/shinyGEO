@@ -5,12 +5,10 @@
 ##########################################################################
 clinicalDataProcessed <- reactive({
 
-  add.tab()
-  if (TRACE) cat("In clinicalDataProcessed reactive...\n")
+  shinycat("In clinicalDataProcessed reactive...\n")
 
   p = values.edit$table
   if (is.null(p)) {
- 	subtract.tab()
 	return(NULL)
   } 
   #####################################################################
@@ -34,7 +32,6 @@ clinicalDataProcessed <- reactive({
   }
   p = p[,i, drop = FALSE]
 
-  cat("removed dups\n")
  
   ## remove non-informative columns; but keep all if all columns would 
   ## be removed  
@@ -43,14 +40,10 @@ clinicalDataProcessed <- reactive({
   m = match(RM.COLS, colnames(p))
   m=m[!is.na(m)]
   if (length(m) == ncol(p)) {
-	subtract.tab()
 	return(p)
   } 
   
-   
   if (length(m) > 0) p=p[,-m, drop = FALSE]
-
-  cat("RM.COLS removed\n")  
 
   m = match(colnames(exprInput()), rownames(p))
   m = m[!is.na(m)]
@@ -62,8 +55,6 @@ clinicalDataProcessed <- reactive({
   p = p[m,,drop = FALSE]
   
   values.edit$table = p
-  if (TRACE) cat("END clinicalDataProcessed reactive...\n")
-  subtract.tab()	
   return(p)
 
 })
@@ -73,15 +64,12 @@ clinicalDataProcessed <- reactive({
 ### Summary of Clinical Data table
 ########################################  
 clinicalDataSummary <- reactive({
-  add.tab()
-  if (TRACE) cat("In clinicalDataSummary reactive...\n")
+  shinycat("In clinicalDataSummary reactive...\n")
   t = clinicalDataProcessed()
   if (is.null(t)) {
-	subtract.tab()
 	return(NULL)
   }
   vars = colnames(t)
-  cat("got ncols = ", length(vars), "\n")
   a = apply(t, 2, function(x)levels(as.factor(x)))
 
   ## if there are no duplicates in each row, the above returns the original table
@@ -104,8 +92,6 @@ clinicalDataSummary <- reactive({
   a = lapply(a, format.it, Inf)
   
   a = sapply(a, paste, collapse = ", ")
-  cat("end clinicalDataSummary reactive\n")
-  subtract.tab()
   cbind(column = vars, values = a)
 })
 
@@ -113,15 +99,12 @@ clinicalDataSummary <- reactive({
 ### ColumnNames of clinicial data table
 ########################################  
 ColumnNames <- reactive({
-  add.tab()
-  if (TRACE) cat("In ColumnNames reactive...\n")
+  shinycat("In ColumnNames reactive...\n")
   if (is.null(clinicalDataProcessed()) | is.null(exprInput())) {
-	subtract.tab()
 	return(NULL)
   }
   vars = colnames(clinicalDataProcessed())
   vars <- as.list(vars)
-  subtract.tab()
   return(vars)
 })
 
@@ -142,7 +125,7 @@ observe({
 ## displays the Clinical Summary Data Table
 ###########################################
 observe({  # observe needed since data object is a reactive function
-  cat("observe for clinicalDataSummary\n") 
+  shinycat("observe for clinicalDataSummary reactive...\n") 
 
   output$clinicalDataSummary <- DT::renderDataTable({ datatable(as.data.frame(clinicalDataSummary()), rownames = TRUE,  
                                                                  extensions = 'ColReorder',
@@ -186,9 +169,8 @@ observe({  # observe needed since data object is a reactive function
 ## Reactive for displaying the dataTable, since same display will be used multiple times
 ##########################################################################################
 displayDataTable <-reactive({
-  add.tab()
+  shinycat("in displayDataTable reactive...\n") 
   depend = values.edit$table
-  cat("in displayDataTable reactive...\n") 
   t = DT::renderDataTable({ datatable(clinicalDataProcessed(), rownames = TRUE,
        #                                               extensions = 'ColReorder',
                                                       options = list(dom = 'Rlfrtip', #ajax = list(url = action1), 
@@ -209,28 +191,22 @@ displayDataTable <-reactive({
                                                       select = list(target = "column"),
                                                       filter = 'none')
   })
-cat("end displayDataTable reactive\n")
-subtract.tab()
-
 return(t)
 })
 
 
 observe({
-  cat("observe for summaryModalTable\n")  
+  shinycat("observe for summaryModalTable\n")  
   output$summaryModalTable <- DT::renderDataTable({ datatable(as.data.frame(clinicalDataSummary()), rownames = FALSE,  
     extensions = 'ColReorder',
     options = list(#dom = 'Rlfrtip', #ajax = list(url = action), 
                    paging = F,  searchHighlight = TRUE),
                    filter = 'none', 
                    selection = 'single') 
-    
   })
-  
 })
 
 observe ({
-  cat("observe for clinicalData\n")
   output$clinicalData <- displayDataTable()
 })
 

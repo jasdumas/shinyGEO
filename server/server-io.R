@@ -31,8 +31,7 @@ vector.it <-function(x) {
 }
 
 observeEvent(input$fileUpload, {
-  add.tab()
-  cat("in file upload observe...\n")  
+  shinycat("in file upload observe...\n")  
   infile <- input$fileUpload
   if (!is.null(infile)){
     createAlert(session,"ioAlert3",content = "Processing file upload, please wait...", style="info",dismiss=FALSE, append = FALSE)
@@ -141,23 +140,15 @@ observeEvent(input$fileUpload, {
     changes = paste0(cols.removed, cols.added, cols.mod, rows.removed)
 
     if (changes=="") {
-	cat("no changes!\n")
 	content = paste0(content, "<p> No changes have been detected </p>")
     } else {
-	cat("we have changes!\n")
 	content = paste0(content, changes)
     }
 
     createAlert(session,"ioAlert3",content = content, style="success",dismiss=TRUE, append = FALSE)
-    cat("initial data = ", isolate(nrow(values.edit$table)), ", ", isolate(ncol(values.edit$table)), "\n")
-
-  
 
     isolate(values.edit$table <- data) 
-
-    cat("new data = ", isolate(nrow(values.edit$table)), ", ", isolate(ncol(values.edit$table)), "\n")
   }
-  cat("left file upload observe...\n")
 })
 
 
