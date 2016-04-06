@@ -26,7 +26,7 @@ calc.columns <- function(this){
   y.outcome = colnames(this)[apply(this,2,is.outcome.column)]
   if(length(x.time) > 1){
     createAlert(session, "warningAlert", alertId = "warn1", title = "Warning: Multiple Time Columns Found",
-                content = paste(c("<strong>Columns Found</strong>:", paste(x.time,collapse=", "),"<br><br> shinyGEO has chosen the best fit.")), style= 'danger', dismiss = TRUE, append = TRUE)
+                content = paste(c("<strong>Columns found</strong>: ", paste(x.time,collapse=", "),"<br> Please check that the selection is correct.")), style= 'danger', dismiss = TRUE, append = TRUE)
     x.time = x.time[1]
   }
   else if(length(x.time) == 0){
