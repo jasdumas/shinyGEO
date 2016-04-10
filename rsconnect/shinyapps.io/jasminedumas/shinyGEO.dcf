@@ -1,6 +1,7 @@
 name: shinyGEO
 account: jasminedumas
 server: shinyapps.io
-bundleId: 393233
+appId: 62916
+bundleId: 411918
 url: https://jasminedumas.shinyapps.io/shinyGEO/
-when: 1457714459.12361
+when: 1459950331.0466

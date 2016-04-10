@@ -1,5 +1,17 @@
 
-createAlert(session,"ioAlert1",content = "<H4>Directions</H4><p>1. Download the current clinical data you are working with, it will be saved in your 'Downloads' folder.<br>2. Edit the dataset, then save your changes.<br>3. Upload your dataset back.</p>",dismiss=FALSE)
+createAlert(session,"ioAlert1",content = "<H4>Directions</H4><p>1. Download the current clinical data you are working with, it will be saved in your 'Downloads' folder.<br>2. Edit the dataset, then save your changes.<br>3. Then upload your dataset back to shinyGEO.</p>",dismiss=FALSE)
+
+
+shinyjs::onclick("ClinicalReset", {
+  if (TEST.DATA) {
+        values.edit$table <- CLINICAL.test
+    } else {
+      values.edit$table <- as.data.frame(pData(phenoData(object = dataInput()[[platformIndex()]])))
+    }
+  createAlert(session, "ioAlert2", content = "<h4>Clinical Data has been reset</h4>", style = "success", dismiss = FALSE, append = FALSE)
+})
+
+
 # start clinical data iotab button events
 output$downloadSet<- downloadHandler(
     
@@ -9,7 +21,7 @@ output$downloadSet<- downloadHandler(
       file = paste(input$GSE,"_",input$platform,"_",Sys.time(),"-clinical", ".csv", sep = "")
 	file = gsub(":", "-",file)
   msg = paste0("<H4>Current Status</H4><p><strong>The clinical data has been downloaded to the following file: ", file, "</p>")
-  createAlert(session,"ioAlert2",content = msg, style="success",dismiss=FALSE)
+  createAlert(session,"ioAlert2",content = msg, style="success",dismiss=FALSE, append = FALSE)
         return(file)
    },
     
@@ -34,11 +46,11 @@ observeEvent(input$fileUpload, {
   shinycat("in file upload observe...\n")  
   infile <- input$fileUpload
   if (!is.null(infile)){
-    createAlert(session,"ioAlert3",content = "Processing file upload, please wait...", style="info",dismiss=FALSE, append = FALSE)
+    createAlert(session,"ioAlert2",content = "Processing file upload, please wait...", style="info",dismiss=FALSE, append = FALSE)
 
     data = try(read.table(infile$datapath, header = TRUE, row.names=1, sep = ","), silent = TRUE)
     if (class(data) %in% "try-error") {
-       createAlert(session,"ioAlert3",content = "Error: file could not be uploaded. This is most likely because the file is not in the correct format (e.g., is not a csv file)" , style="danger",dismiss=TRUE, append = FALSE)
+       createAlert(session,"ioAlert2",content = "Error: file could not be uploaded. This is most likely because the file is not in the correct format (e.g., is not a csv file)" , style="danger",dismiss=TRUE, append = FALSE)
 	return(NULL)
     }
 
@@ -46,14 +58,14 @@ observeEvent(input$fileUpload, {
     check = rownames(data)%in%colnames(exprInput())
 
     if (!any(check)) {
-       createAlert(session,"ioAlert3",content = "Error: uploaded file must include sample (GSM) numbers in 1st column" , style="danger",dismiss=TRUE, append = FALSE)
+       createAlert(session,"ioAlert2",content = "Error: uploaded file must include sample (GSM) numbers in 1st column" , style="danger",dismiss=TRUE, append = FALSE)
     return(NULL)
     }
 
     # make sure no new row names have been added #
     check = setdiff(rownames(data), isolate(rownames(values.edit$table)))
     if (length(check) > 0) {
-       createAlert(session,"ioAlert3",content = "Error: Rows cannot be added. Please remove new rows and re-upload the file" , style="danger",dismiss=TRUE, append = FALSE)
+       createAlert(session,"ioAlert2",content = "Error: Rows cannot be added. Please remove new rows and re-upload the file" , style="danger",dismiss=TRUE, append = FALSE)
     return(NULL)
     }
 
@@ -145,7 +157,8 @@ observeEvent(input$fileUpload, {
 	content = paste0(content, changes)
     }
 
-    createAlert(session,"ioAlert3",content = content, style="success",dismiss=TRUE, append = FALSE)
+    createAlert(session,"ioAlert2",content = content, style="success",dismiss=TRUE, append = FALSE)
+    shinyjs::enable("ClinicalReset") 
 
     isolate(values.edit$table <- data) 
   }

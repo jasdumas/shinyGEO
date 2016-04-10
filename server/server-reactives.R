@@ -3,9 +3,12 @@
 #############################################################################
 shinycat("begin server-reactives.R\n")
 
+shinyjs::disable("ClinicalReset")
+
 shinyjs::onclick("sidebarToggle",
 #  cat("refreshing display...\n")
 )
+
 
 LAST.TAB = "Home"
        content = HTML("To find a dataset, search the <a href = 'http://www.ncbi.nlm.nih.gov/geo/\'>Gene Expression Omnibus</a> and filter by 'Expression profiling by array'.")

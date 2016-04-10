@@ -1,10 +1,12 @@
 ################################################################################
 # generates dotplot evaluating differential expression for expression 
 # vector 'x' and group labels 'y'. The 'GroupNames' are levels of 'y' in 
-# in presentation order, and 'group.names' are optional names for these levels 
+# presentation order, and 'group.names' are optional names for these levels 
 ################################################################################
 stripchart2 <- function(x,y, GroupNames, group.names = NULL, col = NULL, 
 			main = "",  ...) {
+  keep = y%in%GroupNames
+  x = x[keep]; y = y[keep] 
   s = split(x,y)
   num.groups = sum(sapply(s, function(x)!all(is.na(x)))) 
   stats = !(all(is.na(x) | length(s) == 0 | num.groups < 2))
@@ -18,10 +20,10 @@ stripchart2 <- function(x,y, GroupNames, group.names = NULL, col = NULL,
   if (stats & length(s) == 2) {
     m = lapply(s,mean, na.rm=TRUE)
 
-    fc = 2**(m[[2]] - m[[1]])
-    if (group.names[1] > group.names[2]) {
-	fc = 1/fc
-    }
+    fc = 2**(m[[GroupNames[2]]] - m[[GroupNames[1]]])
+    #if (group.names[1] > group.names[2]) {
+    #	fc = 1/fc
+    #}
 
     fc = round(fc, 2)
 

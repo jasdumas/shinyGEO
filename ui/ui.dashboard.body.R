@@ -9,6 +9,13 @@ source("ui/ui.tab.about.R")
 source("misc/html.R")
 
 
+## fileUploadBar without label
+fileUploadBar = fileInput('fileUpload', 'select file',
+	                         accept=c('text/csv', 
+	                                  'text/comma-separated-values,text/plain', 
+	                                  '.csv'))
+fileUploadBar[[3]][1] = NULL 
+
 header = dashboardHeader(
   title = uiOutput("shinyTitle"), titleWidth = 350, disable = FALSE 
 )
@@ -120,25 +127,21 @@ body = dashboardBody(
 
 
 	      fluidRow(
-	        column(5,
+	        column(4,
 	               tags$h4(class="ioTitle","Download Dataset"),
 	               hr(),
 	               downloadButton("downloadSet","Download")
-	               
-	              
 	               ),
-	        column(2,
-	              tags$p("")
-	               ),
-	        column(5,
+	        column(4,
 	               tags$h4(class="ioTitle","Upload Dataset"),
 	               hr(),
-	               fileInput('fileUpload', '',
-	                         accept=c('text/csv', 
-	                                  'text/comma-separated-values,text/plain', 
-	                                  '.csv'))
-	               
-	        )
+	               fileUploadBar
+	        ),
+		column(4,
+			tags$h4(class="ioTitle","Reset Clinical Data to Original"),
+			hr(),
+			HTML("<button id='ClinicalReset' type='button' class='btn btn-danger action-button'>Reset Clinical Data</button>")		
+		)
 	      )
 	   )    
    )
