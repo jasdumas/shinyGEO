@@ -110,21 +110,39 @@ body = dashboardBody(
   shinyjs::useShinyjs(),
   summaryBSModal("summaryBSModal","Clinical Data","ClinicalDataBtn", size = "large",  
 
-    tabsetPanel(
+    tabsetPanel(id = "tabClinicalData",
 	tabPanel("Summary", DT::dataTableOutput("summaryModalTable")),
 	tabPanel("Full Clinical Table",   
         DT::dataTableOutput("clinicalData")
 	),
 
-	tabPanel("Data I/O",
+	# sample selection
+	tabPanel("Sample Selection",
+  	      fluidRow(
+		column(12, bsAlert("selectionAlert1"))
+	      ),
+
+	      fluidRow(
+      		column(4, uiOutput("SampleSelectionCol1")),
+      		column(4, uiOutput("SampleSelection1")),
+		column(4, HTML("<br><button id='btnSelection' type='button' class='btn btn-info action-button'>Select Samples</button>"))
+    	      ),
+    	      fluidRow(
+      		column(4, uiOutput("SampleSelectionCol2")),
+      	        column(4, uiOutput("SampleSelection2"))
+    	      ),
+	      fluidRow(
+		 column(12, bsAlert("selectionAlert2"))
+	      )
+	),
+
+	tabPanel("Advanced Sample Selection and Data Correction",
 	      fluidRow(
 	        column(12,
 	               bsAlert("ioAlert1"),
-	               bsAlert("ioAlert2"),
-	               bsAlert("ioAlert3")
+	               bsAlert("ioAlert2")
 	               )
 	      ),
-
 
 	      fluidRow(
 	        column(4,

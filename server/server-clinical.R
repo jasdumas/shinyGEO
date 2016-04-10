@@ -17,12 +17,15 @@ clinicalDataProcessed <- reactive({
   #   columns specified by RM.COLS will be removed
   #####################################################################
   # show columns that have unique values; or display all if none 
-  num.levels = apply(p, 2, function(x) nlevels(as.factor(x)))
-  i = num.levels > 1
-
-  # keep source_name_ch1 
+  # but keep all characteristics* column
   
-  keep = colnames(p) %in% "source_name_ch1"
+  g = grep("characteristics", colnames(p))
+    
+  num.levels = apply(p, 2, function(x) nlevels(as.factor(x)))
+  i = num.levels > 1 | 1:ncol(p) %in% g 
+
+  # keep source_name_ch1 and description 
+  keep = colnames(p) %in% c("source_name_ch1", "description")
   if (sum(keep) > 0) {
 	i[keep] = TRUE
   }

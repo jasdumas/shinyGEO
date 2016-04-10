@@ -31,14 +31,15 @@ opp = list(dom = 'Rlfrtip', #ajax = list(url = action1),
 ) 
 
 output$summary <-renderUI({
-  createAlert(session, "expAlert", alertId = "Expression-alert", title = "Generating expression plot...", style = "info",
-	content = "Please wait", append = FALSE)
   x = exprInput()
   if (is.null(x)) {
 	return(NULL)
   }
+
   createAlert(session, "alert1", alertId = "Analysis-alert", title = "Please choose an analysis from the sidebar to continue...", style = "success",
                content = "Your selected dataset has been downloaded successfully, and is summarized below. <p>Please select either <b>Differential Expression Analysis</b> or <b>Survival Analysis</b> from the sidebar to continue.</p>", append = FALSE, dismiss = TRUE) 
+
+
   
   p.tag <-function(x) {
 	for (i in 1:length(x)){ 
@@ -48,7 +49,7 @@ output$summary <-renderUI({
   }  
 
   gse = paste0("<b>", input$GSE, "/", input$platform,  
-	" (", ncol(x), " samples, ", nrow(x), " probes)</b>")
+	" (", nrow(values.edit$table), " samples, ", nrow(x), " probes)</b>")
 
   
   msg = p.tag(gse)
@@ -220,6 +221,8 @@ updateSelectizeInput(session, inputId='GSE', label = "Accession Number", server 
       }"
     ))
 )
+
+
 ################################################
 ### Renders drop-down menu for variables/columns 
 ################################################  
@@ -250,9 +253,6 @@ observe({
 
 })
 
-
-
-#output$test2 <- renderText(paste0("row = ", input$clinicalData_rows_selected))
 output$test <- renderPrint(sessionInfo())
 
 ####################################################################
@@ -267,9 +267,6 @@ output$selectedGroups <- renderUI({
               
   )
 })
-
-
-
 
 
 ##############################################

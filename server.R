@@ -32,6 +32,7 @@ shinyServer(function(input, output, session){
   source("server/server-clinical.R", local = TRUE)
   source("server/server-merge.R", local = TRUE)
   source("server/server-io.R", local = TRUE)
+  source("server/server-selection.R", local = TRUE)
   source("server/server-output.R", local = TRUE)
   source("server/server-survival.R", local = TRUE)
   source("server/server-report.R", local = TRUE)

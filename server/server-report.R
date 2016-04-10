@@ -13,7 +13,6 @@ observeEvent(reproducible$report, {
                   mode = "markdown", theme = "chrome")
 })
 
-
 observeEvent(input$reportBtn, {
       shinycat("generating report...\n")
       test.file = "reports/test.R"

@@ -9,8 +9,28 @@ shinyjs::onclick("ClinicalReset", {
       values.edit$table <- as.data.frame(pData(phenoData(object = dataInput()[[platformIndex()]])))
     }
   createAlert(session, "ioAlert2", content = "<h4>Clinical Data has been reset</h4>", style = "success", dismiss = FALSE, append = FALSE)
-})
 
+  closeAlert(session, "selectionAlert2")
+  createAlert(session, "selectionAlert2", content = "All samples currently selected", append = FALSE)
+  shinyjs::disable("btnSelection")
+
+  add.code("\n## Restoring original sample data table ##")
+  add.code("data.p = pData(data.series[[data.index]])")
+  add.code("data.expr = exprs(data.series[[data.index]])")
+  add.code("common = intersect(colnames(data.expr), rownames(data.p))")
+  add.code("m1 = match(common, colnames(data.expr))")
+  add.code("m2 = match(common, rownames(data.p))")
+  add.code("data.expr = data.expr[,m1]")
+  add.code("data.p = data.p[m2,]")
+
+  if (values.edit$log2) {
+        add1  = "data.expr[which(data.expr <= 0)] <- NaN"
+        add2 = "data.expr = log2(data.expr)"
+        add.code(add1)
+        add.code(add2)
+  }
+
+})
 
 # start clinical data iotab button events
 output$downloadSet<- downloadHandler(
