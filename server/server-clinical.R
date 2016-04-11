@@ -58,6 +58,7 @@ clinicalDataProcessed <- reactive({
   p = p[m,,drop = FALSE]
   
   values.edit$table = p
+  shinycat("...done\n")
   return(p)
 
 })

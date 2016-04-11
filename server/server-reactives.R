@@ -267,7 +267,7 @@ platInfo <- reactive({
   t = NULL
   if (TEST.DATA) {
 	t = GPL.test
-  } else { 
+  } else {
     t = Table(getGEO(Platforms()[platformIndex()]))
   }
   

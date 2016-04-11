@@ -64,7 +64,7 @@ sidebar = dashboardSidebar(width = 350,
         menuItem("Differential Expression Analysis", 
 		tabName = "DifferentialExpressionAnalysis", icon = icon("flask")),
 	menuItem("Survival Analysis", tabName = "SurvivalAnalysis", icon = icon("life-ring")),
-	menuItem("View Clinical Data Table", tabName = "FullDataTable", icon = icon("table")),
+	menuItem("View Sample Data Table", tabName = "FullDataTable", icon = icon("table")),
 	menuItem("Code", tabName = "Code", icon = icon("code")),
 	menuItem("About", tabName = "About", icon = icon("info-circle"))
 	     )
@@ -111,8 +111,8 @@ body = dashboardBody(
   summaryBSModal("summaryBSModal","Clinical Data","ClinicalDataBtn", size = "large",  
 
     tabsetPanel(id = "tabClinicalData",
-	tabPanel("Summary", DT::dataTableOutput("summaryModalTable")),
-	tabPanel("Full Clinical Table",   
+	tabPanel("Summary View", DT::dataTableOutput("summaryModalTable")),
+	tabPanel("Standard View",   
         DT::dataTableOutput("clinicalData")
 	),
 
@@ -125,7 +125,7 @@ body = dashboardBody(
 	      fluidRow(
       		column(4, uiOutput("SampleSelectionCol1")),
       		column(4, uiOutput("SampleSelection1")),
-		column(4, HTML("<br><button id='btnSelection' type='button' class='btn btn-info action-button'>Select Samples</button>"))
+		column(4, HTML("<br><button id='btnSelection' type='button' class='btn btn-info action-button'>Apply Selection Criteria</button>"))
     	      ),
     	      fluidRow(
       		column(4, uiOutput("SampleSelectionCol2")),
@@ -136,7 +136,7 @@ body = dashboardBody(
 	      )
 	),
 
-	tabPanel("Advanced Sample Selection and Data Correction",
+	tabPanel("Data Export",
 	      fluidRow(
 	        column(12,
 	               bsAlert("ioAlert1"),

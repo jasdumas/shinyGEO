@@ -113,6 +113,7 @@ observe({
   )
 })
 
+
 observe({
  shinycat("update geneColumn selectizeInput...\n")
  updateSelectizeInput(session, "geneColumn", server = TRUE, 
