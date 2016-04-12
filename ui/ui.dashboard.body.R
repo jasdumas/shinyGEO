@@ -77,14 +77,14 @@ sidebar = dashboardSidebar(width = 350,
 ####################################
 analyses.common = conditionalPanel(condition = "input.tabs == 'DifferentialExpressionAnalysis' | input.tabs == 'SurvivalAnalysis'",
         bsAlert("alert2"),
-        div(style = "display:inline-block; width: 40%",
+        div(style = "display:inline-block; width: 40%", id="sGenes",
          	selectizeInput('selectGenes', "Select Gene/Probe", choices = NULL)
 	),
 
     div(style = "display:inline-block; width: 25%",
     		a(id = "platLink", "Change Search Feature",
 			#style="cursor:pointer; display:block; margin-bottom:5px;")
-			style="cursor:pointer; display:block; position:relative; bottom:20px;")
+			style="cursor:pointer; display:block; position:relative; bottom:5px;")
     ),
        bsModal("platformModal", "Platform annotation", 
                        "platLink", size = "large",
