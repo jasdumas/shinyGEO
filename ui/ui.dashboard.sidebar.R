@@ -34,7 +34,7 @@ sidebar = dashboardSidebar(width = 320,
     menuItem("Home / Change Dataset", tabName = "Home", icon = icon("home")),
 		menuItem("Differential Expression Analysis", tabName = "DifferentialExpressionAnalysis", icon = icon("flask")),
 		menuItem("Survival Analysis", tabName = "SurvivalAnalysis", icon = icon("life-ring")),
-		menuItem("View Clinical Data Table", tabName = "FullDataTable", icon = icon("table")),
+		menuItem("Sample Data Table", tabName = "FullDataTable", icon = icon("table")),
 		#menuItem("Clinical Data Summary", tabName = "ClinicalDataSummary", icon = icon("table")),
 		menuItem("Code", tabName = "Code", icon = icon("code")),
 		menuItem("About", tabName = "About", icon = icon("info-circle"))

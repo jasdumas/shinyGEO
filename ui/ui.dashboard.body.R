@@ -64,7 +64,7 @@ sidebar = dashboardSidebar(width = 350,
         menuItem("Differential Expression Analysis", 
 		tabName = "DifferentialExpressionAnalysis", icon = icon("flask")),
 	menuItem("Survival Analysis", tabName = "SurvivalAnalysis", icon = icon("life-ring")),
-	menuItem("View Clinical Data Table", tabName = "FullDataTable", icon = icon("table")),
+	menuItem("View Sample Data Table", tabName = "FullDataTable", icon = icon("table")),
 	menuItem("Code", tabName = "Code", icon = icon("code")),
 	menuItem("About", tabName = "About", icon = icon("info-circle"))
 	     )
@@ -110,21 +110,39 @@ body = dashboardBody(
   shinyjs::useShinyjs(),
   summaryBSModal("summaryBSModal","Clinical Data","ClinicalDataBtn", size = "large",  
 
-    tabsetPanel(
-	tabPanel("Summary", DT::dataTableOutput("summaryModalTable")),
-	tabPanel("Full Clinical Table",   
+    tabsetPanel(id = "tabClinicalData",
+	tabPanel("Summary View", DT::dataTableOutput("summaryModalTable")),
+	tabPanel("Standard View",   
         DT::dataTableOutput("clinicalData")
 	),
 
-	tabPanel("Data I/O",
+	# sample selection
+	tabPanel("Sample Selection",
+  	      fluidRow(
+		column(12, bsAlert("selectionAlert1"))
+	      ),
+
+	      fluidRow(
+      		column(4, uiOutput("SampleSelectionCol1")),
+      		column(4, uiOutput("SampleSelection1")),
+		column(4, HTML("<br><button id='btnSelection' type='button' class='btn btn-info action-button'>Apply Selection Criteria</button>"))
+    	      ),
+    	      fluidRow(
+      		column(4, uiOutput("SampleSelectionCol2")),
+      	        column(4, uiOutput("SampleSelection2"))
+    	      ),
+	      fluidRow(
+		 column(12, bsAlert("selectionAlert2"))
+	      )
+	),
+
+	tabPanel("Data Export",
 	      fluidRow(
 	        column(12,
 	               bsAlert("ioAlert1"),
-	               bsAlert("ioAlert2"),
-	               bsAlert("ioAlert3")
+	               bsAlert("ioAlert2")
 	               )
 	      ),
-
 
 	      fluidRow(
 	        column(4,
