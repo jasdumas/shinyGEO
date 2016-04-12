@@ -7,8 +7,6 @@ shinyprint <-function(...) print(...)
 shinycat("begin source server.R\n")
 source("server/settings.R")
 
-
-# DT uses devtools::install_github('rstudio/DT', ref = "f3e86a6")
 library(DT)  ## tested on development version 0.1.32
 library(shiny)
 library(GEOquery)
