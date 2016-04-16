@@ -25,7 +25,7 @@ clinicalDataProcessed <- reactive({
   i = num.levels > 1 | 1:ncol(p) %in% g 
 
   # keep source_name_ch1 and description 
-  keep = colnames(p) %in% c("source_name_ch1", "description")
+  keep = colnames(p) %in% c("source_name_ch1", "DESCRIPTION")
   if (sum(keep) > 0) {
 	i[keep] = TRUE
   }
