@@ -2,8 +2,8 @@
 library(shinyAce)
 library(RCurl)
 library(shinyBS)
-library(shinydashboard)
-source("misc/addDeps.R")
+#library("shinydashboard")
+require('shinydashboard')
 
 source("misc/html.R")
 source("misc/bsModal.R")
