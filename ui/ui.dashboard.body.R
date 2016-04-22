@@ -1,4 +1,4 @@
-<<<<<<< HEAD:ui/ui.dashboard.body.R
+
 #####################################
 # dashboard body 
 #####################################
@@ -195,7 +195,7 @@ body = dashboardBody(
     )
 )
 
-=======
+
 
 library(shinyAce)
 library(RCurl)
@@ -217,5 +217,5 @@ shinyUI(
   )
 )
 
->>>>>>> master:ui.r
+
 
