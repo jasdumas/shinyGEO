@@ -27,7 +27,11 @@
 <h2>
 <a id="webpages" class="anchor" href="#webpages" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Webpages</h2>
 
-<p>Primary Application Hosting at Eastern Connecticut State University (#1):: <a href="http://bioinformatics.easternct.edu/shinyGEO/">http://bioinformatics.easternct.edu/shinyGEO/</a></p>
+<p>Primary Application Hosting at Eastern Connecticut State University: <a href="http://bioinformatics.easternct.edu/shinyGEO/">http://bioinformatics.easternct.edu/shinyGEO/</a></p>
+
+<p>Primary Homepage: <a href="http://gdancik.github.io/shinyGEO/">http://gdancik.github.io/shinyGEO/</a></p>
+
+<hr>
 
 <p>Shinyapps.io (Mirror site): <a href="https://jasminedumas.shinyapps.io/shinyGEO">https://jasminedumas.shinyapps.io/shinyGEO</a></p>
 
@@ -41,11 +45,28 @@
 <a id="running-shinygeo-locally" class="anchor" href="#running-shinygeo-locally" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Running shinyGEO locally</h2>
 
 <ol>
-<li><p>Download R from <a href="https://cran.r-project.org">https://cran.r-project.org</a></p></li>
-<li><p>From within R, install 'shiny' by typing
-<code>install.packages("shiny")</code> </p></li>
-<li><p>Type the following from within R:
-<code>runGitHub("shinyGEO", "jasdumas")</code></p></li>
+<li><p>Download and install <em>R</em> from <a href="https://cran.r-project.org">https://cran.r-project.org</a>. (Note: <em>shinyGEO</em> requires <em>R</em>&gt;=3.23)</p></li>
+<li>
+<p>Open <em>R</em>. Then type the following (you may copy and paste) into the <em>R</em> console in order to install the CRAN packages required by <em>shinyGEO</em>:</p>
+
+<p><code>install.packages(c("shiny","survival","shinyBS","GGally","ggplot2","shinyAce","knitr","rmarkdown","RCurl","shinyjs","shinydashboard"))</code> </p>
+
+<pre><code>`install.packages('devtools')`
+`devtools::install_github('rstudio/DT', ref = "f3e86a6")`
+</code></pre>
+</li>
+<li>
+<p>Type the following to install the Bioconductor Packages required by <em>shinyGEO</em>:</p>
+
+<p><code>source("http://bioconductor.org/biocLite.R")</code><br>
+<code>biocLite(c("Biobase","GEOquery"))</code></p>
+</li>
+<li>
+<p>Type the following to run <em>shinyGEO</em>:</p>
+
+<p><code>library(shiny)</code><br>
+<code>runUrl("https://github.com/gdancik/shinyGEO/archive/master.zip")</code></p>
+</li>
 </ol>
 
 <h2>
