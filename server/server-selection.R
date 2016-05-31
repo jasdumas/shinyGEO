@@ -155,7 +155,10 @@ shinyjs::onclick("btnSelection", {
   }
 
   add.code(code)
-  add.code("data.p = data.p[keep,drop = FALSE]")
+  add.code("data.p = data.p[keep,, drop = FALSE]")
+  add.code("m = match(rownames(data.p), colnames(data.expr))")
+  add.code("data.expr = data.expr[,m,drop = FALSE]\n")
+  
 
  if (!is.null(sel2)) {
 	sel1 = paste0(sel1, "<br>", sel2, "</br>")

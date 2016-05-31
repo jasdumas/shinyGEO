@@ -108,7 +108,7 @@ body = dashboardBody(
 
 
   shinyjs::useShinyjs(),
-  summaryBSModal("summaryBSModal","Clinical Data","ClinicalDataBtn", size = "large",  
+  summaryBSModal("summaryBSModal","Sample Data","ClinicalDataBtn", size = "large",  
 
     tabsetPanel(id = "tabClinicalData",
 	tabPanel("Summary View", DT::dataTableOutput("summaryModalTable")),

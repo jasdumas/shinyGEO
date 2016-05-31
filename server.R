@@ -1,8 +1,8 @@
 TRACE = FALSE 
-shinycat <-function(...) {
+shinycat <<-function(...) {
 	if (TRACE) cat(...)
 }
-shinyprint <-function(...) print(...)
+shinyprint <<-function(...) print(...)
 
 shinycat("begin source server.R\n")
 source("server/settings.R")

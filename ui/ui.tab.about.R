@@ -8,7 +8,7 @@ tab.about = tabItem("About",
          is a MSc. Graduate Student in the Predictive Analytics program at DePaul University (Chicago, IL/ Online).
          Jasmine has a BSE in Biomedical Engineering from the University of Hartford
          and a Professional Certificate in Medical Product Develpment from UCI Extension.
-         <a href ='https://github.com/jasdumas'>Github Profile</a> <span class= \'label label-primary\'>Package Maintainer</span> </p>
+         <a href ='https://github.com/jasdumas'>Github Profile</a> <span class= \'label label-primary\'>Contributor</span> </p>
     <p><span style = \'font-weight: bold\'> Garrett M. Dancik, PhD </span>
         is an Assistant Professor of Computer Science / Bioinformatics at Eastern
         Connecticut State University (Wilimantic, CT). His research involves applying statistical, mathematical,

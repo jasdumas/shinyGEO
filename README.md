@@ -2,7 +2,7 @@
 shinyGEO is a web-based tool that allows a user to download the expression and sample data from a [Gene Expression Omnibus](http://www.ncbi.nlm.nih.gov/geo/browse/) dataset, select a gene of interest, and perform a survival or differential expression analysis using the available data. For both analyses, shinyGEO produces publication-ready graphics and generates R code ensuring that all analyses are reproducible. The tool is developed using shiny, a web application framework for R, a language for statistical computing and graphics.
 
 ## Official Website
-http://bioinformatics.easternct.edu/shinyGEO/
+http://gdancik.github.io/shinyGEO/
 
 ## Running shinyGEO locally 
 1. Download and install *R* from https://cran.r-project.org. (Note: *shinyGEO* requires *R*>=3.23)
