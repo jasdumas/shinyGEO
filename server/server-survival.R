@@ -5,7 +5,7 @@ library(stringr)
 ##
 calc.columns <- function(this){
   # First need to grep the first row of the data, then lapply a function that will return true for
-  time.pattern = c("distant-relapse free survival","time","survival \\(mo\\)", "survival month")
+  time.pattern = c("distant-relapse free survival","time","survival \\(mo\\)", "survival month", "survival \\(months\\)","survival months")
   outcome.pattern = c("distant-relapse event","outcome","dead of disease","dss censor","os censor","overall survival", "cancer specific survival", "survival")
   
   is.time.column <- function(x){
@@ -32,6 +32,7 @@ calc.columns <- function(this){
   else if(length(x.time) == 0){
     x.time = NA
     
+    
   }
   if(length(y.outcome) > 1)
   {
@@ -42,15 +43,19 @@ calc.columns <- function(this){
   else if(length(y.outcome) == 0){
     y.outcome = NA
   }
+  
+  if(is.na(x.time) & !is.na(y.outcome)){
+    createAlert(session,"warningAlert",alertId = "warn1",title = "Warning: No survival time columns were found!", content = "<p>If you believe this is incorrect, you can review the clinical data and select the appropriate columns. </p>",style= 'danger', dismiss = TRUE, append = TRUE)
+  }
+  else if(is.na(y.outcome) & !is.na(x.time)){
+    createAlert(session,"warningAlert",alertId = "warn1",title = "Warning: No survival outcome columns were found!", content = "<p>If you believe this is incorrect, you can review the clinical data and select the appropriate columns. </p>",style= 'danger', dismiss = TRUE, append = TRUE)
+  }
  
- if(is.na(y.outcome) & !is.na(x.time)){
+  if(y.outcome == x.time & !is.na(y.outcome) & !is.na(x.time)){
+    y.outcome = NA
     createAlert(session,"warningAlert",alertId = "warn1",title = "Warning: No survival outcome columns were found!", content = "<p>If you believe this is incorrect, you can review the clinical data and select the appropriate columns. </p>",style= 'danger', dismiss = TRUE, append = TRUE)
     
   }
-  else if(is.na(x.time) & !is.na(y.outcome)){
-    createAlert(session,"warningAlert",alertId = "warn1",title = "Warning: No survival time columns were found!", content = "<p>If you believe this is incorrect, you can review the clinical data and select the appropriate columns. </p>",style= 'danger', dismiss = TRUE, append = TRUE)
-  }
-  
   ans = c(x.time,y.outcome)
   return (ans) 
 }
@@ -63,11 +68,11 @@ time.analysis <-reactive({
 	this = values.edit$table
         if(is.null(this)) return(NULL)
 
-	code1 = paste0("time.column = \"", input$autoColumn.time, "\"")
+	code1 = paste0("time.column = \"", input$autoColumnTime, "\"")
  	code2 = paste0("time = as.double(gsub(\".*: \",\"\",data.p[[time.column]]))")
 
 	code = paste(code1, code2, sep = "\n")	
-	time = as.double(reduce(this[[input$autoColumn.time]]))	
+	time = as.double(reduce(this[[input$autoColumnTime]]))	
 
 	list(code = code, time = time)
 
@@ -102,7 +107,6 @@ reduce <- function(column){
 # because time and outcome may be autodetected 
 # (i.e., not selected in drop down)
 reduce.columns <- function(time,outcome,this){
-  
    if(is.na(time) && is.na(outcome)){
     createAlert(session, "warningAlert", alertId = "warn3", title = "Warning: No Columns were found",
                 content = c("<p>Oops! shinyGEO could not find columns for survival analysis in your data. Please try the following: <ol><li>View the table and select the columns relevant to time and outcome or..</li><li>Use manual selection and format your data accordingly.</li></ol></p>"), style= 'danger', dismiss = TRUE, append = TRUE)
@@ -112,14 +116,14 @@ reduce.columns <- function(time,outcome,this){
 
   if(is.na(outcome)){
     reduced.time = reduce(this[[time]])
-    ans = list(time = reduced.time)
+    ans = list(time = reduced.time, outcome = NA)
     return(ans)
   }
   else if(is.na(time)){
     reduced.outcome = reduce(this[[outcome]])
     reduced.outcome = replace(reduced.outcome,(reduced.outcome == "NO" | reduced.outcome == "censored" | reduced.outcome == "survival"),0)
     reduced.outcome = replace(reduced.outcome,(reduced.outcome == "YES" | reduced.outcome == "uncensored" | reduced.outcome == "death"),1)
-    ans = list(outcome = reduced.outcome)
+    ans = list(time = NA,outcome = reduced.outcome)
     return (ans)
     
   } else{
@@ -137,11 +141,10 @@ reduce.columns <- function(time,outcome,this){
 main.gen <- function(this,columns.data){
   #Reduce and analyze
   # update inputs for time and outcome columns
-  updateSelectizeInput(session,"autoColumn.time",choices=colnames(this),
+  updateSelectizeInput(session,"autoColumnTime",choices=colnames(this),
 	selected=columns.data[1])
-  updateSelectizeInput(session,"autoColumn.outcome",choices=colnames(this),
+  updateSelectizeInput(session,"autoColumnOutcome",choices=colnames(this),
 	selected=columns.data[2])
-
   new = reduce.columns(columns.data[1],columns.data[2],this)
   if (!is.na(new$outcome)) {
     outcome.orig = as.character(this[[columns.data[2]]])
@@ -176,9 +179,9 @@ main.gen <- function(this,columns.data){
 
     if (!values.edit$autogen) {
 	# use last saved values
-  	updateSelectizeInput(session,"autoColumn.time",choices=colnames(this),
+  	updateSelectizeInput(session,"autoColumnTime",choices=colnames(this),
 		selected=KM$time.col)
-  	updateSelectizeInput(session,"autoColumn.outcome",choices=colnames(this),
+  	updateSelectizeInput(session,"autoColumnOutcome",choices=colnames(this),
 		selected=KM$outcome.col)
 
 	events = as.character(unique(this[[KM$outcome.col]]))
@@ -199,17 +202,23 @@ main.gen <- function(this,columns.data){
  
 
   # display time table when time column is updated 
-  observeEvent(input$autoColumn.time,({
-    shinycat("observe autoColumn.time...\n")
+  observeEvent(input$autoColumnTime,({
+    shinycat("observe autoColumnTime...\n")
     this = values.edit$table
     if (is.null(this)) return(NULL)
-    if (input$autoColumn.time == "") return(NULL)
-
-    #new = reduce.columns(input$autoColumn.time,NA,this)
+    if (input$autoColumnTime == "") return(NULL)
+    if (input$autoColumnOutcome == ""){
+      shinyjs::disable("genBtn")
+    }
+    else{
+      shinyjs::enable("genBtn")
+    }
+    
+    #new = reduce.columns(input$autoColumnTime,NA,this)
     #if (length(new$time) == 0) return(NULL)
 
 
-    time_both <- data.frame("TimeColumnOriginal" = this[[input$autoColumn.time]],"TimeColumnFormatted" = time.analysis()$time)
+    time_both <- data.frame("TimeColumnOriginal" = this[[input$autoColumnTime]],"TimeColumnFormatted" = time.analysis()$time)
 
     rownames(time_both) <- rownames(this)
 
@@ -220,15 +229,21 @@ main.gen <- function(this,columns.data){
   }))
   
  
-  observeEvent(input$autoColumn.outcome,({
-    shinycat("observe autoColumn.outcome...\n")
+  observeEvent(input$autoColumnOutcome,({
+    shinycat("observe autoColumnOutcome...\n")
     if (is.null(values.edit$table)) return(NULL)
     this = values.edit$table
-    selected = input$autoColumn.outcome
+    selected = input$autoColumnOutcome
     if (selected == "") return(NULL)
+    if (input$autoColumnTime == ""){
+      shinyjs::disable("genBtn")
+    } else{
+      shinyjs::enable("genBtn")
+    }
+    
     selected = setdiff(selected, c("", " "))
-    outcome.orig = as.character(this[[input$autoColumn.outcome]])
-    outcome.new = outcome.01(input$autoColumn.outcome, this) 
+    outcome.orig = as.character(this[[input$autoColumnOutcome]])
+    outcome.new = outcome.01(input$autoColumnOutcome, this) 
     outcome.no = unique(outcome.orig[outcome.new == 0])
     outcome.yes = unique(outcome.orig[outcome.new == 1])
     columnItems = as.character(unique(this[[selected]]))
@@ -245,8 +260,8 @@ main.gen <- function(this,columns.data){
 		 KM$generated <- TRUE
  	         closeAlert(session, alertId = "SelectKM")
     	         values.edit$autogen <- FALSE
-		 KM$time.col = isolate(input$autoColumn.time)
-		 KM$outcome.col = isolate(input$autoColumn.outcome)
+		 KM$time.col = isolate(input$autoColumnTime)
+		 KM$outcome.col = isolate(input$autoColumnOutcome)
 		 KM$eventNo = isolate(input$columnEvent0)
 		 KM$eventYes = isolate(input$columnEvent1)
 
@@ -254,7 +269,7 @@ main.gen <- function(this,columns.data){
                  output$kmSurvival <- renderPlot({
                    main = paste(input$GSE, geneLabel() , sep = ": ")
 
-                   if (input$autoColumn.outcome == "") return(NULL)
+                   if (input$autoColumnOutcome == "") return(NULL)
 
                    outcome.orig = values.edit$table[[KM$outcome.col]]
                    outcome.analysis = rep(NA, length(outcome.orig))
