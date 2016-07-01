@@ -17,8 +17,7 @@ tab.about = tabItem("About",
         <a href ='http://bioinformatics.easternct.edu/'>Bioinformatics Laboratory Page</a> <span class= \'label label-primary\'>Package Maintainer</span></p>
 
     <p><span style = \'font-weight: bold\'> Michael Gargano </span>
-        is currently a Computer Science major at Eastern Connecticut State University graduating in May of 2016. His interests include web application development, text mining, and bioinformatics.
-        He currently works as a web application developer intern for Cigna. </p> 
+        has a BS degree in Computer Science from Eastern Connecticut State University. He is pursuing a Masters in Bioinformatics at Northeastern University.</p> 
   </div>
 
   <div class='panel-heading'>
