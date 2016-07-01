@@ -17,6 +17,9 @@ calc.columns <- function(this){
   }
   is.outcome.column <- function(x){
     ans = grepl(paste(outcome.pattern,collapse="|"),x)
+    # not an outcome if contains 'month'
+    ans2 = grepl("month",x)
+    ans = ans & !ans2
     if(any(ans)){
       return(TRUE)
     }
@@ -45,10 +48,10 @@ calc.columns <- function(this){
   }
   
   if(is.na(x.time) & !is.na(y.outcome)){
-    createAlert(session,"warningAlert",alertId = "warn1",title = "Warning: No survival time columns were found!", content = "<p>If you believe this is incorrect, you can review the clinical data and select the appropriate columns. </p>",style= 'danger', dismiss = TRUE, append = TRUE)
+    createAlert(session,"warningAlert",alertId = "warn1",title = "Warning: No survival time columns were found!", content = "<p>If you believe this is incorrect, you can review the clinical data and select the appropriate column. </p>",style= 'danger', dismiss = TRUE, append = TRUE)
   }
   else if(is.na(y.outcome) & !is.na(x.time)){
-    createAlert(session,"warningAlert",alertId = "warn1",title = "Warning: No survival outcome columns were found!", content = "<p>If you believe this is incorrect, you can review the clinical data and select the appropriate columns. </p>",style= 'danger', dismiss = TRUE, append = TRUE)
+    createAlert(session,"warningAlert",alertId = "warn1",title = "Warning: No survival outcome columns were found!", content = "<p>If you believe this is incorrect, you can review the clinical data and select the appropriate column. </p>",style= 'danger', dismiss = TRUE, append = TRUE)
   }
  
   if(y.outcome == x.time & !is.na(y.outcome) & !is.na(x.time)){
@@ -109,7 +112,7 @@ reduce <- function(column){
 reduce.columns <- function(time,outcome,this){
    if(is.na(time) && is.na(outcome)){
     createAlert(session, "warningAlert", alertId = "warn3", title = "Warning: No Columns were found",
-                content = c("<p>Oops! shinyGEO could not find columns for survival analysis in your data. Please try the following: <ol><li>View the table and select the columns relevant to time and outcome or..</li><li>Use manual selection and format your data accordingly.</li></ol></p>"), style= 'danger', dismiss = TRUE, append = TRUE)
+                content = c("<p>Oops! shinyGEO could not find columns for survival analysis in your data. Please try the following: <ol><li>View the table and select the columns relevant to time and outcome </li><li>If necessary, manually format the data by exporting the data, reformatting, and uploading your data back into <i>shinyGEO</i>.</li></ol></p>"), style= 'danger', dismiss = TRUE, append = TRUE)
     ans = list(time = NA, outcome = NA)
     return(ans)
   }
