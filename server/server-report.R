@@ -214,7 +214,7 @@ add.probe = paste0("probe = \"", input$selectGenes, "\"")
 kmplot <-paste0("probe = \"", input$selectGenes, "\" 
 x = data.expr[probe,]
 
-outcome.column = \"", input$autoColumn.outcome, "\"
+outcome.column = \"", input$autoColumnOutcome, "\"
 outcome.orig = data.p[[outcome.column]]
 outcome = rep(NA, length(outcome.orig))
 

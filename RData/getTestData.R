@@ -3,7 +3,7 @@
 ## Download testdata using first platform for given GSE
 #####################################################################
 
-GSE = "GSE13507"
+GSE = "GSE33331"
 SAVE.FILE = paste0(GSE, ".RData")
 
 

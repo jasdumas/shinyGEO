@@ -90,14 +90,14 @@ shiny::tags$div(class = "modal-body",
                fluidRow(
                  column(7,
                         tags$h4(class="col-time-head","Time Column Selection"),
-                        selectizeInput('autoColumn.time','Time Column',choices=NULL),
+                        selectizeInput('autoColumnTime','Time Column',choices=NULL),
                         tags$br(),
                         DT::dataTableOutput("timetable")
                  ),
                  column(1,""),
                  column(3,
                         tags$h4(class="col-time-head","Outcome Column Selection"),
-                        selectizeInput('autoColumn.outcome','Outcome Column',choices=NULL),
+                        selectizeInput('autoColumnOutcome','Outcome Column',choices=NULL),
                         tags$br(),
                         tags$div(class="columnSelect",
                                  selectizeInput('columnEvent1',label ="Event: Yes",choices = NULL,multiple = TRUE)       
