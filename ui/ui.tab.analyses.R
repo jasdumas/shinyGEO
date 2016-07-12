@@ -15,9 +15,11 @@ conditionalPanel(condition = "input.selectGenes!=''",
     uiOutput("selectedGroups", container = div, style = "display:inline-block; width: 70%"),
     br(),                                                
                                                    
-    actionButton("mergeGroupsButton", "Merge Groups"), 
+    actionButton("mergeGroupsButton", "Merge Groups"),
+
     actionButton("formatDEButton", "Format Graph"),
-    HTML("<button id='DEadd' type='button' class='btn btn-info action-button'>Save R Code</button>"),                                   
+    HTML("<button id='DEdata' type='button' class='btn btn-info action-button'>Export Graph Data</button>"),
+    HTML("<button id='DEadd' type='button' class='btn btn-info action-button'>Save R Code</button>"), 
 
     bsModal("addCodeDEModal", "R Code Added", "DEadd", size = "small",
 		bsAlert("addCodeDEAlert")

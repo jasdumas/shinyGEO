@@ -5,6 +5,9 @@
 ################################################################################
 stripchart2 <- function(x,y, GroupNames, group.names = NULL, col = NULL, 
 			main = "",  ...) {
+  
+  if (is.null(GroupNames)) return(NULL)
+
   keep = y%in%GroupNames
   x = x[keep]; y = y[keep] 
   s = split(x,y)

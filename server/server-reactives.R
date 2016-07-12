@@ -3,12 +3,16 @@
 #############################################################################
 shinycat("begin server-reactives.R\n")
 
+# disable a few buttons initially
 shinyjs::disable("ClinicalReset")
 
 shinyjs::onclick("sidebarToggle",
 #  cat("refreshing display...\n")
 )
 
+shinyjs::hide("DEadd")
+shinyjs::hide("DEdata")
+shinyjs::hide("formatDEButton")
 
 LAST.TAB = "Home"
        content = HTML("To find a dataset, search the <a href = 'http://www.ncbi.nlm.nih.gov/geo/\'>Gene Expression Omnibus</a> and filter by 'Expression profiling by array'.")
@@ -151,7 +155,7 @@ observeEvent(input$selectGenes, {
 
 observeEvent(input$Group1Values, {
      shinycat("input$selectdGroups = ", input$Group1Values, "\n")
-     if (input$Group1Values!="") {
+     if (length(input$Group1Values) > 1 || input$Group1Values!="") {
 	closeAlert(session, alertId = "SelectGroups")	
      }
 })
@@ -433,5 +437,21 @@ probe.expr <-reactive({
         x = profiles()[input$selectGenes,] # effected
         if (is.null(x)) return(NULL)
 	x
+})
+
+
+##### enable/disable DE graph buttons ###
+
+observe({
+
+  if (is.null(input$Group1Values)) { 
+     shinyjs::hide('DEadd')
+     shinyjs::hide('DEdata')
+     shinyjs::hide('formatDEButton')
+  } else {
+     shinyjs::show('DEadd')
+     shinyjs::show('DEdata')
+     shinyjs::show('formatDEButton')
+  }
 })
 

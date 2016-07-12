@@ -340,6 +340,8 @@ observe({
         output$plot <-renderPlot({NULL})
   } else  {
         output$plot <- renderPlot({
+
+ 	      if(is.null(input$Group1Values)) return(NULL)
               iv = input$selectedColumn
               m = match(as.character(iv), colnames(clinicalDataProcessed()))  
               clinical = as.character(clinicalDataProcessed()[,m]) 
