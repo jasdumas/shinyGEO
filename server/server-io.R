@@ -40,6 +40,7 @@ output$downloadSet<- downloadHandler(
     filename = function() {
       file = paste(input$GSE,"_",input$platform,"_",Sys.time(),"-clinical", ".csv", sep = "")
 	file = gsub(":", "-",file)
+	file = gsub(" ", "_",file)
   msg = paste0("<H4>Current Status</H4><p><strong>The clinical data has been downloaded to the following file: ", file, "</p>")
   createAlert(session,"ioAlert2",content = msg, style="success",dismiss=FALSE, append = FALSE)
         return(file)

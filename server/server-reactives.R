@@ -154,7 +154,7 @@ observeEvent(input$selectGenes, {
 })
 
 observeEvent(input$Group1Values, {
-     shinycat("input$selectdGroups = ", input$Group1Values, "\n")
+     shinycat("input$selectedGroups = ", input$Group1Values, "\n")
      if (length(input$Group1Values) > 1 || input$Group1Values!="") {
 	closeAlert(session, alertId = "SelectGroups")	
      }
@@ -459,12 +459,21 @@ output$downloadDE <- downloadHandler(
     filename = function() {
       file = paste(input$GSE,"_",input$platform,"_",input$selectGenes,"_", Sys.time(),"-DE", ".csv", sep = "")
 	file = gsub(":", "-",file)
+	file = gsub(" ", "_",file)
   msg = paste0("<H4>Data Exported</H4><p> The expression data has been downloaded to the following file: ", file, "</p>")
   createAlert(session,"alert2",content = msg, style="success",dismiss=TRUE, append = FALSE)
         return(file)
 },
 
    content = function(file) {
- 	write.csv(iris, file)	
+	s = stripReactive()
+	if (is.null(s)) return(NULL)
+	save(s, file = "s.RData")
+        d = data.frame(ID = names(s$x), X = s$x, Group = s$y)
+	d = subset(d, !is.na(Group) & !is.na(X))
+	if (nrow(d) > 0) {
+		o = order(d$Group)
+ 		write.csv(d[o,], file, row.names = FALSE)
+	}	
     }
  )

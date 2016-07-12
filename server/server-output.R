@@ -320,6 +320,32 @@ observe({
   }
 })
 
+stripReactive <-reactive({
+  if(is.null(input$Group1Values)) return(NULL)
+  iv = input$selectedColumn
+  m = match(as.character(iv), colnames(clinicalDataProcessed()))  
+  clinical = as.character(clinicalDataProcessed()[,m]) 
+  selected = c(as.character(input$Group1Values))
+  k = clinical%in% selected
+    
+  y = clinical
+  y[!k] = NA
+            
+  ## make sure levels are in selected order for plot
+  y = factor(y)
+  x = probe.expr()
+
+  common = intersect(names(x), rownames(values.edit$table))
+  m1 = match(common, names(x))
+  m2 = match(common, rownames(values.edit$table))
+
+  x = x[m1]
+  y = y[m2]
+
+  list(x = x, y = y)
+
+})
+
 observe({
     
   PLOT = TRUE
@@ -338,26 +364,10 @@ observe({
   } else  {
         output$plot <- renderPlot({
 
- 	      if(is.null(input$Group1Values)) return(NULL)
-              iv = input$selectedColumn
-              m = match(as.character(iv), colnames(clinicalDataProcessed()))  
-              clinical = as.character(clinicalDataProcessed()[,m]) 
-              selected = c(as.character(input$Group1Values))
-              k = clinical%in% selected
-    
-              y = clinical
-              y[!k] = NA
-            
-              ## make sure levels are in selected order for plot
-              y = factor(y)
-	      x = probe.expr()
-
-	      common = intersect(names(x), rownames(values.edit$table))
-              m1 = match(common, names(x))
-              m2 = match(common, rownames(values.edit$table))
-
-	      x = x[m1]
-              y = y[m2]
+	      s = stripReactive()
+	      if (is.null(s)) return(NULL)
+	      x = s$x 
+              y = s$y
 
               main = paste(input$GSE, geneLabel() , sep = ": ")
               print(stripchart2(x,y, input$Group1Values, group.names = DE$labels,
