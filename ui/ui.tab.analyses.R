@@ -18,13 +18,10 @@ conditionalPanel(condition = "input.selectGenes!=''",
     actionButton("mergeGroupsButton", "Merge Groups"),
 
     actionButton("formatDEButton", "Format Graph"),
-    HTML("<button id='DEdata' type='button' class='btn btn-info action-button'>Export Graph Data</button>"),
+    downloadButton('downloadDE', 'Export Graph Data'), 
+
     HTML("<button id='DEadd' type='button' class='btn btn-info action-button'>Save R Code</button>"), 
 
-    bsModal("addCodeDEModal", "R Code Added", "DEadd", size = "small",
-		bsAlert("addCodeDEAlert")
-    ),
-             
     plotOutput("plot"),
     formatBSModal("MergeGroupsModal", "Merge Groups", "mergeGroupsButton", size = "large", applyID = "applyMergeGroups",
 

@@ -1,4 +1,4 @@
-createAlert(session,"selectionAlert1",content = "<H4>Directions</H4><p> Select a subset of samples to analyze by specifying selection criteria using the drop down boxes below, and then click the 'Apply Selection Criteria' button. <br>For more advanced selections, export and update the data table using the 'Data Export' option)</br></p>", dismiss=FALSE) 
+createAlert(session,"selectionAlert1",content = "<H4>Directions</H4><p> Select a subset of samples to analyze by specifying selection criteria using the drop down boxes below, and then click the 'Apply Selection Criteria' button. <br>For more advanced selections, export and update the data table using the 'Data Export' option</br></p>", dismiss=FALSE) 
 
 
 shinyjs::disable("btnSelection")

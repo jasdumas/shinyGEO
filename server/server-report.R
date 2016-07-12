@@ -123,6 +123,8 @@ quote.it <-function(x) paste0("\"", x, "\"")
 observeEvent(input$DEadd, {
   shinycat("Add DE code to report...\n")
 
+createAlert(session, "alert2", title = "", style = "success",
+            content = "<H4>R Code Generation</H4><p> R Code for Differential Expression Analysis has been added to the <i> Code </i> page </p>", append = TRUE, dismiss = TRUE) 
 
 if (!CODE$stripchart.loaded) {
   s2function = scan(file = "misc/stripchart2.R", what = character(), sep = "\n")
@@ -135,7 +137,6 @@ vector.it <-function(x) {
   x = paste0("\"", x, "\"", collapse = ",")
   paste0("c(", x, ")")
 }
-
 
  
 ## generate differential expression plot ##

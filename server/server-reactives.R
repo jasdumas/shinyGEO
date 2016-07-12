@@ -11,7 +11,7 @@ shinyjs::onclick("sidebarToggle",
 )
 
 shinyjs::hide("DEadd")
-shinyjs::hide("DEdata")
+shinyjs::hide("downloadDE")
 shinyjs::hide("formatDEButton")
 
 LAST.TAB = "Home"
@@ -446,12 +446,25 @@ observe({
 
   if (is.null(input$Group1Values)) { 
      shinyjs::hide('DEadd')
-     shinyjs::hide('DEdata')
+     shinyjs::hide('downloadDE')
      shinyjs::hide('formatDEButton')
   } else {
      shinyjs::show('DEadd')
-     shinyjs::show('DEdata')
+     shinyjs::show('downloadDE')
      shinyjs::show('formatDEButton')
   }
 })
 
+output$downloadDE <- downloadHandler(
+    filename = function() {
+      file = paste(input$GSE,"_",input$platform,"_",input$selectGenes,"_", Sys.time(),"-DE", ".csv", sep = "")
+	file = gsub(":", "-",file)
+  msg = paste0("<H4>Data Exported</H4><p> The expression data has been downloaded to the following file: ", file, "</p>")
+  createAlert(session,"alert2",content = msg, style="success",dismiss=TRUE, append = FALSE)
+        return(file)
+},
+
+   content = function(file) {
+ 	write.csv(iris, file)	
+    }
+ )

@@ -5,9 +5,6 @@
 load("series/series.RData")
 load("platforms/platforms.RData")
 
-createAlert(session, "addCodeDEAlert", alertId = "DE-add-alert", title = "", style = "success",
-            content = "R Code for Differential Expression Analysis Added", append = FALSE, dismiss = FALSE) 
-
 createAlert(session, "addCodeSurvAlert", alertId = "Surv-add-alert", title = "", style = "success",
             content = "R Code for Survival Analysis Added", append = FALSE, dismiss = FALSE) 
 
