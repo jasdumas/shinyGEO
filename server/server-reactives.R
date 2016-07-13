@@ -33,7 +33,7 @@ values.edit <- reactiveValues(table = NULL, platformGeneColumn = NULL, original 
 reproducible <-reactiveValues(report = NULL)
 KM <- reactiveValues(time.col = NULL, outcome.col = NULL, generated = FALSE, 
 	eventYes = NULL, eventNo = NULL, xlab = "Time", ylab = "Survival", hr.format = "high/low", 
-	col = c("darkblue", "darkred"))
+	col = c("darkblue", "darkred"), cutoff = "Median")
 
 DE <- reactiveValues(labels = NULL, col = NULL)
 
@@ -60,6 +60,7 @@ reactiveValues.reset <-function() {
 	KM$eventYes = NULL
 	KM$eventNo = NULL
         KM$generated = FALSE 
+	KM$cutoff = "Median"
 
         CODE$stripchart.loaded = FALSE
 	CODE$plot.km.loaded = FALSE
@@ -501,8 +502,10 @@ output$downloadKM <- downloadHandler(
    content = function(file) {
 	km = kmReactive()
 	if (is.null(km)) return(NULL)
+	optimal.cut = TRUE
+        if (KM$cutoff == "Median") optimal.cut = FALSE 
         res = plot.shiny.km(time = km$time, death = km$death, x = km$x, 
-			    ids = km$id, no.plot = TRUE)
+			    ids = km$id, no.plot = TRUE, optimal.cut = optimal.cut)
 	if (is.null(res)) return(NULL)
  		write.csv(res, file, row.names = FALSE)
 	}	
