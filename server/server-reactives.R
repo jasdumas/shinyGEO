@@ -211,7 +211,7 @@ dataInput <- reactive({
               content = content , append = TRUE, dismiss = FALSE) 
   code = paste0("data.series = getGEO(GEO = \"", GSE, "\", AnnotGPL = FALSE, getGPL = FALSE)")
 
-    geo = try(getGEO(GEO = isolate(GSE), AnnotGPL=FALSE, getGPL = FALSE))
+    geo = try(getGEO(GEO = isolate(GSE), AnnotGPL=FALSE, getGPL = FALSE), silent = TRUE)
 
     if (class(geo) == "try-error") {
         content = "This is typically an indication that the GEO data is not in the correct format. Please select another dataset to continue. <p><p>The specific error appears below:<p>"

@@ -386,6 +386,11 @@ main.gen <- function(this,columns.data){
 		   optimal.cut = TRUE
 		   if (KM$cutoff == "Median") optimal.cut = FALSE 
 
+		   keep = !is.na(km$x) & !is.nan(km$x) & !is.na(km$time)
+		   check = km$death[keep] 
+ 		   y = sum(check%in%1)	
+ 		   n = sum(check%in%0)	
+
                    res = plot.shiny.km(time = km$time, death = km$death, x = km$x,  
                                         col = KM$col, title = main,
 					xlab = KM$xlab, ylab = KM$ylab,
@@ -401,9 +406,16 @@ main.gen <- function(this,columns.data){
 		     shinyjs::hide("downloadKM")
 		     shinyjs::hide("formatDEButton2")
 		     if (!is.null(input$selectGenes) & input$selectGenes!="") {
+                	content = "<b>Error</b>: Survival analysis could not be completed using the selected time and outcome columns. This is typically because the selected columns do not contain survival information. Click on the Select Time/Outcome button to select the appropriate columns. Note that survival information is not available for all datasets."
+			
+			if (KM$cutoff != "Median") {
+				content = paste0(content, " Alternatively, the survival data may be unbalanced (e.g., 99% of individuals are censored). If this is the case, the Median cutoff must be used.")
+			}
+
     		       createAlert(session, "alert2", alertId = "kmAlert", 
 			title = "Survival Analysis",
-                	content = "Kaplan-Meier curves could not be produced due to an insufficent amount of data. Click on the Select Time/Outcome button to re-select the appropriate columns.  Note that survival information is not available for all datasets.", style= 'danger', dismiss = TRUE, append = TRUE)
+			content = content,
+			style= 'danger', dismiss = TRUE, append = TRUE)
 		       }
 	             }
                  })

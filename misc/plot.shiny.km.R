@@ -26,7 +26,10 @@ plot.shiny.km <- function(time, death, x, title = "", ids = NULL,
   ## find optimal cutoff if specified ##
   if (optimal.cut) {
      mod <- coxph(Surv(time, event) ~ X, data = km.data)
-     cc = cutp(mod)
+     cc = try(cutp(mod), silent = TRUE)
+     if (class(cc) %in% "try-error") {
+	return(invisible(NULL))
+     }
      cut = cc$X$X[1]
      p.adj = cc$X$p[1]
      percentile = round(sum(x>=cut) / length(x) * 100,2)
@@ -44,8 +47,8 @@ plot.shiny.km <- function(time, death, x, title = "", ids = NULL,
   if (no.plot) return(invisible(km.data))
 
   n = length(levels(expression))
-  km.group = coxph(Surv(time, death) ~ expression)
-
+  km.group = try(coxph(Surv(time, death) ~ expression), silent = TRUE)
+  if (class(km.group) %in% "try-error") return(invisible(NULL))
   p.km = 1 - pchisq(km.group$score,n-1)
   hr = exp(km.group$coefficients)
   n = km.group$n
