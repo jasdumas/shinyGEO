@@ -74,7 +74,7 @@ genBSModal<-function (id, title, trigger, ..., size)
                         size = "default", type = "action", block = FALSE, disabled = FALSE,
                         value = FALSE),
  
-               bsButton("genBtn", "Generate Analysis", icon = NULL, style = "success",
+               bsButton("genBtn", "Generate KM Plot", icon = NULL, style = "success",
                         size = "default", type = "action", block = FALSE, disabled = FALSE,
                         value = FALSE),
                shiny::tags$h4(class = "modal-title", title)
@@ -89,8 +89,8 @@ shiny::tags$div(class = "modal-body",
 		column(12,
 		  div(class="panel panel-default",
 	    	    div(class="panel-heading",
-	              h4(class="panel-title",
-	  		HTML("<a data-toggle='collapse' href = '#survOptions'> Survival analysis options </a>")
+	              div(class="panel-title", 
+	  		HTML("<b><a data-toggle='collapse' href = '#survOptions'> Survival analysis options </a></b>")
     		      ),
    		      div(id="survOptions", class="panel-collapse collapse", br(),
 		    	radioButtons("radioCutoff", 

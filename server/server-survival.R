@@ -1,6 +1,6 @@
 library(stringr)
 
-createAlert(session, "warningAlert", "survInstructions", title = "Survival Analysis", content = "<i>shinyGEO</i> has automatically detected and formatted columns within your data for you. Please confirm these are correct and then generate the analysis.", style = "success", dismiss = TRUE) 
+createAlert(session, "warningAlert", "survInstructions", title = "Survival Analysis", content = "<i>shinyGEO</i> will attempt to detect the time and outcome columns from the sample data. Please confirm the selection and then generate the KM plot by clicking on the button above. The KM plot will compare samples wit high expression to samples with low expression, using the median expression value as the cutoff. To use the best cutoff instead, select this option under the 'Survival analysis options' menu below ", style = "success", dismiss = TRUE) 
 
 #Auto-Generation of columns
 ## Functions for autogen
@@ -30,7 +30,7 @@ calc.columns <- function(this){
   x.time = colnames(this)[apply(this,2,is.time.column)]
   y.outcome = colnames(this)[apply(this,2,is.outcome.column)]
   if(length(x.time) > 1){
-    createAlert(session, "warningAlert", alertId = "warn1", title = "Warning: Multiple Time Columns Found",
+    createAlert(session, "warningAlert", alertId = "warn1", title = "Warning: multiple time columns found",
                 content = paste(c("<strong>Columns found</strong>: ", paste(x.time,collapse=", "),"<br> Please check that the selection is correct.")), style= 'danger', dismiss = TRUE, append = TRUE)
     x.time = x.time[1]
   }
@@ -41,7 +41,7 @@ calc.columns <- function(this){
   }
   if(length(y.outcome) > 1)
   {
-    createAlert(session, "warningAlert", alertId = "warn1", title = "Warning: Multiple Outcome Columns Found",
+    createAlert(session, "warningAlert", alertId = "warn1", title = "Warning: multiple outcome columns Found",
                 content = paste(c("<strong>Columns Found</strong>: ", paste(y.outcome,collapse=", "),"<br><br> Please check that the selection is correct.")), style= 'danger', dismiss = TRUE, append = TRUE)
     y.outcome = y.outcome[1]
   }
@@ -50,15 +50,15 @@ calc.columns <- function(this){
   }
   
   if(is.na(x.time) & !is.na(y.outcome)){
-    createAlert(session,"warningAlert",alertId = "warn1",title = "Warning: No survival time columns were found!", content = "<p>If you believe this is incorrect, you can review the clinical data and select the appropriate column. </p>",style= 'danger', dismiss = TRUE, append = TRUE)
+    createAlert(session,"warningAlert",alertId = "warn1",title = "Warning: no survival time columns were found!", content = "<p>If you believe this is incorrect, you can review the sample data and select the appropriate column. </p>",style= 'danger', dismiss = TRUE, append = FALSE)
   }
   else if(is.na(y.outcome) & !is.na(x.time)){
-    createAlert(session,"warningAlert",alertId = "warn1",title = "Warning: No survival outcome columns were found!", content = "<p>If you believe this is incorrect, you can review the clinical data and select the appropriate column. </p>",style= 'danger', dismiss = TRUE, append = TRUE)
+    createAlert(session,"warningAlert",alertId = "warn1",title = "Warning: No survival outcome columns were found!", content = "<p>If you believe this is incorrect, you can review the sample data and select the appropriate column. </p>",style= 'danger', dismiss = TRUE, append = TRUE)
   }
  
   if(y.outcome == x.time & !is.na(y.outcome) & !is.na(x.time)){
     y.outcome = NA
-    createAlert(session,"warningAlert",alertId = "warn1",title = "Warning: No survival outcome columns were found!", content = "<p>If you believe this is incorrect, you can review the clinical data and select the appropriate columns. </p>",style= 'danger', dismiss = TRUE, append = TRUE)
+    createAlert(session,"warningAlert",alertId = "warn1",title = "Warning: No survival outcome columns were found!", content = "<p>If you believe this is incorrect, you can review the sample data and select the appropriate columns. </p>",style= 'danger', dismiss = TRUE, append = TRUE)
     
   }
   ans = c(x.time,y.outcome)
@@ -112,8 +112,8 @@ reduce <- function(column){
 # (i.e., not selected in drop down)
 reduce.columns <- function(time,outcome,this){
    if(is.na(time) && is.na(outcome)){
-    createAlert(session, "warningAlert", alertId = "warn3", title = "Warning: No Columns were found",
-                content = c("<p>Oops! shinyGEO could not find columns for survival analysis in your data. Please try the following: <ol><li>View the table and select the columns relevant to time and outcome </li><li>If necessary, manually format the data by exporting the data, reformatting, and uploading your data back into <i>shinyGEO</i>.</li></ol></p>"), style= 'danger', dismiss = TRUE, append = TRUE)
+    createAlert(session, "warningAlert", alertId = "warn3", title = "Warning: No time or outcome columns were found",
+                content = c("<p>Oops! shinyGEO could not find columns for survival analysis in your data. Please try the following: <ul><li>View the table and select the columns relevant to time and outcome </li><li>If necessary, manually format the data by exporting the data, reformatting, and uploading your data back into <i>shinyGEO</i>.</li><li> Note that survival information is not available in all datasets.</ul></p>"), style= 'danger', dismiss = TRUE, append = TRUE)
     ans = list(time = NA, outcome = NA)
     return(ans)
   }
@@ -272,10 +272,9 @@ main.gen <- function(this,columns.data){
 	}
     }
     cat("autoColumnOutcome = ", input$autoColumnOutcome, "\n")
-
     if (input$autoColumnOutcome == ""){
       shinyjs::disable("genBtn")
-    } else {
+    } else if (!is.null(input$columnEvent1) & !is.null(input$columnEvent0)) {
        shinyjs::enable("genBtn")
     }
     
@@ -292,16 +291,12 @@ main.gen <- function(this,columns.data){
     setTimeTable()
     selected = input$autoColumnOutcome
     if (selected == "") {
-#        createAlert(session, "warningAlert", alertId = "warn2", title = "Time and Outcome Selection",
- #               content = "Please select an appropriate time and outcome column, and event values", style= 'danger', dismiss = TRUE, append = TRUE)
-
 	shinyjs::disable("genBtn")
 	shinyjs::hide("columnEvent1")
 	shinyjs::hide("columnEvent0")
 	return(NULL)
     }
     if (input$autoColumnTime!="") closeAlert(session, "warn2")
-    shinyjs::enable("genBtn")
     shinyjs::show("columnEvent1")
     shinyjs::show("columnEvent0")
  
@@ -315,12 +310,10 @@ main.gen <- function(this,columns.data){
     updateSelectizeInput(session,"columnEvent1",choices=columnItems,selected=outcome.yes,server=TRUE)
     updateSelectizeInput(session,"columnEvent0",choices=columnItems,selected=outcome.no,server=TRUE)
 
-    if (is.null(input$columnEvent1) | is.null(input$columnEvent0)) {  
-	cat("no events selected, create Alert!\n") 
-        #createAlert(session, "warningAlert", alertId = "warn2", title = "Time and Outcome Selection",
-         #       content = "Please select an appropriate time and outcome column, and event values", style= 'danger', dismiss = TRUE, append = TRUE)
-    } 
- 
+    if (!is.null(input$columnEvent1) & !is.null(input$columnEvent0)) {
+	    shinyjs::enable("genBtn")
+    }
+
   }))
   
   observe({
@@ -329,9 +322,9 @@ main.gen <- function(this,columns.data){
 	    closeAlert(session, "warn2")
             shinyjs::enable("genBtn")
     	    setTimeTable()    
-	} else {
+	} else if (!values.edit$autogen)  {
           createAlert(session, "warningAlert", alertId = "warn2", title = "Time and Outcome Selection",
-                content = "Please select an appropriate time and outcome column, and event values", style= 'danger', dismiss = TRUE, append = TRUE)
+                content = "Please select an appropriate time and outcome column, and event values.", style= 'danger', dismiss = TRUE, append = TRUE)
           shinyjs::disable("genBtn")
 	  if (is.null(input$columnEvent1) | is.null(input$columnEvent0)) {
 		setTimeTable()
