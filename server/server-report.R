@@ -51,6 +51,7 @@ library(reshape2)
 library(survival)
 library(ggplot2)
 library(GGally)
+library(survMisc)
 
 ## Download data from GEO ##
 GSE = \"", GSE, "\"
@@ -182,8 +183,6 @@ observeEvent(input$Survadd, {
    if (!CODE$plot.km.loaded) {
      kmfunction = scan(file = "misc/plot.shiny.km.R", what = character(), sep = "\n")
      sapply(kmfunction, add.code)
-     add.code(time.analysis()$code)
-     add.code("")
      CODE$plot.km.loaded = TRUE
   }
 
@@ -215,6 +214,10 @@ labels = paste0("\nxlab = ", xlab, "\nylab = ", ylab, "\nhr.inverse = ", hr.inve
 
 add.code("## Survival Analysis ##")
 add.probe = paste0("probe = \"", input$selectGenes, "\"") 
+
+add.code(time.analysis()$code)
+add.code("")
+
 kmplot <-paste0("probe = \"", input$selectGenes, "\" 
 x = data.expr[probe,]
 
@@ -227,9 +230,11 @@ eventYes = ", vector.it(input$columnEvent1), "
 outcome[outcome.orig %in% eventNo] = 0
 outcome[outcome.orig %in% eventYes] = 1
 
+optimal.cut = ", KM$cutoff != "Median", "
+
 main = paste(GSE, \"", geneLabel(), "\", sep = \": \")\n", labels, "
 
-plot.shiny.km(time = time, death = as.integer(outcome), x = x, col = ", vector.it(KM$col), ", title = main, xlab = xlab, ylab = ylab, hr.inverse = hr.inverse)
+plot.shiny.km(time = time, death = as.integer(outcome), x = x, col = ", vector.it(KM$col), ", title = main, xlab = xlab, ylab = ylab, hr.inverse = hr.inverse, optimal.cut = optimal.cut)
 ")
  
  add.code(kmplot)

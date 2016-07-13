@@ -65,7 +65,6 @@ calc.columns <- function(this){
   return (ans) 
 }
 
-
 ##########################################################
 # returns the current and formatted time vector  
 ###########################################################

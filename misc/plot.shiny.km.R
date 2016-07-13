@@ -13,7 +13,7 @@ plot.shiny.km <- function(time, death, x, title = "", ids = NULL,
   if (!is.null(ids)) ids = ids[subset]
   if (length(x) ==0 | length(time) == 0 | length(death) == 0 
       | length(unique(death)) < 2) {
-    return(NULL)
+    return(invisible(NULL))
   }
   if (is.null(ids)) ids = 1:length(x)
   km.data = data.frame(ID = ids, X = x, Group = NA, time = time, event = death)
@@ -41,7 +41,7 @@ plot.shiny.km <- function(time, death, x, title = "", ids = NULL,
   expression = as.factor(newX)
   km.data$Group = expression
   
-  if (no.plot) return(km.data)
+  if (no.plot) return(invisible(km.data))
 
   n = length(levels(expression))
   km.group = coxph(Surv(time, death) ~ expression)
@@ -55,7 +55,7 @@ plot.shiny.km <- function(time, death, x, title = "", ids = NULL,
   hr.str = paste("HR = ", round(hr,2), ", ")
   p.str = paste0("P = ", round(p.km,4))
   if (!is.null(p.adj)) {
-    p.str = paste0(p.str, ", adj.P = ", round(p.adj,4))
+    p.str = paste0(p.str, ", P(adjusted) = ", round(p.adj,4))
   }
   
   if (title=="") { 
@@ -76,7 +76,7 @@ plot.shiny.km <- function(time, death, x, title = "", ids = NULL,
   #    theme(plot.title = element_text(vjust = 0.5, colour = "black"))
   
   plot(km.group)
-  return(km.data)
+  return(invisible(km.data))
 }
 
 
