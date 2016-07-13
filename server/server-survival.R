@@ -209,12 +209,32 @@ main.gen <- function(this,columns.data){
     shinycat("observe autoColumnTime...\n")
     this = values.edit$table
     if (is.null(this)) return(NULL)
-    if (input$autoColumnTime == "") return(NULL)
+    if (input$autoColumnTime == "") {
+	time_both = data.frame(TimeColumnOriginal = NULL, TimeColumnFormatted = NULL)
+    	output$timetable <- DT::renderDataTable(time_both)
+        shinyjs::disable("genBtn")
+
+#        createAlert(session, "warningAlert", alertId = "warn2", title = "Time and Outcome Selection",
+ #               content = "Please select an appropriate time and outcome column, and event values", style= 'danger', dismiss = TRUE, append = TRUE)
+
+	return(NULL)
+    }
+
+    if (input$autoColumnOutcome!="") {
+	Y = input$columnEvent1
+	N = input$columnEvent0
+	if (is.null(N) | is.null(Y)) {
+		closeAlert(session, "warn2")
+	} else if (!is.null(N) & N == "" | !is.null(Y) & Y == "") {
+		closeAlert(session, "warn2") 
+	}
+    }
+    cat("autoColumnOutcome = ", input$autoColumnOutcome, "\n")
+
     if (input$autoColumnOutcome == ""){
       shinyjs::disable("genBtn")
-    }
-    else{
-      shinyjs::enable("genBtn")
+    } else {
+       shinyjs::enable("genBtn")
     }
     
     #new = reduce.columns(input$autoColumnTime,NA,this)
@@ -237,13 +257,20 @@ main.gen <- function(this,columns.data){
     if (is.null(values.edit$table)) return(NULL)
     this = values.edit$table
     selected = input$autoColumnOutcome
-    if (selected == "") return(NULL)
-    if (input$autoColumnTime == ""){
-      shinyjs::disable("genBtn")
-    } else{
-      shinyjs::enable("genBtn")
+    if (selected == "") {
+#        createAlert(session, "warningAlert", alertId = "warn2", title = "Time and Outcome Selection",
+ #               content = "Please select an appropriate time and outcome column, and event values", style= 'danger', dismiss = TRUE, append = TRUE)
+
+	shinyjs::disable("genBtn")
+	shinyjs::hide("columnEvent1")
+	shinyjs::hide("columnEvent0")
+	return(NULL)
     }
-    
+    if (input$autoColumnTime!="") closeAlert(session, "warn2")
+    shinyjs::enable("genBtn")
+    shinyjs::show("columnEvent1")
+    shinyjs::show("columnEvent0")
+ 
     selected = setdiff(selected, c("", " "))
     outcome.orig = as.character(this[[input$autoColumnOutcome]])
     outcome.new = outcome.01(input$autoColumnOutcome, this) 
@@ -253,10 +280,48 @@ main.gen <- function(this,columns.data){
 
     updateSelectizeInput(session,"columnEvent1",choices=columnItems,selected=outcome.yes,server=TRUE)
     updateSelectizeInput(session,"columnEvent0",choices=columnItems,selected=outcome.no,server=TRUE)
-    
+
+    if (is.null(input$columnEvent1) | is.null(input$columnEvent0)) {  
+	cat("no events selected, create Alert!\n") 
+        #createAlert(session, "warningAlert", alertId = "warn2", title = "Time and Outcome Selection",
+         #       content = "Please select an appropriate time and outcome column, and event values", style= 'danger', dismiss = TRUE, append = TRUE)
+    } 
+ 
   }))
   
-  
+  observe({
+	if (!is.null(input$columnEvent1) & !is.null(input$columnEvent0) &
+            input$autoColumnTime != "" & input$autoColumnOutcome != "") {
+	    closeAlert(session, "warn2")
+	} else {
+        createAlert(session, "warningAlert", alertId = "warn2", title = "Time and Outcome Selection",
+                content = "Please select an appropriate time and outcome column, and event values", style= 'danger', dismiss = TRUE, append = TRUE)
+	}
+  })
+
+
+
+  kmReactive <- reactive({
+  	outcome.orig = values.edit$table[[KM$outcome.col]]
+        outcome.analysis = rep(NA, length(outcome.orig))
+        outcome.analysis[outcome.orig%in%KM$eventNo] = 0
+	outcome.analysis[outcome.orig%in%KM$eventYes] = 1  
+			
+        time = time.analysis()$time
+        death = as.integer(outcome.analysis)
+	x = probe.expr()
+	ids = names(x)
+	
+	common = intersect(names(x), rownames(values.edit$table))		 
+	m1 = match(common, names(x))
+        m2 = match(common, rownames(values.edit$table))
+		
+	x = x[m1]; ids = ids[m1]
+        time = time[m2]
+        death = death[m2]
+	return(data.frame(id = as.character(ids), x = x, time = time, death = death))
+  })
+
   observeEvent(input$genBtn,
                ({
                  shinycat("observe genBtn...\n")
@@ -268,39 +333,44 @@ main.gen <- function(this,columns.data){
 		 KM$eventNo = isolate(input$columnEvent0)
 		 KM$eventYes = isolate(input$columnEvent1)
 
+		 time = KM$time.col
+	         outcome = KM$outcome.col
+		 yes = KM$eventYes; no = KM$eventNo
+
                  if (is.null(values.edit$table)) return(NULL)
                  output$kmSurvival <- renderPlot({
-                   main = paste(input$GSE, geneLabel() , sep = ": ")
 
                    if (input$autoColumnOutcome == "") return(NULL)
 
-                   outcome.orig = values.edit$table[[KM$outcome.col]]
-                   outcome.analysis = rep(NA, length(outcome.orig))
-                   outcome.analysis[outcome.orig%in%KM$eventNo] = 0
-		   outcome.analysis[outcome.orig%in%KM$eventYes] = 1  
-			
-                   hr.inverse = FALSE
+		   km = isolate(kmReactive())
+                   main = paste(input$GSE, geneLabel() , sep = ": ")
+
+	 	   hr.inverse = FALSE
 		   if(KM$hr.format == "low/high") {
 				hr.inverse = TRUE
 	    	   }
 
-                   time = isolate(time.analysis()$time)
-                   death = as.integer(outcome.analysis)
-		   x = probe.expr()
-
-		   common = intersect(names(x), rownames(values.edit$table))		 
-		   m1 = match(common, names(x))
-                   m2 = match(common, rownames(values.edit$table))
-		
-		   x = x[m1]
-                   time = time[m2]
-                   death = death[m2]
-
-                   return(plot.shiny.km(time = time, death = death, x = x, 
+                   res = plot.shiny.km(time = km$time, death = km$death, x = km$x,  
                                         col = KM$col, title = main,
 					xlab = KM$xlab, ylab = KM$ylab,
-					hr.inverse = hr.inverse))
+					hr.inverse = hr.inverse)
+
+		  if (!is.null(res)) {
+		     shinyjs::show("Survadd")
+		     shinyjs::show("downloadKM")
+		     shinyjs::show("formatDEButton2")
+		     closeAlert(session, "kmAlert")	
+		  } else {
+		     shinyjs::hide("Survadd")
+		     shinyjs::hide("downloadKM")
+		     shinyjs::hide("formatDEButton2")
+    		     createAlert(session, "alert2", alertId = "kmAlert", 
+			title = "Survival Analysis",
+                	content = "Kaplan-Meier curves could not be produced due to an insufficent amount of data. Click on the Select Time/Outcome button to re-select the appropriate columns.  Note that survival information is not available for all datasets.", style= 'danger', dismiss = TRUE, append = TRUE)
+		  }
+
                  })
+
                  closeAlert(session,"warn1")
                  closeAlert(session,"warn2")
                  closeAlert(session,"warn3")

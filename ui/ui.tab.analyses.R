@@ -55,6 +55,7 @@ tab.survival.analysis = tabItem("SurvivalAnalysis",
         summaryBSModal("summaryBSModal","Clinical Data Summary",""),
         bsButton("autoAnalysis","Select Time/Outcome", style="success",disabled = TRUE),
         actionButton("formatDEButton2", "Format Graph",disabled=TRUE), # add on
+        downloadButton('downloadKM', 'Export Graph Data'), 
         HTML("<button id='Survadd' type='button' class='btn btn-info action-button'>Save R Code</button>"),                                   
     formatBSModal("Format2", "Format", "formatDEButton2", applyID = "applyFormatDE2", size = "large", 
 	hr = radioButtons("hr.format", label = "HR (expression)",
@@ -64,9 +65,6 @@ tab.survival.analysis = tabItem("SurvivalAnalysis",
         textInput("km.ylab", "y-axis label: ", "Survival"),
 	htmlOutput("formatDE2")
     ),    
-    bsModal("addCodeSurvModal", "R Code Added", "Survadd", size = "small",
-		bsAlert("addCodeSurvAlert")
-        ),
          plotOutput("kmSurvival")
   )
 ) # end tabPanel: Survival Analysis

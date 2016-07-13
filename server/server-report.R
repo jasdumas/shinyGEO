@@ -176,6 +176,9 @@ add.code(s3plot)
 #################################
 observeEvent(input$Survadd, {
   shinycat("Add survival code to report...\n")
+
+  createAlert(session, "alert2", title = "", style = "success",
+            content = "<H4>R Code Generation</H4><p> R Code for Survival Analysis has been added to the <i> Code </i> page </p>", append = TRUE, dismiss = TRUE) 
    if (!CODE$plot.km.loaded) {
      kmfunction = scan(file = "misc/plot.shiny.km.R", what = character(), sep = "\n")
      sapply(kmfunction, add.code)

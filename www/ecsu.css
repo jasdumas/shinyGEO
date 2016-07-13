@@ -53,7 +53,7 @@ bottom:25px;
 	color:white;
  }
 
-#downloadDE{
+#downloadDE, #downloadKM {
         margin-bottom:5px;
 	border-radius:2px;	
 	background-color: rgb(0, 38, 73);
@@ -81,10 +81,6 @@ margin-bottom:5px;
 margin-bottom:5px;
 }
 #DEadd {
-margin-bottom:5px;
-}
-
-#DEdata {
 margin-bottom:5px;
 }
 

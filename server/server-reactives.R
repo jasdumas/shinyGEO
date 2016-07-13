@@ -14,6 +14,10 @@ shinyjs::hide("DEadd")
 shinyjs::hide("downloadDE")
 shinyjs::hide("formatDEButton")
 
+shinyjs::hide("Survadd")
+shinyjs::hide("downloadKM")
+shinyjs::hide("formatDEButton2")
+
 LAST.TAB = "Home"
        content = HTML("To find a dataset, search the <a href = 'http://www.ncbi.nlm.nih.gov/geo/\'>Gene Expression Omnibus</a> and filter by 'Expression profiling by array'.")
 
@@ -455,20 +459,22 @@ observe({
   }
 })
 
+#######################################
+# Download handler for DE data export
+#######################################
 output$downloadDE <- downloadHandler(
     filename = function() {
       file = paste(input$GSE,"_",input$platform,"_",input$selectGenes,"_", Sys.time(),"-DE", ".csv", sep = "")
 	file = gsub(":", "-",file)
 	file = gsub(" ", "_",file)
   msg = paste0("<H4>Data Exported</H4><p> The expression data has been downloaded to the following file: ", file, "</p>")
-  createAlert(session,"alert2",content = msg, style="success",dismiss=TRUE, append = FALSE)
+  createAlert(session,"alert2",content = msg, style="success",dismiss=TRUE, append = TRUE)
         return(file)
 },
 
    content = function(file) {
 	s = stripReactive()
 	if (is.null(s)) return(NULL)
-	save(s, file = "s.RData")
         d = data.frame(ID = names(s$x), X = s$x, Group = s$y)
 	d = subset(d, !is.na(Group) & !is.na(X))
 	if (nrow(d) > 0) {
@@ -477,3 +483,30 @@ output$downloadDE <- downloadHandler(
 	}	
     }
  )
+
+
+#######################################
+# Download handler for KM data export
+#######################################
+output$downloadKM <- downloadHandler(
+    filename = function() {
+      file = paste(input$GSE,"_",input$platform,"_",input$selectGenes,"_", Sys.time(),"-KM", ".csv", sep = "")
+	file = gsub(":", "-",file)
+	file = gsub(" ", "_",file)
+  msg = paste0("<H4>Data Exported</H4><p> The expression and survival data has been downloaded to the following file: ", file, "</p>")
+  createAlert(session,"alert2",content = msg, style="success",dismiss=TRUE, append = TRUE)
+        return(file)
+},
+
+   content = function(file) {
+	km = kmReactive()
+	if (is.null(km)) return(NULL)
+        res = plot.shiny.km(time = km$time, death = km$death, x = km$x, 
+			    ids = km$id, no.plot = TRUE)
+	if (is.null(res)) return(NULL)
+ 		write.csv(res, file, row.names = FALSE)
+	}	
+ )
+
+
+

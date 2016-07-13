@@ -2,7 +2,7 @@
 # DEBUG SETTINGS
 ##############################################################
 
-TEST.DATA = TRUE 
+TEST.DATA = FALSE 
 if (TEST.DATA) {
   shinycat("loading test data...\n")
   #load RData/GSE13.RData or RData/GSE19915.RData here
