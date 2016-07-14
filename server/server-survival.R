@@ -1,6 +1,6 @@
 library(stringr)
 
-createAlert(session, "warningAlert", "survInstructions", title = "Survival Analysis", content = "<i>shinyGEO</i> will attempt to detect the time and outcome columns from the sample data. Please confirm the selection and then generate the KM plot by clicking on the button above. The KM plot will compare samples wit high expression to samples with low expression, using the median expression value as the cutoff. To use the best cutoff instead, select this option under the 'Survival analysis options' menu below ", style = "success", dismiss = TRUE) 
+createAlert(session, "warningAlert", "survInstructions", title = "Survival Analysis", content = "<i>shinyGEO</i> will attempt to detect the time and outcome columns from the sample data. Please confirm the selection and then generate the KM plot by clicking on the button above. The KM plot will compare survival curves for samples with high expression to samples with low expression, using the median expression value as the cutoff. To use the best cutoff instead, select this option under the 'Survival analysis options' menu below ", style = "success", dismiss = TRUE) 
 
 #Auto-Generation of columns
 ## Functions for autogen
@@ -371,6 +371,14 @@ main.gen <- function(this,columns.data){
 
                  if (is.null(values.edit$table)) return(NULL)
                  output$kmSurvival <- renderPlot({
+			# display wait message in plot #
+			plot(1:10,xaxt = "n", yaxt = "n", xlab = "", 
+				ylab = "", type = "n")
+			legend("center", "Generating KM curves,\nplease wait...", 
+				box.lwd = 0, cex =2)
+
+		   createAlert(session, "warningAlert", alertId = "alertWait1", title = "Status", content = "Generating KM curve, please wait...", style = "info", append = TRUE, dismiss = FALSE)
+
 
                    if (input$autoColumnOutcome == "") return(NULL)
 		   if (is.null(input$selectGenes)) return(NULL)
@@ -395,6 +403,8 @@ main.gen <- function(this,columns.data){
                                         col = KM$col, title = main,
 					xlab = KM$xlab, ylab = KM$ylab,
 					hr.inverse = hr.inverse, optimal.cut = optimal.cut)
+
+		   closeAlert(session, "alertWait1")
 
 		  if (!is.null(res)) {
 		     shinyjs::show("Survadd")
@@ -424,8 +434,6 @@ main.gen <- function(this,columns.data){
                  closeAlert(session,"warn2")
                  closeAlert(session,"warn3")
                  toggleModal(session,"autogenModal",toggle = "toggle")
-                 
-                 tags$script(HTML("window.location.href= '/#kmSurvial'"))
                })
   )
   
