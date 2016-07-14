@@ -323,13 +323,15 @@ stripReactive <-reactive({
   clinical = as.character(clinicalDataProcessed()[,m]) 
   selected = c(as.character(input$Group1Values))
   k = clinical%in% selected
-    
+ 
   y = clinical
   y[!k] = NA
-            
+
   ## make sure levels are in selected order for plot
   y = factor(y)
   x = probe.expr()
+
+  t = values.edit$table  
 
   common = intersect(names(x), rownames(values.edit$table))
   m1 = match(common, names(x))
@@ -337,6 +339,8 @@ stripReactive <-reactive({
 
   x = x[m1]
   y = y[m2]
+
+  if (all(is.na(y))) return(NULL)
 
   list(x = x, y = y)
 

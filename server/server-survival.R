@@ -1,6 +1,6 @@
 library(stringr)
 
-createAlert(session, "warningAlert", "survInstructions", title = "Survival Analysis", content = "<i>shinyGEO</i> will attempt to detect the time and outcome columns from the sample data. Please confirm the selection and then generate the KM plot by clicking on the button above. The KM plot will compare survival curves for samples with high expression to samples with low expression, using the median expression value as the cutoff. To use the best cutoff instead, select this option under the 'Survival analysis options' menu below ", style = "success", dismiss = TRUE) 
+createAlert(session, "warningAlert", "survInstructions", title = "Survival Analysis", content = "<i>shinyGEO</i> will attempt to detect the time and outcome columns from the sample data. Please confirm the selection and then generate the KM plot by clicking on the button above. The KM plot will generate survival curves for samples with high expression to samples with low expression, using the median expression value as the cutoff. To use the best cutoff instead, select this option under the 'Survival analysis options' menu below ", style = "success", dismiss = TRUE) 
 
 #Auto-Generation of columns
 ## Functions for autogen
@@ -76,7 +76,7 @@ time.analysis <-reactive({
  	code2 = paste0("time = as.double(gsub(\".*: \",\"\",data.p[[time.column]]))")
 
 	code = paste(code1, code2, sep = "\n")	
-	time = as.double(reduce(this[[input$autoColumnTime]]))	
+	time = suppressWarnings(as.double(reduce(this[[input$autoColumnTime]])))	
 
 	list(code = code, time = time)
 
@@ -157,7 +157,7 @@ main.gen <- function(this,columns.data){
   updateSelectizeInput(session,"autoColumnOutcome",choices=colnames(this),
 	selected=columns.data[2])
   new = reduce.columns(columns.data[1],columns.data[2],this)
-  if (!is.na(new$outcome)) {
+  if (sum(!is.na(new$outcome)) <= 0) { 
     outcome.orig = as.character(this[[columns.data[2]]])
     outcome.new = new$outcome
     outcome.no = unique(outcome.orig[outcome.new == 0])
@@ -170,7 +170,7 @@ main.gen <- function(this,columns.data){
 	selected=outcome.no,server=TRUE)
   }
 
-  if (!is.na(new$time)) {
+  if (sum(!is.na(new$time)) <= 0) {
     time_both <- data.frame("TimeColumnOriginal" = this[[columns.data[1]]],
 			  "TimeColumnFormatted" = new$time)
     rownames(time_both) <- rownames(this)
@@ -267,11 +267,10 @@ main.gen <- function(this,columns.data){
 	N = input$columnEvent0
 	if (is.null(N) | is.null(Y)) {
 		closeAlert(session, "warn2")
-	} else if (!is.null(N) & N == "" | !is.null(Y) & Y == "") {
+	} else if (!is.null(N) & N[1] == "" | !is.null(Y) & Y[1] == "") {
 		closeAlert(session, "warn2") 
 	}
     }
-    cat("autoColumnOutcome = ", input$autoColumnOutcome, "\n")
     if (input$autoColumnOutcome == ""){
       shinyjs::disable("genBtn")
     } else if (!is.null(input$columnEvent1) & !is.null(input$columnEvent0)) {
@@ -333,6 +332,7 @@ main.gen <- function(this,columns.data){
   })
 
   kmReactive <- reactive({
+	shinycat("in kmReactive...\n")
   	outcome.orig = values.edit$table[[KM$outcome.col]]
         outcome.analysis = rep(NA, length(outcome.orig))
         outcome.analysis[outcome.orig%in%KM$eventNo] = 0
@@ -384,6 +384,7 @@ main.gen <- function(this,columns.data){
 		   if (is.null(input$selectGenes)) return(NULL)
 
 		   km = isolate(kmReactive())
+		   if (is.null(km$x)) return(NULL) 
                    main = paste(input$GSE, geneLabel() , sep = ": ")
 
 	 	   hr.inverse = FALSE
@@ -394,16 +395,10 @@ main.gen <- function(this,columns.data){
 		   optimal.cut = TRUE
 		   if (KM$cutoff == "Median") optimal.cut = FALSE 
 
-		   keep = !is.na(km$x) & !is.nan(km$x) & !is.na(km$time)
-		   check = km$death[keep] 
- 		   y = sum(check%in%1)	
- 		   n = sum(check%in%0)	
-
                    res = plot.shiny.km(time = km$time, death = km$death, x = km$x,  
                                         col = KM$col, title = main,
 					xlab = KM$xlab, ylab = KM$ylab,
 					hr.inverse = hr.inverse, optimal.cut = optimal.cut)
-
 		   closeAlert(session, "alertWait1")
 
 		  if (!is.null(res)) {
@@ -412,10 +407,13 @@ main.gen <- function(this,columns.data){
 		     shinyjs::show("formatDEButton2")
 		     closeAlert(session, "kmAlert")	
 		  } else {
+
 		     shinyjs::hide("Survadd")
 		     shinyjs::hide("downloadKM")
 		     shinyjs::hide("formatDEButton2")
 		     if (!is.null(input$selectGenes) & input$selectGenes!="") {
+		        plot(1:10, type = 'n', xaxt = 'n', yaxt = 'n', 
+			     lwd = 0, ylab = "", xlab = "", bty = 'n')
                 	content = "<b>Error</b>: Survival analysis could not be completed using the selected time and outcome columns. This is typically because the selected columns do not contain survival information. Click on the Select Time/Outcome button to select the appropriate columns. Note that survival information is not available for all datasets."
 			
 			if (KM$cutoff != "Median") {
