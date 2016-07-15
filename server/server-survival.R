@@ -30,7 +30,6 @@ calc.columns <- function(this){
   x.time = colnames(this)[apply(this,2,is.time.column)]
   y.outcome = colnames(this)[apply(this,2,is.outcome.column)]
 
-save(x.time, y.outcome, file = "this.RData")
  have.time = length(x.time) > 0
  have.outcome = length(y.outcome) > 0
 
