@@ -11,16 +11,16 @@ calc.columns <- function(this){
   outcome.pattern = c("distant-relapse event","outcome","dead of disease","dss censor","os censor","overall survival", "cancer specific survival", "survival")
   
   is.time.column <- function(x){
-    ans = grepl(paste(time.pattern,collapse="|"),x)
+    ans = grepl(paste(time.pattern,collapse="|"),x, ignore.case = TRUE)
     if(any(ans)){
       return(TRUE)
     }
     return(FALSE)
   }
   is.outcome.column <- function(x){
-    ans = grepl(paste(outcome.pattern,collapse="|"),x)
+    ans = grepl(paste(outcome.pattern,collapse="|"),x, ignore.case = TRUE)
     # not an outcome if contains 'month'
-    ans2 = grepl("month",x)
+    ans2 = grepl("month",x, ignore.case = TRUE)
     ans = ans & !ans2
     if(any(ans)){
       return(TRUE)
