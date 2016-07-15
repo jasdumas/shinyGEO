@@ -100,7 +100,7 @@ observeEvent(input$applyMergeGroups, ({
   data = values.edit$table
   data[[col]] = Y
 
-  add1 = paste0(add1, "data.p[[\"", col, "\"]] = Y")
+  add1 = paste0(add1, "data.p[[\"", col, "\"]] = Y\n")
   isolate(add.code(add1))
 
   isolate(values.edit$table <- data)
