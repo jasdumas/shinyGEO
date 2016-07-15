@@ -113,7 +113,7 @@ reduce <- function(column){
 reduce.columns <- function(time,outcome,this){
    if(is.na(time) && is.na(outcome)){
     createAlert(session, "warningAlert", alertId = "warn3", title = "Warning: No time or outcome columns were found",
-                content = c("<p>Oops! shinyGEO could not find columns for survival analysis in your data. Please try the following: <ul><li>View the table and select the columns relevant to time and outcome </li><li>If necessary, manually format the data by exporting the data, reformatting, and uploading your data back into <i>shinyGEO</i>.</li><li> Note that survival information is not available in all datasets.</ul></p>"), style= 'danger', dismiss = TRUE, append = TRUE)
+                content = c("<p>Oops! <i>shinyGEO</i> could not find columns for survival analysis in your data. Please try the following: <ul><li>View the table and select the columns relevant to time and outcome </li><li>If necessary, manually format the data by exporting the data, reformatting, and uploading your data back into <i>shinyGEO</i>.</li><li> Note that survival information is not available in all datasets.</ul></p>"), style= 'danger', dismiss = TRUE, append = TRUE)
     ans = list(time = NA, outcome = NA)
     return(ans)
   }
@@ -152,12 +152,14 @@ outcomeChoices <-reactive({
 main.gen <- function(this,columns.data){
   #Reduce and analyze
   # update inputs for time and outcome columns
+  
   updateSelectizeInput(session,"autoColumnTime",choices=colnames(this),
 	selected=columns.data[1])
   updateSelectizeInput(session,"autoColumnOutcome",choices=colnames(this),
 	selected=columns.data[2])
   new = reduce.columns(columns.data[1],columns.data[2],this)
-  if (sum(!is.na(new$outcome)) <= 0) { 
+
+  if (sum(!is.na(new$outcome)) > 0) { 
     outcome.orig = as.character(this[[columns.data[2]]])
     outcome.new = new$outcome
     outcome.no = unique(outcome.orig[outcome.new == 0])
@@ -170,7 +172,7 @@ main.gen <- function(this,columns.data){
 	selected=outcome.no,server=TRUE)
   }
 
-  if (sum(!is.na(new$time)) <= 0) {
+  if (sum(!is.na(new$time)) > 0) {
     time_both <- data.frame("TimeColumnOriginal" = this[[columns.data[1]]],
 			  "TimeColumnFormatted" = new$time)
     rownames(time_both) <- rownames(this)
@@ -429,7 +431,7 @@ main.gen <- function(this,columns.data){
 		     if (!is.null(input$selectGenes) & input$selectGenes!="") {
 		        plot(1:10, type = 'n', xaxt = 'n', yaxt = 'n', 
 			     lwd = 0, ylab = "", xlab = "", bty = 'n')
-                	content = "<b>Error</b>: Survival analysis could not be completed using the selected time and outcome columns. This is typically because the selected columns do not contain survival information. Click on the Select Time/Outcome button to select the appropriate columns. Note that survival information is not available for all datasets."
+                	content = "<b>Error</b>: Survival analysis could not be completed using the selected time and outcome columns for the selected probe. This is typically because the selected columns do not contain survival information. Click on the Select Time/Outcome button to select the appropriate columns, or choose another probe. Note that survival information is not available for all datasets."
 			
 			if (KM$cutoff != "Median") {
 				content = paste0(content, " Alternatively, the survival data may be unbalanced (e.g., 99% of individuals are censored). If this is the case, the Median cutoff must be used.")
