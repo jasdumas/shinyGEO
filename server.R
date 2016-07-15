@@ -1,4 +1,4 @@
-TRACE = FALSE 
+TRACE = TRUE 
 shinycat <<-function(...) {
 	if (TRACE) cat(...)
 }

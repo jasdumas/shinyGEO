@@ -371,9 +371,6 @@ observe({
 
               main = paste(input$GSE, geneLabel() , sep = ": ")
 
-		group1 = input$Group1Values; group.names = DE$labels; col = DE$col
-		save(x,y, group1, group.names, main, col, file = "strip.RData")
-
               print(stripchart2(x,y, input$Group1Values, group.names = DE$labels,
 		 main = main, col=DE$col))
               }) # end of renderPLot
