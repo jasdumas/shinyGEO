@@ -1,5 +1,5 @@
 
-createAlert(session,"ioAlert1",content = "<H4>Directions</H4><p>1. Download the current clinical data you are working with, it will be saved in your 'Downloads' folder.<br>2. Edit the dataset, then save your changes.<br>3. Then upload your dataset back to shinyGEO.</p>",dismiss=FALSE)
+createAlert(session,"ioAlert1",content = "<H4>Directions</H4><p>1. Download the current clinical data you are working with, it will be saved in your 'Downloads' folder.<br>2. Edit the dataset, then save your changes.<br>3. Then upload your dataset back to <i>shinyGEO</i>.</p>",dismiss=FALSE)
 
 
 shinyjs::onclick("ClinicalReset", {

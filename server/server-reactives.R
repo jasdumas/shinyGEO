@@ -477,7 +477,7 @@ output$downloadDE <- downloadHandler(
 	s = stripReactive()
 	if (is.null(s)) return(NULL)
         d = data.frame(ID = names(s$x), X = s$x, Group = s$y)
-	d = subset(d, !is.na(Group) & !is.na(X))
+	d = subset(d, !is.na(Group))
 	if (nrow(d) > 0) {
 		o = order(d$Group)
  		write.csv(d[o,], file, row.names = FALSE)
