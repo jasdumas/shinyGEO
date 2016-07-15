@@ -320,6 +320,12 @@ main.gen <- function(this,columns.data){
             input$autoColumnTime != "" & input$autoColumnOutcome != "") {
 	    closeAlert(session, "warn2")
             shinyjs::enable("genBtn")
+	    if (length(intersect(input$columnEvent0, input$columnEvent1)) == 0) {
+		  closeAlert(session, "warnYesNo")	
+	    }	
+		
+
+		
     	    setTimeTable()    
 	} else if (!values.edit$autogen)  {
           createAlert(session, "warningAlert", alertId = "warn2", title = "Time and Outcome Selection",
@@ -368,6 +374,15 @@ main.gen <- function(this,columns.data){
 		 time = KM$time.col
 	         outcome = KM$outcome.col
 		 yes = KM$eventYes; no = KM$eventNo
+
+		 check = intersect(yes, no)
+		 if (length(check) > 0) {
+          		createAlert(session, "warningAlert", alertId = "warnYesNo", title = "Event Selection Error",
+                content = "At least one value was selected for both Event:Yes and Event: No. Make sure that the Yes and No events are distinct.", style= 'danger', dismiss = TRUE, append = TRUE)
+          shinyjs::disable("genBtn")
+			return(NULL)
+
+		 }
 
                  if (is.null(values.edit$table)) return(NULL)
                  output$kmSurvival <- renderPlot({

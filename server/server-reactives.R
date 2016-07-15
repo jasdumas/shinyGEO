@@ -468,7 +468,7 @@ output$downloadDE <- downloadHandler(
       file = paste(input$GSE,"_",input$platform,"_",input$selectGenes,"_", Sys.time(),"-DE", ".csv", sep = "")
 	file = gsub(":", "-",file)
 	file = gsub(" ", "_",file)
-  msg = paste0("<H4>Data Exported</H4><p> The expression data has been downloaded to the following file: ", file, "</p>")
+  msg = paste0("<H4>Differential Expression Data Exported</H4><p> The expression and grouping data has been downloaded to the following file in your Downloads folder: <b>", file, "</p>")
   createAlert(session,"alert2",content = msg, style="success",dismiss=TRUE, append = TRUE)
         return(file)
 },
@@ -494,7 +494,7 @@ output$downloadKM <- downloadHandler(
       file = paste(input$GSE,"_",input$platform,"_",input$selectGenes,"_", Sys.time(),"-KM", ".csv", sep = "")
 	file = gsub(":", "-",file)
 	file = gsub(" ", "_",file)
-  msg = paste0("<H4>Data Exported</H4><p> The expression and survival data has been downloaded to the following file: ", file, "</p>")
+  msg = paste0("<H4>Survival Data Exported</H4><p> The expression and survival data has been downloaded to the following file in your Downloads folder: <b>", file, "</b></p>")
   createAlert(session,"alert2",content = msg, style="success",dismiss=TRUE, append = TRUE)
         return(file)
 },
