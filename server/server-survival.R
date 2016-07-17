@@ -7,8 +7,8 @@ createAlert(session, "warningAlert", "survInstructions", title = "Survival Analy
 ##
 calc.columns <- function(this){
   # First need to grep the first row of the data, then lapply a function that will return true for
-  time.pattern = c("distant-relapse free survival","time","survival \\(mo\\)", "survival month", "survival \\(months\\)","survival months")
-  outcome.pattern = c("distant-relapse event","outcome","dead of disease","dss censor","os censor","overall survival", "cancer specific survival", "survival")
+  time.pattern = c("distant-relapse free survival","time","survival \\(mo\\)", "survival month", "survival \\(months\\)","survival months", "survival_month")
+  outcome.pattern = c("distant-relapse event","outcome","dead of disease","dss censor","os censor","overall survival", "cancer specific survival", "survival", "cancer_death")
   
   is.time.column <- function(x){
     ans = grepl(paste(time.pattern,collapse="|"),x, ignore.case = TRUE)
