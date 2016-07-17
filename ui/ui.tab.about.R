@@ -12,7 +12,7 @@ tab.about = tabItem("About",
          is a MSc. Graduate Student in the Predictive Analytics program at DePaul University (Chicago, IL/ Online).
          Jasmine has a BSE in Biomedical Engineering from the University of Hartford
          and a Professional Certificate in Medical Product Develpment from UCI Extension.
-         <a href ='https://github.com/jasdumas'>Github Profile</a> <span class= \'label label-primary\'>Contributor</span> </p>
+         <a href ='http://jasdumas.github.io/'>Jasmine's Homepage</a> <span class= \'label label-primary\'>Contributor</span> </p>
     <p><span style = \'font-weight: bold\'> Michael Gargano </span>
         has a BS degree in Computer Science from Eastern Connecticut State University. He is pursuing a Masters in Bioinformatics at Northeastern University.<span class=\'label label-primary\'>Contributor</span></p> 
   </div>
