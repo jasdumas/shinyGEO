@@ -434,7 +434,9 @@ profiles <- reactive({
 probe.expr <-reactive({
 	if (is.null(values.edit$table)) return(NULL)
 	if (input$selectGenes=="") return (NULL)
-        x = profiles()[input$selectGenes,] # effected
+        x = profiles()[input$selectGenes,] # selected
+        # make sure expression values are named
+        if (is.null(names(x))) names(x) = colnames(profiles()) 
         if (is.null(x)) return(NULL)
 	x
 })

@@ -350,7 +350,7 @@ stripReactive <-reactive({
 observe({
     
   PLOT = TRUE
-      
+     
   if (input$selectGenes == "") {
         PLOT = FALSE
   } else {
@@ -371,7 +371,6 @@ observe({
               y = s$y
 
               main = paste(input$GSE, geneLabel() , sep = ": ")
-
               print(stripchart2(x,y, input$Group1Values, group.names = DE$labels,
 		 main = main, col=DE$col))
               }) # end of renderPLot
