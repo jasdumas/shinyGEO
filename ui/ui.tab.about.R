@@ -14,7 +14,7 @@ tab.about = tabItem("About",
          and a Professional Certificate in Medical Product Develpment from UCI Extension.
          <a href ='https://github.com/jasdumas'>Github Profile</a> <span class= \'label label-primary\'>Contributor</span> </p>
     <p><span style = \'font-weight: bold\'> Michael Gargano </span>
-        has a BS degree in Computer Science from Eastern Connecticut State University. He is pursuing a Masters in Bioinformatics at Northeastern University.</p> span class=\'label label-primary\'>Contributor</span></p> 
+        has a BS degree in Computer Science from Eastern Connecticut State University. He is pursuing a Masters in Bioinformatics at Northeastern University.<span class=\'label label-primary\'>Contributor</span></p> 
   </div>
 
   <div class='panel-heading'>
