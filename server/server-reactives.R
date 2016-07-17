@@ -129,7 +129,7 @@ observeEvent(input$tabs, {
   	shinyjs::disable('platform')
   	shinyjs::disable('submitButton')
   } else {
-    	shinyjs::enable('platform')  
+    	#shinyjs::enable('platform')  
 	closeAlert(session, alertId = "SelectGene-alert")
 	closeAlert(session, alertId = "SelectGroups")
   } 
@@ -209,7 +209,6 @@ dataInput <- reactive({
 
    createAlert(session, "alert1", alertId = "GSE-progress-alert", title = "Current Status", style = "success",
               content = content , append = TRUE, dismiss = FALSE) 
-  code = paste0("data.series = getGEO(GEO = \"", GSE, "\", AnnotGPL = FALSE, getGPL = FALSE)")
 
     geo = try(getGEO(GEO = isolate(GSE), AnnotGPL=FALSE, getGPL = FALSE), silent = TRUE)
 
@@ -253,6 +252,7 @@ platformIndex <- reactive({
   if (length(dataInput())==1) return (1)
   m = match((input$platform), as.character(sapply(dataInput(), annotation)))   
   if (is.na(m)) return(NULL)
+  shinyjs::disable('platform')
   return(m)
 })
 
@@ -263,8 +263,6 @@ platInfo <- reactive({
   shinycat("In platInfo reactive...\n")
   if (is.null(Platforms()) | is.null(platformIndex())) return (NULL)
 
-  code = paste0("data.platform = getGEO(\"", Platforms()[platformIndex()],  "\")
-")
   closeAlert(session, "GPL-alert")
   if (!TEST.DATA) {
     createAlert(session, "alert1", alertId = "GPL-alert", title = "Current Status", style = "info",
@@ -351,7 +349,6 @@ observe({
 
   # only update table if values.edit$table is null
   if (is.null(values.edit$table)) {
-    code = paste0("data.p = pData(data.series[[data.index]])")
     if (TEST.DATA) {
         values.edit$table = CLINICAL.test
     } else {
@@ -370,8 +367,6 @@ exprInput <- reactive({
 	return(NULL)
   }
   pl=Platforms()[platformIndex()]
-  code = paste0("data.index = match(\"", pl, "\", sapply(data.series, annotation))")
-  code = paste0("data.expr = exprs(data.series[[data.index]])")
   ans = exprs(dataInput()[[pi]])
   return(ans)
 })

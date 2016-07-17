@@ -30,7 +30,8 @@ observeEvent(input$reportBtn, {
 })
 
 #########################################################
-# profiles() or CODE$expression.code will trigger report 
+# profiles() or CODE$expression.code will trigger report
+# used for when expression.code is zero for initial set-up
 #########################################################
 observe({
   shinycat("observe profiles or CODE$expression.code for report...\n")
@@ -42,8 +43,7 @@ observe({
     GSE = strsplit(names(GEO.test),"-")[[1]][1]
   }
 
-
-if (CODE$expression.code == 0) {
+  initialCode = NULL
   initialCode <- paste0(
 "## Load required packages ##
 library(GEOquery)
@@ -53,24 +53,19 @@ library(ggplot2)
 library(GGally)
 library(survMisc)
 
-## Download data from GEO ##
+## Download series data from GEO ##
 GSE = \"", GSE, "\"
-GPL = \"", Platforms()[platformIndex()], "\"
- 
 data.series = getGEO(GEO = GSE, AnnotGPL = FALSE, getGPL = FALSE)
+")
+
+ initialCode <-paste0(initialCode, "
+## Download platform data from GEO and get sample (phenotype) information ## 
+GPL = \"", Platforms()[platformIndex()], "\"
 data.platform = getGEO(GPL)
 data.index = match(GPL, sapply(data.series, annotation))
 data.p = pData(data.series[[data.index]])
-") # end of paste of intial code download
-  
+") 
   add.code(initialCode)
-}
-
-# if here, CODE$expression.code is not negative 1, so always add expression
-
-if (CODE$expression.code == 1) {
-  add.code("# change default expression normalization")
-}
   add.code("data.expr = exprs(data.series[[data.index]])")
   add.code("common = intersect(colnames(data.expr), rownames(data.p))")  
   add.code("m1 = match(common, colnames(data.expr))")
