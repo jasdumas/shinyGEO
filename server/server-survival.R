@@ -51,6 +51,7 @@ calc.columns <- function(this){
   title = NULL
   if (!have.time & !have.outcome) {
 	title = "Warning: No time or outcome columns were found"
+       shinyjs::disable("genBtn")
   } else  if(!have.time & have.outcome){
 	title = "Warning: No survival time columns were found"
   }
