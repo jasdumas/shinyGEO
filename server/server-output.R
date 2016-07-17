@@ -149,6 +149,7 @@ observe ({
     pl.description = platforms.description[keep]
     if (length(pl.accession) == 1) {
       pl.selected = pl.accession 
+      shinyjs::disable('platform')
       choices = pl.selected
     } else {
       pl.selected = NULL

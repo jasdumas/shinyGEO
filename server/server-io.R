@@ -21,7 +21,7 @@ shinyjs::onclick("ClinicalReset", {
   add.code("m1 = match(common, colnames(data.expr))")
   add.code("m2 = match(common, rownames(data.p))")
   add.code("data.expr = data.expr[,m1]")
-  add.code("data.p = data.p[m2,]")
+  add.code("data.p = data.p[m2,]\n")
 
   if (values.edit$log2) {
         add1  = "data.expr[which(data.expr <= 0)] <- NaN"
