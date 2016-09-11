@@ -2,7 +2,7 @@
 library(shinyAce)
 library(RCurl)
 library(shinyBS)
-#library("shinydashboard")
+library("shinydashboard")
 require('shinydashboard')
 
 source("misc/html.R")
