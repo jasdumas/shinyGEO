@@ -9,7 +9,7 @@ http://gdancik.github.io/shinyGEO/
 
 2. Open *R*. Then type the following (you may copy and paste) into the *R* console in order to install the CRAN packages required by *shinyGEO*:
 
-	`install.packages(c("shiny","survival","shinyBS","GGally","ggplot2","shinyAce","knitr","rmarkdown","RCurl","shinyjs","shinydashboard"))` 
+	`install.packages(c("shiny","survival","shinyBS","GGally","ggplot2","shinyAce","knitr","rmarkdown","RCurl","shinyjs","shinydashboard", "survMisc"))` 
 
         `install.packages('devtools')`
         `devtools::install_github('rstudio/DT', ref = "f3e86a6")`

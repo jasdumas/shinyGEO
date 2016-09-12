@@ -9,6 +9,7 @@ if (TEST.DATA) {
   #load("RData/GSE19915.RData")
   #load("RData/GSE13.RData")
   load("RData/GSE13507.RData")
+  #load("RData/GSE60322.RData")
   #load("RData/GSE33331.RData")
 }
 

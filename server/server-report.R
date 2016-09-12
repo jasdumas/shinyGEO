@@ -30,7 +30,8 @@ observeEvent(input$reportBtn, {
 })
 
 #########################################################
-# profiles() or CODE$expression.code will trigger report 
+# profiles() or CODE$expression.code will trigger report
+# used for when expression.code is zero for initial set-up
 #########################################################
 observe({
   shinycat("observe profiles or CODE$expression.code for report...\n")
@@ -42,8 +43,7 @@ observe({
     GSE = strsplit(names(GEO.test),"-")[[1]][1]
   }
 
-
-if (CODE$expression.code == 0) {
+  initialCode = NULL
   initialCode <- paste0(
 "## Load required packages ##
 library(GEOquery)
@@ -51,25 +51,21 @@ library(reshape2)
 library(survival)
 library(ggplot2)
 library(GGally)
+library(survMisc)
 
-## Download data from GEO ##
+## Download series data from GEO ##
 GSE = \"", GSE, "\"
-GPL = \"", Platforms()[platformIndex()], "\"
- 
 data.series = getGEO(GEO = GSE, AnnotGPL = FALSE, getGPL = FALSE)
+")
+
+ initialCode <-paste0(initialCode, "
+## Download platform data from GEO and get sample (phenotype) information ## 
+GPL = \"", Platforms()[platformIndex()], "\"
 data.platform = getGEO(GPL)
 data.index = match(GPL, sapply(data.series, annotation))
 data.p = pData(data.series[[data.index]])
-") # end of paste of intial code download
-  
+") 
   add.code(initialCode)
-}
-
-# if here, CODE$expression.code is not negative 1, so always add expression
-
-if (CODE$expression.code == 1) {
-  add.code("# change default expression normalization")
-}
   add.code("data.expr = exprs(data.series[[data.index]])")
   add.code("common = intersect(colnames(data.expr), rownames(data.p))")  
   add.code("m1 = match(common, colnames(data.expr))")
@@ -123,6 +119,8 @@ quote.it <-function(x) paste0("\"", x, "\"")
 observeEvent(input$DEadd, {
   shinycat("Add DE code to report...\n")
 
+createAlert(session, "alert2", title = "", style = "success",
+            content = "<H4>R Code Generation</H4><p> R Code for Differential Expression Analysis has been added to the <i> Code </i> page </p>", append = TRUE, dismiss = TRUE) 
 
 if (!CODE$stripchart.loaded) {
   s2function = scan(file = "misc/stripchart2.R", what = character(), sep = "\n")
@@ -135,7 +133,6 @@ vector.it <-function(x) {
   x = paste0("\"", x, "\"", collapse = ",")
   paste0("c(", x, ")")
 }
-
 
  
 ## generate differential expression plot ##
@@ -175,11 +172,12 @@ add.code(s3plot)
 #################################
 observeEvent(input$Survadd, {
   shinycat("Add survival code to report...\n")
+
+  createAlert(session, "alert2", title = "", style = "success",
+            content = "<H4>R Code Generation</H4><p> R Code for Survival Analysis has been added to the <i> Code </i> page </p>", append = TRUE, dismiss = TRUE) 
    if (!CODE$plot.km.loaded) {
      kmfunction = scan(file = "misc/plot.shiny.km.R", what = character(), sep = "\n")
      sapply(kmfunction, add.code)
-     add.code(time.analysis()$code)
-     add.code("")
      CODE$plot.km.loaded = TRUE
   }
 
@@ -211,6 +209,10 @@ labels = paste0("\nxlab = ", xlab, "\nylab = ", ylab, "\nhr.inverse = ", hr.inve
 
 add.code("## Survival Analysis ##")
 add.probe = paste0("probe = \"", input$selectGenes, "\"") 
+
+add.code(time.analysis()$code)
+add.code("")
+
 kmplot <-paste0("probe = \"", input$selectGenes, "\" 
 x = data.expr[probe,]
 
@@ -223,9 +225,11 @@ eventYes = ", vector.it(input$columnEvent1), "
 outcome[outcome.orig %in% eventNo] = 0
 outcome[outcome.orig %in% eventYes] = 1
 
+optimal.cut = ", KM$cutoff != "Median", "
+
 main = paste(GSE, \"", geneLabel(), "\", sep = \": \")\n", labels, "
 
-plot.shiny.km(time = time, death = as.integer(outcome), x = x, col = ", vector.it(KM$col), ", title = main, xlab = xlab, ylab = ylab, hr.inverse = hr.inverse)
+plot.shiny.km(time = time, death = as.integer(outcome), x = x, col = ", vector.it(KM$col), ", title = main, xlab = xlab, ylab = ylab, hr.inverse = hr.inverse, optimal.cut = optimal.cut)
 ")
  
  add.code(kmplot)

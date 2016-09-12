@@ -97,10 +97,18 @@ observeEvent(input$applyMergeGroups, ({
         Y[X %in% g3] = input$group3Label  
 	add1 = paste0(add1, "Y[tmp %in% ", vector.it(g3), "] = \"", input$group3Label, "\"\n")  
   }
+
+  if(length(unique(Y)) <= 1) {
+     createAlert(session, "mergeGroupsAlert", alertId = "merge-alert-error", title = "Save Error", style = "danger", content = "<p> Error: this merge would create a column where all values are the same. This operation is currently not supported" , append = TRUE)
+    return(NULL)
+  } 
+
   data = values.edit$table
+
   data[[col]] = Y
 
-  add1 = paste0(add1, "data.p[[\"", col, "\"]] = Y")
+
+  add1 = paste0(add1, "data.p[[\"", col, "\"]] = Y\n")
   isolate(add.code(add1))
 
   isolate(values.edit$table <- data)

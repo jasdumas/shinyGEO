@@ -123,7 +123,7 @@ observeEvent(input$formatDEButton, {
 
 ## get current colors ##
 colorsDE2 <-reactive({
-  names = paste0("colorDE", 1:length(isolate(input$Group1Values)))
+  names = paste0("colorDE", 1:length(input$Group1Values))
   vals = NULL
   for (n in names) {
     vals = c(vals, input[[n]])
@@ -132,7 +132,7 @@ colorsDE2 <-reactive({
 })
   
 labelsDE2 <-reactive({
-  names = paste0("labelDE", 1:length(isolate(input$Group1Values)))
+  names = paste0("labelDE", 1:length(input$Group1Values))
   vals = NULL
   for (n in names) {
     vals = c(vals, input[[n]])
@@ -142,10 +142,8 @@ labelsDE2 <-reactive({
 
 
 observeEvent(input$Group1Values, {
-  # Note: The statement below does not work because colorsDE2() searches colors
-  # before the selectInput boxes are created. Therefore, the
-  # default colors are returned
   DE$labels = input$Group1Values
+  DE$col = NULL
 })
 
 observeEvent(input$applyFormatDE, {

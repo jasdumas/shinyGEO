@@ -1,5 +1,5 @@
 
-createAlert(session,"ioAlert1",content = "<H4>Directions</H4><p>1. Download the current clinical data you are working with, it will be saved in your 'Downloads' folder.<br>2. Edit the dataset, then save your changes.<br>3. Then upload your dataset back to shinyGEO.</p>",dismiss=FALSE)
+createAlert(session,"ioAlert1",content = "<H4>Directions</H4><p>1. Download the current clinical data you are working with, it will be saved in your 'Downloads' folder.<br>2. Edit the dataset, then save your changes.<br>3. Then upload your dataset back to <i>shinyGEO</i>.</p>",dismiss=FALSE)
 
 
 shinyjs::onclick("ClinicalReset", {
@@ -21,7 +21,7 @@ shinyjs::onclick("ClinicalReset", {
   add.code("m1 = match(common, colnames(data.expr))")
   add.code("m2 = match(common, rownames(data.p))")
   add.code("data.expr = data.expr[,m1]")
-  add.code("data.p = data.p[m2,]")
+  add.code("data.p = data.p[m2,]\n")
 
   if (values.edit$log2) {
         add1  = "data.expr[which(data.expr <= 0)] <- NaN"
@@ -40,6 +40,7 @@ output$downloadSet<- downloadHandler(
     filename = function() {
       file = paste(input$GSE,"_",input$platform,"_",Sys.time(),"-clinical", ".csv", sep = "")
 	file = gsub(":", "-",file)
+	file = gsub(" ", "_",file)
   msg = paste0("<H4>Current Status</H4><p><strong>The clinical data has been downloaded to the following file: ", file, "</p>")
   createAlert(session,"ioAlert2",content = msg, style="success",dismiss=FALSE, append = FALSE)
         return(file)

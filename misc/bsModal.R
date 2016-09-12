@@ -74,7 +74,7 @@ genBSModal<-function (id, title, trigger, ..., size)
                         size = "default", type = "action", block = FALSE, disabled = FALSE,
                         value = FALSE),
  
-               bsButton("genBtn", "Generate Analysis", icon = NULL, style = "success",
+               bsButton("genBtn", "Generate KM Plot", icon = NULL, style = "success",
                         size = "default", type = "action", block = FALSE, disabled = FALSE,
                         value = FALSE),
                shiny::tags$h4(class = "modal-title", title)
@@ -82,11 +82,26 @@ genBSModal<-function (id, title, trigger, ..., size)
 shiny::tags$div(class = "modal-body",
               fluidRow(
                  column(12,
-                        tags$h4(class="intro","shinyGEO has automatically detected and formatted columns within your data for you. Please confirm these are correct and then generate the analysis."),
-                        bsAlert("warningAlert")
-                 )
-               ),
-               tags$hr(class="hr"),
+                        bsAlert("warningAlert"),
+               		tags$hr(class="hr")
+                 ),
+	       hr(style = "margin: 0px"),
+		column(12,
+		  div(class="panel panel-default",
+	    	    div(class="panel-heading",
+	              div(class="panel-title", 
+	  		HTML("<b><a data-toggle='collapse' href = '#survOptions'> Survival analysis options </a></b>")
+    		      ),
+   		      div(id="survOptions", class="panel-collapse collapse", br(),
+		    	radioButtons("radioCutoff", 
+		 	  label = "Cutoff selection to separate high and low expressors", 
+			  choices = c("Median", "Auto select best cutoff"), inline = TRUE)
+    		      )
+)
+)
+               )),
+
+	       hr(style = "margin: 0px"),
                fluidRow(
                  column(7,
                         tags$h4(class="col-time-head","Time Column Selection"),
@@ -96,6 +111,7 @@ shiny::tags$div(class = "modal-body",
                  ),
                  column(1,""),
                  column(3,
+
                         tags$h4(class="col-time-head","Outcome Column Selection"),
                         selectizeInput('autoColumnOutcome','Outcome Column',choices=NULL),
                         tags$br(),
@@ -104,14 +120,17 @@ shiny::tags$div(class = "modal-body",
                         ),
                         tags$div(class="columnSelect",
                                  selectizeInput('columnEvent0',label="Event: No",choices = NULL, multiple = TRUE)
-                        ))
-                    )
+                        )
+		  )
+                 )
                  )
               )
            )
        )
    
 }
+
+
 summaryBSModal<-function (id, title, trigger,size, ...) { 
 if (!missing(size)) { 
   if (size == "large") { 

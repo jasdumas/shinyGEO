@@ -3,12 +3,20 @@
 #############################################################################
 shinycat("begin server-reactives.R\n")
 
+# disable a few buttons initially
 shinyjs::disable("ClinicalReset")
 
 shinyjs::onclick("sidebarToggle",
 #  cat("refreshing display...\n")
 )
 
+shinyjs::hide("DEadd")
+shinyjs::hide("downloadDE")
+shinyjs::hide("formatDEButton")
+
+shinyjs::hide("Survadd")
+shinyjs::hide("downloadKM")
+shinyjs::hide("formatDEButton2")
 
 LAST.TAB = "Home"
        content = HTML("To find a dataset, search the <a href = 'http://www.ncbi.nlm.nih.gov/geo/\'>Gene Expression Omnibus</a> and filter by 'Expression profiling by array'.")
@@ -25,7 +33,7 @@ values.edit <- reactiveValues(table = NULL, platformGeneColumn = NULL, original 
 reproducible <-reactiveValues(report = NULL)
 KM <- reactiveValues(time.col = NULL, outcome.col = NULL, generated = FALSE, 
 	eventYes = NULL, eventNo = NULL, xlab = "Time", ylab = "Survival", hr.format = "high/low", 
-	col = c("darkblue", "darkred"))
+	col = c("darkblue", "darkred"), cutoff = "Median")
 
 DE <- reactiveValues(labels = NULL, col = NULL)
 
@@ -52,6 +60,7 @@ reactiveValues.reset <-function() {
 	KM$eventYes = NULL
 	KM$eventNo = NULL
         KM$generated = FALSE 
+	KM$cutoff = "Median"
 
         CODE$stripchart.loaded = FALSE
 	CODE$plot.km.loaded = FALSE
@@ -120,7 +129,7 @@ observeEvent(input$tabs, {
   	shinyjs::disable('platform')
   	shinyjs::disable('submitButton')
   } else {
-    	shinyjs::enable('platform')  
+    	#shinyjs::enable('platform')  
 	closeAlert(session, alertId = "SelectGene-alert")
 	closeAlert(session, alertId = "SelectGroups")
   } 
@@ -150,8 +159,8 @@ observeEvent(input$selectGenes, {
 })
 
 observeEvent(input$Group1Values, {
-     shinycat("input$selectdGroups = ", input$Group1Values, "\n")
-     if (input$Group1Values!="") {
+     shinycat("input$selectedGroups = ", input$Group1Values, "\n")
+     if (length(input$Group1Values) > 1 || input$Group1Values!="") {
 	closeAlert(session, alertId = "SelectGroups")	
      }
 })
@@ -200,9 +209,8 @@ dataInput <- reactive({
 
    createAlert(session, "alert1", alertId = "GSE-progress-alert", title = "Current Status", style = "success",
               content = content , append = TRUE, dismiss = FALSE) 
-  code = paste0("data.series = getGEO(GEO = \"", GSE, "\", AnnotGPL = FALSE, getGPL = FALSE)")
 
-    geo = try(getGEO(GEO = isolate(GSE), AnnotGPL=FALSE, getGPL = FALSE))
+    geo = try(getGEO(GEO = isolate(GSE), AnnotGPL=FALSE, getGPL = FALSE), silent = TRUE)
 
     if (class(geo) == "try-error") {
         content = "This is typically an indication that the GEO data is not in the correct format. Please select another dataset to continue. <p><p>The specific error appears below:<p>"
@@ -244,6 +252,7 @@ platformIndex <- reactive({
   if (length(dataInput())==1) return (1)
   m = match((input$platform), as.character(sapply(dataInput(), annotation)))   
   if (is.na(m)) return(NULL)
+  shinyjs::disable('platform')
   return(m)
 })
 
@@ -254,8 +263,6 @@ platInfo <- reactive({
   shinycat("In platInfo reactive...\n")
   if (is.null(Platforms()) | is.null(platformIndex())) return (NULL)
 
-  code = paste0("data.platform = getGEO(\"", Platforms()[platformIndex()],  "\")
-")
   closeAlert(session, "GPL-alert")
   if (!TEST.DATA) {
     createAlert(session, "alert1", alertId = "GPL-alert", title = "Current Status", style = "info",
@@ -342,7 +349,6 @@ observe({
 
   # only update table if values.edit$table is null
   if (is.null(values.edit$table)) {
-    code = paste0("data.p = pData(data.series[[data.index]])")
     if (TEST.DATA) {
         values.edit$table = CLINICAL.test
     } else {
@@ -361,8 +367,6 @@ exprInput <- reactive({
 	return(NULL)
   }
   pl=Platforms()[platformIndex()]
-  code = paste0("data.index = match(\"", pl, "\", sapply(data.series, annotation))")
-  code = paste0("data.expr = exprs(data.series[[data.index]])")
   ans = exprs(dataInput()[[pi]])
   return(ans)
 })
@@ -430,8 +434,79 @@ profiles <- reactive({
 probe.expr <-reactive({
 	if (is.null(values.edit$table)) return(NULL)
 	if (input$selectGenes=="") return (NULL)
-        x = profiles()[input$selectGenes,] # effected
+        x = profiles()[input$selectGenes,] # selected
+        # make sure expression values are named
+        if (is.null(names(x))) names(x) = colnames(profiles()) 
         if (is.null(x)) return(NULL)
 	x
 })
+
+
+##### enable/disable DE graph buttons ###
+
+observe({
+
+  if (is.null(input$Group1Values)) { 
+     shinyjs::hide('DEadd')
+     shinyjs::hide('downloadDE')
+     shinyjs::hide('formatDEButton')
+  } else {
+     shinyjs::show('DEadd')
+     shinyjs::show('downloadDE')
+     shinyjs::show('formatDEButton')
+  }
+})
+
+#######################################
+# Download handler for DE data export
+#######################################
+output$downloadDE <- downloadHandler(
+    filename = function() {
+      file = paste(input$GSE,"_",input$platform,"_",input$selectGenes,"_", Sys.time(),"-DE", ".csv", sep = "")
+	file = gsub(":", "-",file)
+	file = gsub(" ", "_",file)
+  msg = paste0("<H4>Differential Expression Data Exported</H4><p> The expression and grouping data has been downloaded to the following file in your Downloads folder: <b>", file, "</p>")
+  createAlert(session,"alert2",content = msg, style="success",dismiss=TRUE, append = TRUE)
+        return(file)
+},
+
+   content = function(file) {
+	s = stripReactive()
+	if (is.null(s)) return(NULL)
+        d = data.frame(ID = names(s$x), X = s$x, Group = s$y)
+	d = subset(d, !is.na(Group))
+	if (nrow(d) > 0) {
+		o = order(d$Group)
+ 		write.csv(d[o,], file, row.names = FALSE)
+	}	
+    }
+ )
+
+
+#######################################
+# Download handler for KM data export
+#######################################
+output$downloadKM <- downloadHandler(
+    filename = function() {
+      file = paste(input$GSE,"_",input$platform,"_",input$selectGenes,"_", Sys.time(),"-KM", ".csv", sep = "")
+	file = gsub(":", "-",file)
+	file = gsub(" ", "_",file)
+  msg = paste0("<H4>Survival Data Exported</H4><p> The expression and survival data has been downloaded to the following file in your Downloads folder: <b>", file, "</b></p>")
+  createAlert(session,"alert2",content = msg, style="success",dismiss=TRUE, append = TRUE)
+        return(file)
+},
+
+   content = function(file) {
+	km = kmReactive()
+	if (is.null(km)) return(NULL)
+	optimal.cut = TRUE
+        if (KM$cutoff == "Median") optimal.cut = FALSE 
+        res = plot.shiny.km(time = km$time, death = km$death, x = km$x, 
+			    ids = km$id, no.plot = TRUE, optimal.cut = optimal.cut)
+	if (is.null(res)) return(NULL)
+ 		write.csv(res, file, row.names = FALSE)
+	}	
+ )
+
+
 

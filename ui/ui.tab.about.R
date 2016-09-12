@@ -4,20 +4,17 @@ tab.about = tabItem("About",
          <h3 class='panel-title' style = \'font-weight: bold\'>Primary Contributors</h3>
    </div>
    <div class='panel-body'>
+    <p><span style = \'font-weight: bold\'> Garrett M. Dancik, PhD </span>
+        is an Associate Professor of Computer Science / <a href = 'http://bioinformatics.easternct.edu'>Bioinformatics</a> at Eastern
+        Connecticut State University (Wilimantic, CT). <span class= \'label label-primary\'>Package Maintainer</span></p>
+
     <p> <span style = \'font-weight: bold\'> Jasmine Dumas </span>
          is a MSc. Graduate Student in the Predictive Analytics program at DePaul University (Chicago, IL/ Online).
          Jasmine has a BSE in Biomedical Engineering from the University of Hartford
          and a Professional Certificate in Medical Product Develpment from UCI Extension.
-         <a href ='https://github.com/jasdumas'>Github Profile</a> <span class= \'label label-primary\'>Contributor</span> </p>
-    <p><span style = \'font-weight: bold\'> Garrett M. Dancik, PhD </span>
-        is an Assistant Professor of Computer Science / Bioinformatics at Eastern
-        Connecticut State University (Wilimantic, CT). His research involves applying statistical, mathematical,
-        and computational models to answer biological questions and gain insight into biological systems.
-        His more recent work has focused on analyzing gene expression data and identifying prognostic tumor biomarkers.
-        <a href ='http://bioinformatics.easternct.edu/'>Bioinformatics Laboratory Page</a> <span class= \'label label-primary\'>Package Maintainer</span></p>
-
+         <a href ='http://jasdumas.github.io/'>Jasmine's Homepage</a> <span class= \'label label-primary\'>Contributor</span> </p>
     <p><span style = \'font-weight: bold\'> Michael Gargano </span>
-        has a BS degree in Computer Science from Eastern Connecticut State University. He is pursuing a Masters in Bioinformatics at Northeastern University.</p> 
+        has a BS degree in Computer Science from Eastern Connecticut State University. He is pursuing a Masters in Bioinformatics at Northeastern University.<span class=\'label label-primary\'>Contributor</span></p> 
   </div>
 
   <div class='panel-heading'>

@@ -5,13 +5,6 @@
 load("series/series.RData")
 load("platforms/platforms.RData")
 
-createAlert(session, "addCodeDEAlert", alertId = "DE-add-alert", title = "", style = "success",
-            content = "R Code for Differential Expression Analysis Added", append = FALSE, dismiss = FALSE) 
-
-createAlert(session, "addCodeSurvAlert", alertId = "Surv-add-alert", title = "", style = "success",
-            content = "R Code for Survival Analysis Added", append = FALSE, dismiss = FALSE) 
-
-
 m = matrix(rnorm(1000), ncol=20)
 rownames(m) = paste0("row", 1:nrow(m))
 
@@ -156,6 +149,7 @@ observe ({
     pl.description = platforms.description[keep]
     if (length(pl.accession) == 1) {
       pl.selected = pl.accession 
+      shinyjs::disable('platform')
       choices = pl.selected
     } else {
       pl.selected = NULL
@@ -323,10 +317,40 @@ observe({
   }
 })
 
+stripReactive <-reactive({
+  if(is.null(input$Group1Values)) return(NULL)
+  iv = input$selectedColumn
+  m = match(as.character(iv), colnames(clinicalDataProcessed()))  
+  clinical = as.character(clinicalDataProcessed()[,m]) 
+  selected = c(as.character(input$Group1Values))
+  k = clinical%in% selected
+ 
+  y = clinical
+  y[!k] = NA
+
+  ## make sure levels are in selected order for plot
+  y = factor(y)
+  x = probe.expr()
+
+  t = values.edit$table  
+
+  common = intersect(names(x), rownames(values.edit$table))
+  m1 = match(common, names(x))
+  m2 = match(common, rownames(values.edit$table))
+
+  x = x[m1]
+  y = y[m2]
+
+  if (all(is.na(y))) return(NULL)
+
+  list(x = x, y = y)
+
+})
+
 observe({
     
   PLOT = TRUE
-      
+     
   if (input$selectGenes == "") {
         PLOT = FALSE
   } else {
@@ -340,25 +364,11 @@ observe({
         output$plot <-renderPlot({NULL})
   } else  {
         output$plot <- renderPlot({
-              iv = input$selectedColumn
-              m = match(as.character(iv), colnames(clinicalDataProcessed()))  
-              clinical = as.character(clinicalDataProcessed()[,m]) 
-              selected = c(as.character(input$Group1Values))
-              k = clinical%in% selected
-    
-              y = clinical
-              y[!k] = NA
-            
-              ## make sure levels are in selected order for plot
-              y = factor(y)
-	      x = probe.expr()
 
-	      common = intersect(names(x), rownames(values.edit$table))
-              m1 = match(common, names(x))
-              m2 = match(common, rownames(values.edit$table))
-
-	      x = x[m1]
-              y = y[m2]
+	      s = stripReactive()
+	      if (is.null(s)) return(NULL)
+	      x = s$x 
+              y = s$y
 
               main = paste(input$GSE, geneLabel() , sep = ": ")
               print(stripchart2(x,y, input$Group1Values, group.names = DE$labels,
