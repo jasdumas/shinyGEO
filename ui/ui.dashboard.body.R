@@ -21,9 +21,9 @@ header = dashboardHeader(
 )
 
 # add id to sidebar toggle link so that we can refresh when clicked
-tmp = header$children[[3]]$children[[2]]
-tmp = gsub("\"#\"", "\"#\" id = \"sidebarToggle\"", tmp)
-header$children[[3]]$children[[2]] = tmp
+#tmp = header$children[[3]]$children[[2]]
+#tmp = gsub("\"#\"", "\"#\" id = \"sidebarToggle\"", tmp)
+#header$children[[3]]$children[[2]] = tmp
 
 gse.input = div(style = "display:inline-block; width: 75%",
             selectizeInput('GSE', label = "Accession Number", choices = NULL, width = 275,
