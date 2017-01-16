@@ -61,14 +61,10 @@ output$GeneColumn <- renderUI({
 #############################################
 # dynamically change shinyTitle
 #############################################
-shinyTitle <-reactive({
-  gse = isolate(input$GSE)
-  platform = isolate(input$platform)
-  if (is.null(gse) | gse == "") return("shinyGEO")
-  paste0("shinyGEO - ", gse, "/", platform, sep = "")
-})
 
-output$shinyTitle = renderText(shinyTitle())
+shinyTitle = "shinyGEO <span style ='font-size:60%;'>(last updated: 1/16/17)</span>"
+
+output$shinyTitle = renderText(shinyTitle)
 
 ######################################################
 # Hidden text boxes for conditional output

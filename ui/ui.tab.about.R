@@ -1,7 +1,7 @@
 tab.about = tabItem("About",
     HTML("<div class='panel panel-default'>
   <div class='panel-heading'>
-         <h3 class='panel-title' style = \'font-weight: bold\'>Please cite</h3>
+         <h3 class='panel-title' style = \'font-weight: bold\'>Citation</h3>
    </div>
    <div class='panel-body'>
    <p> Dumas J, Gargano MA, Dancik GM. <i>shinyGEO</i>: a web-based application for analyzing Gene Expression Omnibus datasets. Bioinformatics. 2016 Dec 1;32(23):3679-3681 </p>

@@ -9,6 +9,6 @@ header = dashboardHeader(
 
 # add id to sidebar toggle link so that we can refresh when clicked
 tmp = header$children[[3]]$children[[2]]
-#tmp = gsub("\"#\"", "\"#\" id = \"sidebarToggle\"", tmp)
 tmp[[2]]$id = "sidebarToggle"
 header$children[[3]]$children[[2]] = tmp
+
