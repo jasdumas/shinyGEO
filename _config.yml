@@ -1,0 +1,8 @@
+title: shinyGEO
+description: a web application for analyzing Gene Expression Omnibus (GEO) datasets using shiny
+google_analytics: 
+show_downloads: true
+theme: jekyll-theme-cayman
+
+gems:
+  - jekyll-mentions
