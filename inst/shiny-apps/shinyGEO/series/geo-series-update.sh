@@ -3,14 +3,14 @@
 
 DIR=/home/user
 {
-	
+
 	mv $DIR/series.csv $DIR/backup-series.csv &&
 	echo "Backup created.."
 
 } || {
 
 	echo "No local series data found.. one will be created"
-}	
+}
 
 echo "Update GEO data..."
 data=$(curl --silent "https://www.ncbi.nlm.nih.gov/geo/browse/" | grep "total_count")
@@ -26,10 +26,10 @@ if [ "$i != 1" ]
 then
 	wget --content-disposition "https://www.ncbi.nlm.nih.gov/geo/browse/?view=series&zsort=date&mode=csv&page=$i&display=5000" -q -O ->> $DIR/series.csv
 else
-	wget --content-disposition "https://www.ncbi.nlm.nih.gov/geo/browse/?view=series&zsort=date&mode=csv&page=$i&display=5000" -q -a  ->> $DIR/series.csv	
-   	
+	wget --content-disposition "https://www.ncbi.nlm.nih.gov/geo/browse/?view=series&zsort=date&mode=csv&page=$i&display=5000" -q -a  ->> $DIR/series.csv
+
 fi
 
-done 
+done
 
-echo "Finished update...data saved to -> series.csv" 
+echo "Finished update...data saved to -> series.csv"

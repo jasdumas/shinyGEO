@@ -1,2 +1,7 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
+^1200x592\.png$
+^jasmine_dumas_user2016_poster_update\.pdf$
+^jasmine_dumas_user2016_poster_update\.pptx$
+^jasmine_dumas_user2016_poster\.pptx$
+^\.travis\.yml$
