@@ -30,4 +30,5 @@ Imports:
     shinyAce, 
     knitr, 
     DT
-License: MIT + file LICENSE.txt
+License: MIT + file LICENSE
+RoxygenNote: 6.0.0
