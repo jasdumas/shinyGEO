@@ -7,3 +7,11 @@
 ^\.travis\.yml$
 ^rsconnect$
 ^ui\.dashboard\.body\.R~master$
+^inst/extdata/series\.csv$
+^inst/extdata/platform\.csv$
+^inst/shiny-apps/shinyGEO/platforms$
+^inst/shiny-apps/shinyGEO/series$
+^inst/shiny-apps/shinyGEO/RData$
+^inst/shiny-apps/shinyGEO/series/series\.RData$
+^inst/shiny-apps/shinyGEO/series/platforms\.RData$
+^cran-comments\.md$

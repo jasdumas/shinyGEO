@@ -1,17 +1,19 @@
 ##########################################################
 # display functions for conditional panels              ##
 ##########################################################
+seriesDir <- system.file("data", "series.RData", package = "shinyGEO")
+load(seriesDir)
+platformsDir <- system.file("data", "platforms.RData", package = "shinyGEO")
+load(platformsDir)
 
-load("series/series.RData")
-load("platforms/platforms.RData")
 
 m = matrix(rnorm(1000), ncol=20)
 rownames(m) = paste0("row", 1:nrow(m))
 
-opp = list(dom = 'Rlfrtip', #ajax = list(url = action1), 
+opp = list(dom = 'Rlfrtip', #ajax = list(url = action1),
                        #scrollX = "auto",
                        #scrollY = "400px",
-                       paging = T, 
+                       paging = T,
                        searchHighlight = TRUE,
                        columnDefs = list(list(
                          targets = 1: ncol(m), # applies to the entire table
@@ -21,7 +23,7 @@ opp = list(dom = 'Rlfrtip', #ajax = list(url = action1),
                            "'<span title=\"' + data + '\">' + data.substr(0, 20) + '...</span>' : data;",
                            "}")
                        ))
-) 
+)
 
 output$summary <-renderUI({
   x = exprInput()
@@ -30,23 +32,23 @@ output$summary <-renderUI({
   }
 
   createAlert(session, "alert1", alertId = "Analysis-alert", title = "Please choose an analysis from the sidebar to continue...", style = "success",
-               content = "Your selected dataset has been downloaded successfully, and is summarized below. <p>Please select either <b>Differential Expression Analysis</b> or <b>Survival Analysis</b> from the sidebar to continue.</p>", append = FALSE, dismiss = TRUE) 
+               content = "Your selected dataset has been downloaded successfully, and is summarized below. <p>Please select either <b>Differential Expression Analysis</b> or <b>Survival Analysis</b> from the sidebar to continue.</p>", append = FALSE, dismiss = TRUE)
 
 
-  
+
   p.tag <-function(x) {
-	for (i in 1:length(x)){ 
-		x[i] = paste0("<p>",x[i], "</p>")	
-	} 
-        paste0(x, collapse = "") 
-  }  
+	for (i in 1:length(x)){
+		x[i] = paste0("<p>",x[i], "</p>")
+	}
+        paste0(x, collapse = "")
+  }
 
-  gse = paste0("<b>", input$GSE, "/", input$platform,  
+  gse = paste0("<b>", input$GSE, "/", input$platform,
 	" (", nrow(values.edit$table), " samples, ", nrow(x), " probes)</b>")
 
-  
+
   msg = p.tag(gse)
-	
+
   HTML(msg)
 
 
@@ -62,7 +64,7 @@ output$GeneColumn <- renderUI({
 # dynamically change shinyTitle
 #############################################
 
-shinyTitle = "shinyGEO <span style ='font-size:60%;'>(last updated: 1/16/17)</span>"
+shinyTitle = "shinyGEO"
 
 output$shinyTitle = renderText(shinyTitle)
 
@@ -96,18 +98,18 @@ observe({
 
   label =  paste0("Select Probe (You May Search By  ", values.edit$platformGeneColumn, ")")
 
-  updateSelectizeInput(session, "selectGenes", 
-	label = label, server = TRUE, 
- 	choices = geneNames(), options = options 
+  updateSelectizeInput(session, "selectGenes",
+	label = label, server = TRUE,
+ 	choices = geneNames(), options = options
   )
 })
 
 
 observe({
  shinycat("update geneColumn selectizeInput...\n")
- updateSelectizeInput(session, "geneColumn", server = TRUE, 
-	choices = colnames(platInfo()), selected = values.edit$platformGeneColumn) 
-}) 
+ updateSelectizeInput(session, "geneColumn", server = TRUE,
+	choices = colnames(platInfo()), selected = values.edit$platformGeneColumn)
+})
 
 observeEvent(input$geneColumn, {
 	if (is.null(input$geneColumn) | input$geneColumn == "") return(NULL)
@@ -118,7 +120,7 @@ observeEvent(input$geneColumn, {
 PlatformLinks <- reactive({
   pl = Platforms()
   if (is.null(pl)) return(NULL)
-  pl = paste0("<a target = \"_blank\" href = \"http://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=", 
+  pl = paste0("<a target = \"_blank\" href = \"http://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=",
          pl, "\">", pl, "</a>")
   pl = paste0("<p>",pl, "</p>")
   pl = paste0(pl, collapse = "")
@@ -135,21 +137,21 @@ observe ({
   ## only show plaforms for selected series ##
   pl = Platforms()
   shinycat("updating for platform = ", pl, "\n")
- 
+
   pl.selected = NULL
   choices = NULL
-  pl.options = NULL 
+  pl.options = NULL
   if (!is.null(pl)) {
     keep = platforms.accession %in% pl
     pl.accession = platforms.accession[keep]
     pl.description = platforms.description[keep]
     if (length(pl.accession) == 1) {
-      pl.selected = pl.accession 
+      pl.selected = pl.accession
       shinyjs::disable('platform')
       choices = pl.selected
     } else {
       pl.selected = NULL
-      choices = data.frame(label = pl.accession, value = pl.accession, 
+      choices = data.frame(label = pl.accession, value = pl.accession,
 		name = pl.description)
       pl.options = list(
           render = I(
@@ -163,11 +165,11 @@ observe ({
        )
     }
   }
- 
+
   updateSelectizeInput(session, inputId='platform', label = "Platform", server = TRUE,
                choices = choices,
                selected = pl.selected,
-	       options = pl.options 
+	       options = pl.options
 )
 
   if (!is.null(pl)) {
@@ -181,9 +183,9 @@ observe ({
   	x = paste(x, collapse = "<br>")
 
 	if (!TEST.DATA) {
-    	createAlert(session, "alert1", alertId = "GPL-alert", 
-		title = "Please select a platform to continue", 
-		style = "success", content = x, append = TRUE, dismiss = FALSE) 
+    	createAlert(session, "alert1", alertId = "GPL-alert",
+		title = "Please select a platform to continue",
+		style = "success", content = x, append = TRUE, dismiss = FALSE)
   	}
   }
 })
@@ -215,28 +217,28 @@ updateSelectizeInput(session, inputId='GSE', label = "Accession Number", server 
 
 
 ################################################
-### Renders drop-down menu for variables/columns 
-################################################  
+### Renders drop-down menu for variables/columns
+################################################
 observe({
 
   val = NULL
 
-  colNames = rownames(clinicalDataSummary()) 
+  colNames = rownames(clinicalDataSummary())
   val = input$summaryModalTable_row_last_clicked
   val = colNames[val]
- 
-  output$selectedColumn <- renderUI({  
+
+  output$selectedColumn <- renderUI({
       # show possible choices (column names)
-      selectInput('selectedColumn', 'Selected Column', 
+      selectInput('selectedColumn', 'Selected Column',
             choices = ColumnNames(), #width='20%',
             selected = val, multiple = FALSE, selectize = FALSE
     )
   })
 
   val = input$selectedColumn
-  output$selectedColumnForCombine <- renderUI({  
+  output$selectedColumnForCombine <- renderUI({
       # show possible choices (column names)
-      selectInput('selectedColumnForCombine', 'Selected Column', 
+      selectInput('selectedColumnForCombine', 'Selected Column',
             choices = ColumnNames(), #width='20%',
             selected = val, multiple = F, selectize = FALSE
     )
@@ -250,12 +252,12 @@ output$test <- renderPrint(sessionInfo())
 ## renders drop-down menus (server-side) for clinical group selection
 ####################################################################
 output$selectedGroups <- renderUI({
-  selectInput('Group1Values','Select Groups for Comparison', 
+  selectInput('Group1Values','Select Groups for Comparison',
               choices = groupsForSelectedColumn(), multiple=TRUE,
               selected = defaultGroupsForSelectedColumn(),
               width='100%',
               selectize = TRUE
-              
+
   )
 })
 
@@ -264,7 +266,7 @@ output$selectedGroups <- renderUI({
 # set output variables to display the table
 ##############################################
 ##############################
-## Expression Profiles plot 
+## Expression Profiles plot
 ##############################
 
 observe ({
@@ -280,29 +282,29 @@ observe ({
     s = sample(1:n, 30)
     x = x[,s]
   }
-  
+
   # if more than 30 samples change the title to include " selected samples" since they are randomly selected, else " samples"
   if (n > 30) {
     title.detail = " selected samples"
   } else {
     title.detail = " samples"
   }
-  
-  y.label = "log2 expression"  
 
-  title <- paste(isolate(input$GSE), '/', isolate(input$platform), title.detail, sep ='') # need 
- 
+  y.label = "log2 expression"
+
+  title <- paste(isolate(input$GSE), '/', isolate(input$platform), title.detail, sep ='') # need
+
   fixed.df <- as.data.frame(x=x, stringsAsFactors = FALSE)
-  
-  x1 <- reshape2::melt(fixed.df, na.rm = TRUE, id.vars = NULL, 
-            variable.name = "variable", 
+
+  x1 <- reshape2::melt(fixed.df, na.rm = TRUE, id.vars = NULL,
+            variable.name = "variable",
             value.name = "value")
-  
-  exp.prof.plot <- ggplot(x1, aes(variable, value)) + 
+
+  exp.prof.plot <- ggplot(x1, aes(variable, value)) +
                 geom_boxplot(outlier.colour = "green") +
-                labs(title = title, y = y.label, x = "") + 
+                labs(title = title, y = y.label, x = "") +
                 theme(axis.text.x = element_text(angle = 90, hjust = 1))
-  isolate(values.edit$profilesPlot <- TRUE) 
+  isolate(values.edit$profilesPlot <- TRUE)
   output$exProfiles <- renderPlot({print(exp.prof.plot)})
 })
 
@@ -316,11 +318,11 @@ observe({
 stripReactive <-reactive({
   if(is.null(input$Group1Values)) return(NULL)
   iv = input$selectedColumn
-  m = match(as.character(iv), colnames(clinicalDataProcessed()))  
-  clinical = as.character(clinicalDataProcessed()[,m]) 
+  m = match(as.character(iv), colnames(clinicalDataProcessed()))
+  clinical = as.character(clinicalDataProcessed()[,m])
   selected = c(as.character(input$Group1Values))
   k = clinical%in% selected
- 
+
   y = clinical
   y[!k] = NA
 
@@ -328,7 +330,7 @@ stripReactive <-reactive({
   y = factor(y)
   x = probe.expr()
 
-  t = values.edit$table  
+  t = values.edit$table
 
   common = intersect(names(x), rownames(values.edit$table))
   m1 = match(common, names(x))
@@ -344,9 +346,9 @@ stripReactive <-reactive({
 })
 
 observe({
-    
+
   PLOT = TRUE
-     
+
   if (input$selectGenes == "") {
         PLOT = FALSE
   } else {
@@ -355,7 +357,7 @@ observe({
             PLOT = FALSE
           }
   }
-      
+
   if (!PLOT) {
         output$plot <-renderPlot({NULL})
   } else  {
@@ -363,7 +365,7 @@ observe({
 
 	      s = stripReactive()
 	      if (is.null(s)) return(NULL)
-	      x = s$x 
+	      x = s$x
               y = s$y
 
               main = paste(input$GSE, geneLabel() , sep = ": ")

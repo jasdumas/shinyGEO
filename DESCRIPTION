@@ -29,6 +29,11 @@ Imports:
     ggplot2, 
     shinyAce, 
     knitr, 
-    DT
+    DT, 
+    rvest, 
+    readr, 
+    magrittr, 
+    xml2, 
+    devtools
 License: MIT + file LICENSE
 RoxygenNote: 6.0.0

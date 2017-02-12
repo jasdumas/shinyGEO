@@ -1,6 +1,10 @@
 {
-    "path" : "~/Desktop/R-directory/shinyGEO/inst/shiny-apps/shinyGEO/server",
+    "path" : "~/Desktop/R-directory/shinyGEO/man",
     "sortOrder" : [
+        {
+            "ascending" : false,
+            "columnIndex" : 4
+        },
         {
             "ascending" : true,
             "columnIndex" : 2

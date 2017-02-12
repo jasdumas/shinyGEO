@@ -7,9 +7,9 @@ misc/plot.shiny.km.R
 misc/stripchart2.R
 misc/addDeps.R
 
-platforms/platforms.RData
+data/platforms.RData
 
-series/series.RData
+data/series.RData
 
 server/formatDE.R
 server/server-clinical.R
