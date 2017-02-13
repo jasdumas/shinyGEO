@@ -6,32 +6,41 @@ shinyGEO is a web-based tool that allows a user to download the expression and s
 ## Official Website
 http://gdancik.github.io/shinyGEO/
 
-## Running shinyGEO locally 
-1. Download and install *R* from https://cran.r-project.org. (Note: *shinyGEO* requires *R*>=3.23)
+## How to install this package?
 
-2. Open *R*. Then type the following (you may copy and paste) into the *R* console in order to install the CRAN packages required by *shinyGEO*:
+Install the development version from Github:
 
-	`install.packages(c("shiny","survival","shinyBS","GGally","ggplot2","shinyAce","knitr","rmarkdown","RCurl","shinyjs","shinydashboard", "survMisc"))` 
+```r
+library(devtools)
+install_github("jasdumas/shinyGEO")
+library(shinyGEO)
+```
 
-        `install.packages('devtools')`
-        `devtools::install_github('rstudio/DT', ref = "f3e86a6")`
+## How to use this package?
 
-3. Type the following to install the Bioconductor Packages required by *shinyGEO*:
+Update the series and platform meta-data:
 
-	`source("http://bioconductor.org/biocLite.R")`		
-	`biocLite(c("Biobase","GEOquery"))`
+```r
+shinyGEO::updateGEOdata()
+```
 
-4. Type the following to run *shinyGEO*:
+Launch the shiny application locally:
 
-	`library(shiny)`	 
-	`runUrl("https://github.com/gdancik/shinyGEO/archive/master.zip")`
+```r
+shinyGEO::runshinyGEO()
+```
+
+Or launch the shiny application in a web browser:
+
+[http://bioinformatics.easternct.edu/shinyGEO/](http://bioinformatics.easternct.edu/shinyGEO/)
 
 ## Contributors
 - Main contributors: Jasmine Dumas, Michael Gargano, Garrett M. Dancik, PhD
 - Additional contributors: Ken-Heng Liao, Gregory Harper, Brandon Spratt
 
+Please note that this project is released with a [Contributor Code of Conduct](CONDUCT.md). By participating in this project you agree to abide by its terms.
+
 ## Acknowledgements
 This work was supported, in part, by Google Summer of Code funding to JD in 2015. MG, KHL, GH, and BS contributed as part of an independent study in Computer Science / Bioinformatics while undergraduate students at Eastern Connecticut State University, Willimantic, CT,  USA.
 
-## Contributing
-Please note that this project is released with a [Contributor Code of Conduct](CONDUCT.md). By participating in this project you agree to abide by its terms.
+
