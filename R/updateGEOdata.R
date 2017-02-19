@@ -15,6 +15,8 @@ updateGEOdata <- function(){
   #### series update ####
   series_count <- read_html('https://www.ncbi.nlm.nih.gov/geo/browse/')
 
+  ## tests if the data is able to be downloaded
+  if (is.list(series_count)) {
   series_count <- series_count  %>%
     html_nodes(xpath="//*[(@id = 'count')]") %>%
     html_text() %>%
@@ -38,7 +40,7 @@ updateGEOdata <- function(){
   }
   # save raw data in external folder
   write_csv(series, "inst/extdata/series.csv")
-  cat("Finished update...raw data saved to -> inst/extdata/series.csv")
+  message("Finished update...raw data saved to -> inst/extdata/series.csv")
 
   #### process series data ####
   series <- read_csv("inst/extdata/series.csv")
@@ -52,10 +54,14 @@ updateGEOdata <- function(){
   series.accession <- series.accession[o]
   series.description <- series.description[o]
   save(series.accession, series.description, file = "data/series.RData")
+  } else {
+    message("Please connect to the internet to download updated data")
+  }
 
   #### platform update ####
   platform_count <- read_html("https://www.ncbi.nlm.nih.gov/geo/browse/?view=platforms")
 
+  if (is.list(platform_count)){
   platform_count <- platform_count  %>%
     html_nodes(xpath="//*[(@id = 'count')]") %>%
     html_text() %>%
@@ -79,7 +85,7 @@ updateGEOdata <- function(){
   }
   # save raw data in external folder
   write_csv(platform, "inst/extdata/platform.csv")
-  cat("Finished update...raw data saved to -> inst/extdata/platform.csv")
+  message("Finished update...raw data saved to -> inst/extdata/platform.csv")
 
   #### process platform data ####
   platforms <- read_csv("inst/extdata/platform.csv")
@@ -101,6 +107,9 @@ updateGEOdata <- function(){
   #### Compress the data files ####
   tools::resaveRdaFiles("data/series.RData")
   tools::resaveRdaFiles("data/platforms.RData")
+  } else {
+    message("Please connect to the internet to download updated data")
+  }
 
 }
 
