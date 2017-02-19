@@ -1,5 +1,7 @@
 [![Build Status](https://travis-ci.org/jasdumas/shinyGEO.svg?branch=master)](https://travis-ci.org/jasdumas/shinyGEO)
 
+[![Coverage Status](https://img.shields.io/codecov/c/github/jasdumas/shinyGEO/master.svg)](https://codecov.io/github/jasdumas/shinyGEO?branch=master)
+
 # shinyGEO
 shinyGEO is a web-based tool that allows a user to download the expression and sample data from a [Gene Expression Omnibus](http://www.ncbi.nlm.nih.gov/geo/browse/) dataset, select a gene of interest, and perform a survival or differential expression analysis using the available data. For both analyses, shinyGEO produces publication-ready graphics and generates R code ensuring that all analyses are reproducible. The tool is developed using shiny, a web application framework for R, a language for statistical computing and graphics.
 
