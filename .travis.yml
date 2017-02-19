@@ -1,4 +1,27 @@
-language: R
+language: r
 cache: packages
 after_success:
   - Rscript -e 'covr::codecov()'
+warnings_are_errors: false
+r_packages:
+- shiny
+- reshape2
+- survival
+- shinyBS
+- GGally
+- ggplot2
+- shinyAce
+- knitr
+- DT
+- rvest
+- readr
+- magrittr
+- xml2
+- devtools
+- covr
+- testthat
+bioc_packages:
+- affy
+- Biobase
+- GEOquery
+- lima
