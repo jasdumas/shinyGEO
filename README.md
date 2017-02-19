@@ -41,6 +41,12 @@ Or launch the shiny application in a web browser:
 Please note that this project is released with a [Contributor Code of Conduct](CONDUCT.md). By participating in this project you agree to abide by its terms.
 
 ## Acknowledgements
-This work was supported, in part, by Google Summer of Code funding to JD in 2015. MG, KHL, GH, and BS contributed as part of an independent study in Computer Science / Bioinformatics while undergraduate students at Eastern Connecticut State University, Willimantic, CT,  USA.
+This work was supported, in part, by [Google Summer of Code funding to JD in 2015](https://www.google-melange.com/archive/gsoc/2015/orgs/rproject/projects/jasdumas.html). MG, KHL, GH, and BS contributed as part of an independent study in Computer Science / Bioinformatics while undergraduate students at Eastern Connecticut State University, Willimantic, CT,  USA.
+
+## Meta
+- Please [report any issues or bugs](https://github.com/jasdumas/shinyGEO/issues).
+- License: MIT
+- Get citation information for `shinyGEO` in R doing `r citation(package = 'shinyGEO')`
+
 
 
