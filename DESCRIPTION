@@ -14,8 +14,8 @@ Description: A web application to download, parse, transform, model,
     across genes, probes and phenotype groups. A report with code
     and can also be generated for complete reporducibility at the console.
 Depends: R (>= 3.2.0)
-BugReports: https://github.com/gdancik/shinyGEO/issues
-URL: http://gdancik.github.io/shinyGEO/
+BugReports: https://github.com/jasdumas/shinyGEO/issues
+URL: https://github.com/jasdumas/shinyGEO
 Imports:
     shiny, 
     GEOquery, 
