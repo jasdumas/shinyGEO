@@ -24,4 +24,4 @@ bioc_packages:
 - affy
 - Biobase
 - GEOquery
-- lima
+- limma
