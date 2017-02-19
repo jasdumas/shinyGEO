@@ -45,10 +45,14 @@ Please note that this project is released with a [Contributor Code of Conduct](C
 ## Acknowledgements
 This work was supported, in part, by [Google Summer of Code funding to JD in 2015](https://www.google-melange.com/archive/gsoc/2015/orgs/rproject/projects/jasdumas.html). MG, KHL, GH, and BS contributed as part of an independent study in Computer Science / Bioinformatics while undergraduate students at Eastern Connecticut State University, Willimantic, CT,  USA.
 
+## Learn more
+- Read the abstract about `shinyGEO` published in [*Bioinformatics*](https://academic.oup.com/bioinformatics/article-abstract/32/23/3679/2525634/shinyGEO-a-web-based-application-for-analyzing).
+
 ## Meta
 - Please [report any issues or bugs](https://github.com/jasdumas/shinyGEO/issues).
 - License: MIT
 - Get citation information for `shinyGEO` in R doing `r citation(package = 'shinyGEO')`
+
 
 
 
