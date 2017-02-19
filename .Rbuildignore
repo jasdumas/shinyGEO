@@ -16,3 +16,4 @@
 ^inst/shiny-apps/shinyGEO/series/platforms\.RData$
 ^cran-comments\.md$
 ^CONDUCT\.md$
+^*\.RData$
