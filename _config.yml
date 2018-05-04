@@ -2,7 +2,7 @@ title: shinyGEO
 description: a web application for analyzing Gene Expression Omnibus (GEO) datasets using shiny developed during Google Summer of Code 2015
 google_analytics: 
 show_downloads: true
-theme: jekyll-theme-cayman
+theme: jekyll-theme-slate
 
 gems:
   - jekyll-mentions
