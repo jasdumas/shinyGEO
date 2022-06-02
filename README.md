@@ -37,7 +37,7 @@ Or launch the shiny application in a web browser:
 [http://bioinformatics.easternct.edu/shinyGEO/](http://bioinformatics.easternct.edu/shinyGEO/)
 
 ## Contributors
-- Main contributors: Jasmine Dumas, Michael Gargano, Garrett M. Dancik, PhD
+- Main contributors: Jasmine Daly, Michael Gargano, Garrett M. Dancik, PhD
 - Additional contributors: Ken-Heng Liao, Gregory Harper, Brandon Spratt
 
 Please note that this project is released with a [Contributor Code of Conduct](CONDUCT.md). By participating in this project you agree to abide by its terms.
